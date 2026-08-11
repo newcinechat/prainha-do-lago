@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prainha do Lago - O Guia dos Ambulantes</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1B5E20;
+            --accent: #E65100;
+            --bg: #F8F9FA;
+            --card-bg: #FFFFFF;
+            --text: #212529;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 60px; }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            position: relative;
+        }
+        header h1 { font-size: 1.4rem; margin-bottom: 4px; }
+        header p { font-size: 0.85rem; opacity: 0.9; }
+        .admin-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .container { max-width: 600px; margin: 15px auto; padding: 0 15px; }
+
+        .client-welcome {
+            background: #E8F5E9;
+            border: 1px solid #C8E6C9;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+        .client-welcome span { font-weight: bold; color: var(--primary); }
+
+        .alert-banner {
+            background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+            border-left: 5px solid var(--accent);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .alert-banner h3 { font-size: 0.9rem; color: #E65100; margin-bottom: 2px; }
+        .alert-banner p { font-size: 0.8rem; color: #444; }
+
+        .actions-grid { display: flex; gap: 10px; margin-bottom: 15px; }
+        .btn-action {
+            flex: 1;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(230,81,0,0.3);
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-client { background-color: var(--primary); }
+        .btn-chat { background-color: #0277bd; }
+
+        .media-actions-grid { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-media {
+            flex: 1;
+            background-color: #37474F;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        h2.section-title { font-size: 1rem; margin-bottom: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .quiosque-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid #eaeaea;
+        }
+        .quiosque-info h4 { font-size: 0.95rem; color: var(--primary); margin-bottom: 2px; }
+        .quiosque-info p { font-size: 0.75rem; color: #777; }
+        .badge { background: #E8F5E9; color: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 600px;
+            max-height: 85vh;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999; }
+        
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f2f2f2;
+        }
+        .product-details h5 { font-size: 0.85rem; color: #333; }
+        .product-details p { font-size: 0.7rem; color: #777; margin-top: 1px; }
+        .product-price { font-weight: bold; color: var(--primary); font-size: 0.85rem; }
+        
+        .btn-buy-item {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .custom-order-box {
+            margin-top: 15px;
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .custom-order-box label { display: block; font-size: 0.75rem; font-weight: bold; color: #444; margin-bottom: 4px; }
+        .custom-order-box textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 0.8rem; height: 60px; resize: none; margin-bottom: 8px; }
+
+        .contact-box {
+            margin-top: 15px;
+            background: #F1F8E9;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .contact-box p { font-size: 0.75rem; color: #444; margin-bottom: 8px; }
+        
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+
+        .bank-section {
+            margin-top: 15px;
+            background: #FFF;
+            border: 1px solid #C8E6C9;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .bank-section p { font-size: 0.75rem; color: #333; margin-bottom: 8px; font-weight: bold; }
+        .bank-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+        .bank-btn {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 8px 3px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #333;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .bank-btn:hover { background: #e8f5e9; border-color: var(--primary); color: var(--primary); }
+
+        .social-section {
+            margin-top: 25px;
+            background: #FFF;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .social-section h3 { font-size: 0.9rem; margin-bottom: 10px; color: var(--primary); }
+        .social-grid {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        .social-btn {
+            flex: 1;
+            padding: 10px 5px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+            text-align: center;
+        }
+        .btn-wpp { background: #25D366; }
+        .btn-telegram { background: #0088cc; }
+        .btn-insta { background: #e4405f; }
+        .btn-uber-main { background: #000000; }
+        .btn-99-main { background: #FFCC00; color: #000; }
+
+        .form-container { display: none; margin-top: 15px; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 0.75rem; color: #555; margin-bottom: 3px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 0.8rem; }
+        .btn-submit { background: var(--primary); color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        
+        .btn-delete-quiosque {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .admin-box { background: #263238; color: white; padding: 15px; border-radius: 10px; margin-top: 10px; }
+        .admin-box h3 { color: #81C784; font-size: 1rem; margin-bottom: 10px; }
+        .admin-stat { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #37474F; font-size: 0.85rem; align-items: center; }
+        .admin-input-edit { width: 70px; padding: 4px; text-align: center; border-radius: 4px; border: 1px solid #81C784; background: #111; color: #81C784; font-weight: bold; }
+        
+        .client-item-admin {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #111;
+            padding: 6px 10px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🌴 Prainha do Lago</h1>
+        <p>Diretório de Quiosques & Clientes</p>
+        <button class="admin-icon" onclick="abrirAdmin()">🔐 Admin</button>
+    </header>
+
+    <div class="container">
+        <div id="clientWelcomeBox" class="client-welcome" style="display: none;">
+            <span>👤 Olá, <span id="clientNameDisplay"></span>!</span>
+            <a href="#" onclick="logoutClient()" style="color: #d32f2f; font-size: 0.75rem;">Sair</a>
+        </div>
+
+        <div class="alert-banner">
+            <h3>⚠️ Bem-vindo à Orla!</h3>
+            <p id="live-alert">Divulgue seu quiosque e faça pedidos diretos na vitrine.</p>
+        </div>
+
+        <div class="actions-grid">
+            <button class="btn-action btn-client" onclick="toggleForm('clienteForm')">👤 Cadastrar Cliente</button>
+            <button class="btn-action" onclick="toggleForm('quiosqueForm')">+ Cadastrar Quiosque</button>
+            <button class="btn-action btn-chat" onclick="abrirChat()">💬 Chat em Tempo Real</button>
+        </div>
+
+        <div class="media-actions-grid">
+            <button class="btn-media" onclick="document.getElementById('inputGaleria').click()">
+                🖼️ Abrir Galeria (Fotos/Vídeos)
+            </button>
+            <input type="file" id="inputGaleria" accept="image/*,video/*" style="display: none;" onchange="processarArquivoMidia(this)">
+
+            <button class="btn-media" onclick="document.getElementById('inputCamera').click()">
+                📷 Tirar Foto / Gravar Vídeo
+            </button>
+            <input type="file" id="inputCamera" accept="image/*,video/*" capture="environment" style="display: none;" onchange="processarArquivoMidia(this)">
+        </div>
+
+        <div id="mediaPreviewArea" style="display: none; margin-bottom: 15px; text-align: center; background: white; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+            <p style="font-size: 0.75rem; font-weight: bold; color: var(--primary); margin-bottom: 5px;">Mídia Pronta para Envio:</p>
+            <div id="mediaContainerContent"></div>
+            <button onclick="enviarMidiaParaGrupo()" class="whatsapp-btn" style="margin-top: 8px; margin-bottom: 0;">📤 Enviar Mídia no WhatsApp da Orla</button>
+        </div>
+
+        <div id="clienteForm" class="form-container">
+            <h3 style="font-size: 0.9rem; margin-bottom: 10px; color: var(--primary);">Cadastro Rápido de Cliente (Orla)</h3>
+            <div class="form-group">
+                <label>Seu Nome</label>
+                <input type="text" id="cliNome" placeholder="Ex: Ana Souza">
+            </div>
+            <div class="form-group">
+                <label>Seu WhatsApp / Contato</label>
+                <input type="text" id="cliWpp" placeholder="Ex: 61 98888-8888">
+            </div>
+            <div class="form-group">
+                <label>Localização / Ponto na Prainha</label>
+                <input type="text" id="cliLocal" placeholder="Ex: Próximo à quadra de vôlei / Mesa 4">
+            </div>
+            <button class="btn-submit" onclick="salvarCliente()">Entrar no Aplicativo</button>
+        </div>
+
+        <!-- Formulário Atualizado com Campo de Produtos -->
+        <div id="quiosqueForm" class="form-container">
+            <h3 style="font-size: 0.9rem; margin-bottom: 10px; color: var(--accent);">Cadastro de Ambulante / Quiosque</h3>
+            <div class="form-group">
+                <label>Nome do Quiosque</label>
+                <input type="text" id="novoNome" placeholder="Ex: Quiosque do Seu Carlos">
+            </div>
+            <div class="form-group">
+                <label>Responsável</label>
+                <input type="text" id="novoResp" placeholder="Ex: Carlos">
+            </div>
+            <div class="form-group">
+                <label>WhatsApp (com DDD)</label>
+                <input type="text" id="novoWpp" placeholder="Ex: 5561999999999">
+            </div>
+            <div class="form-group">
+                <label>Formas de Pagamento</label>
+                <input type="text" id="novoPag" placeholder="Ex: Pix, Dinheiro, Cartão">
+            </div>
+            <div class="form-group">
+                <label>Produtos e Preços (Ex: Cerveja R$ 10, Água R$ 5, Porção R$ 35)</label>
+                <input type="text" id="novoProdTexto" placeholder="Ex: Cerveja Lata 350ml - R$ 8,00 | Água - R$ 4,00">
+            </div>
+            <button class="btn-submit" style="background: var(--accent);" onclick="salvarNovoQuiosque()">Cadastrar Quiosque Grátis</button>
+        </div>
+
+        <h2 class="section-title">Quiosques Disponíveis</h2>
+        <div id="quiosques-list"></div>
+
+        <div class="social-section">
+            <h3>🌐 Conecte-se & Serviços da Orla</h3>
+            <div class="social-grid">
+                <a href="https://wa.me/5561999999999?text=Olá,%20vim%20pelo%20app%20Prainha%20do%20Lago!" target="_blank" class="social-btn btn-wpp">🟢 WhatsApp</a>
+                <a href="https://t.me/" target="_blank" class="social-btn btn-telegram">🔵 Telegram</a>
+                <a href="https://instagram.com/" target="_blank" class="social-btn btn-insta">📸 Instagram</a>
+            </div>
+
+            <div class="bank-section" style="margin-top: 12px; margin-bottom: 12px;">
+                <p>⚡ Aplicativos de Bancos (Pix / Pagamentos):</p>
+                <div class="bank-grid">
+                    <a href="#" class="bank-btn" onclick="abrirBanco('nubank')">🟣 Nubank</a>
+                    <a href="#" class="bank-btn" onclick="abrirBanco('picpay')">🟢 PicPay</a>
+                    <a href="#" class="bank-btn" onclick="abrirBanco('santander')">🔴 Santander</a>
+                    <a href="#" class="bank-btn" onclick="abrirBanco('caixa')">🔵 Caixa</a>
+                </div>
+            </div>
+
+            <div class="social-grid">
+                <a href="https://m.uber.com/ul/?action=setPickup&dropoff[latitude]=-15.8267&dropoff[longitude]=-47.9218" target="_blank" class="social-btn btn-uber-main">🚗 Chamar Uber</a>
+                <a href="https://99app.com/" target="_blank" class="social-btn btn-99-main">🚖 Chamar 99</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal da Vitrine do Quiosque -->
+    <div id="quiosqueModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modal-title" style="color: var(--primary); font-size: 1rem;"></h3>
+                    <p id="modal-subtitle" style="font-size: 0.75rem; color: #777;"></p>
+                </div>
+                <button class="close-btn" onclick="fecharModal()">&times;</button>
+            </div>
+            
+            <h4 style="font-size: 0.85rem; margin-bottom: 8px; color: #555;">Vitrine de Produtos Disponíveis:</h4>
+            <div id="modal-products"></div>
+
+            <div class="custom-order-box">
+                <label>Ou digite o que deseja pedir deste quiosque:</label>
+                <textarea id="customOrderInput" placeholder="Ex: 2 Cervejas geladas e 1 porção de batata frita, por favor."></textarea>
+                <button class="btn-submit" style="background: var(--accent); padding: 8px;" onclick="comprarPedidoPersonalizado()">Enviar Pedido Personalizado</button>
+            </div>
+
+            <div class="contact-box" style="margin-top: 10px;">
+                <p id="modal-payment"><strong>Formas de Pagamento:</strong> Pix / Dinheiro</p>
+
+                <div class="bank-section">
+                    <p>⚡ Pagar via Pix (Abrir App do Banco):</p>
+                    <div class="bank-grid" style="grid-template-columns: repeat(4, 1fr);">
+                        <a href="#" class="bank-btn" onclick="abrirBanco('nubank')">🟣 Nubank</a>
+                        <a href="#" class="bank-btn" onclick="abrirBanco('picpay')">🟢 PicPay</a>
+                        <a href="#" class="bank-btn" onclick="abrirBanco('santander')">🔴 Santander</a>
+                        <a href="#" class="bank-btn" onclick="abrirBanco('caixa')">🔵 Caixa</a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-delete-quiosque" onclick="deletarQuiosqueAtual()">🗑️ Excluir este Quiosque do Diretório</button>
+        </div>
+    </div>
+
+    <!-- Modal do Chat em Tempo Real -->
+    <div id="chatModal" class="modal">
+        <div class="modal-content" style="height: 75vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <h3 style="color: #0277bd; font-size: 1rem;">💬 Chat da Orla (Tempo Real)</h3>
+                <button class="close-btn" onclick="fecharChat()">&times;</button>
+            </div>
+            <div id="chatMessages" style="flex: 1; background: #f9f9f9; border: 1px solid #eee; border-radius: 8px; padding: 10px; overflow-y: auto; margin-bottom: 10px; font-size: 0.8rem;">
+                <p style="color: #888; text-align: center; margin-top: 20px;">Carregando mensagens em tempo real...</p>
+            </div>
+            <div style="display: flex; gap: 6px;">
+                <input type="text" id="chatInput" placeholder="Digite sua mensagem para todos..." style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 0.8rem;" onkeypress="if(event.key === 'Enter') enviarMensagemFirebase()">
+                <button onclick="enviarMensagemFirebase()" style="background: #0277bd; color: white; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal do Painel Administrativo -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color: #263238; font-size: 1rem;">🔐 Painel de Relatório & Gestão</h3>
+                <button class="close-btn" onclick="fecharAdmin()">&times;</button>
+            </div>
+            
+            <div id="adminLoginArea">
+                <p style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">Digite a senha de administrador para acessar os dados:</p>
+                <div class="form-group">
+                    <input type="password" id="adminSenha" placeholder="Senha de acesso">
+                </div>
+                <button class="btn-submit" style="background: #263238;" onclick="verificarAdmin()">Acessar Painel</button>
+            </div>
+
+            <div id="adminDashboardArea" style="display: none;">
+                <div class="admin-box">
+                    <h3>📊 Faturamento & Comissão</h3>
+                    <div class="admin-stat">
+                        <span>Total de Pedidos:</span>
+                        <strong id="statPedidos">0</strong>
+                    </div>
+                    <div class="admin-stat">
+                        <span>Vendas Registradas:</span>
+                        <strong id="statVendas">R$ 0,00</strong>
+                    </div>
+                    <div class="admin-stat">
+                        <span>Taxa de Comissão (%):</span>
+                        <input type="number" id="inputPorcentagem" class="admin-input-edit" value="10" min="1" max="50" onchange="atualizarPorcentagemComissao()">
+                    </div>
+                    <div class="admin-stat" style="border: none; color: #81C784; font-size: 0.95rem;">
+                        <span>Comissão a Receber:</span>
+                        <strong id="statComissao">R$ 0,00</strong>
+                    </div>
+                </div>
+
+                <div class="admin-box" style="margin-top: 12px;">
+                    <h3>👥 Gerenciar Clientes Cadastrados</h3>
+                    <div id="adminClientList" style="max-height: 120px; overflow-y: auto; margin-top: 8px;"></div>
+                </div>
+
+                <button class="btn-submit" style="background: #263238; margin-top: 15px;" onclick="alert('Configurações salvas com sucesso!')">Salvar Alterações</button>
+                <button class="btn-submit" style="background: #d32f2f; margin-top: 8px;" onclick="fecharAdmin()">Sair do Painel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
