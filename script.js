@@ -2,18 +2,39 @@ let clienteAtual = null;
 let quiosqueSelecionadoId = null;
 let quiosqueUltimaCompraId = null;
 let mediaStreamAtiva = null;
-const SENHA_ADMIN_MESTRE = "1983"; // Senha padrão para abrir o Admin
+const SENHA_ADMIN_MESTRE = "00256383"; // Nova senha master de auditoria
 
 let adminConfig = {
     pedidosRealizados: 0,
     faturamentoQuiosques: 0.00,
     arrecadacaoBolao: 0.00,
-    faturamentoFranquias: 1500.00,
+    faturamentoFranquias: 3000.00,
     itensVendidosHistorico: {}
 };
 
 let franquiasData = [
-    { id: 1, nome: "Carlos Eduardo", cidade: "Brasília / DF", whatsapp: "5561999999999", status: "Ativa (Setup + Royalties)", faturamentoPraça: 3500.00 }
+    { 
+        id: 1, 
+        nome: "Carlos Eduardo", 
+        cidade: "Brasília / DF", 
+        whatsapp: "5561999999999", 
+        status: "Ativa", 
+        faturamentoPraça: 4200.00,
+        historicoOperacoes: "Implantado com 4 quiosques na Orla do Paranoá. Alta demanda em fins de semana.",
+        oQueDáCerto: "Entrega rápida via comanda digital e forte engajamento nos bolões.",
+        oQueMelhorar: "Expandir cobertura de quiosques noturnos e iluminação na praça."
+    },
+    { 
+        id: 2, 
+        nome: "Fernanda Lima", 
+        cidade: "São Paulo / SP", 
+        whatsapp: "5511988888888", 
+        status: "Ativa", 
+        faturamentoPraça: 8900.00,
+        historicoOperacoes: "Parceria consolidada com quiosques na represa e ciclovia.",
+        oQueDáCerto: "Eventos semanais e forte divulgação no Instagram.",
+        oQueMelhorar: "Agilizar o tempo de resposta dos ambulantes nos horários de pico."
+    }
 ];
 
 let quiosquesData = [
@@ -24,9 +45,15 @@ let quiosquesData = [
         responsavel: 'Seu Carlos', 
         whatsapp: '5561999999999', 
         pagamento: 'Pix / Dinheiro', 
+        logomarca: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=150',
         senhaCofre: '1234',
         premioCofre: '10% de desconto na próxima porção!',
-        produtos: [{ nome: 'Cerveja Lata', desc: 'Gelada 350ml', preco: 'R$ 8,00' }, { nome: 'Água Mineral', desc: '500ml', preco: 'R$ 4,00' }] 
+        produtos: [
+            { categoria: 'ESPETINHOS', nome: 'Carne de sol c/ queijo', preco: 10.00 },
+            { categoria: 'ESPETINHOS', nome: 'Frango c/ bacon', preco: 10.00 },
+            { categoria: 'BEBIDAS', nome: 'Heineken 330ml', preco: 10.00 },
+            { categoria: 'BEBIDAS', nome: 'Água Mineral', preco: 5.00 }
+        ] 
     },
     { 
         id: 2, 
@@ -35,35 +62,66 @@ let quiosquesData = [
         responsavel: 'Mariana', 
         whatsapp: '5561988888888', 
         pagamento: 'Pix / Cartão', 
+        logomarca: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=150',
         senhaCofre: '4321',
         premioCofre: 'Ganhou uma Água de Coco grátis!',
-        produtos: [{ nome: 'Água de Coco', desc: 'Natural', preco: 'R$ 9,00' }, { nome: 'Espetinho', desc: 'Carne ou Frango', preco: 'R$ 12,00' }] 
+        produtos: [
+            { categoria: 'BEBIDAS', nome: 'Água de Coco', preco: 9.00 },
+            { categoria: 'ESPETINHOS', nome: 'Espetinho de Carne', preco: 12.00 }
+        ] 
     }
 ];
 
-function entrarNaPlataforma() {
-    const nome = document.getElementById('loginNome').value.trim();
-    const wpp = document.getElementById('loginWpp').value.trim();
-    const local = document.getElementById('loginLocal').value;
-
-    if (!nome || !wpp) {
-        alert('Por favor, informe seu Nome e WhatsApp.');
-        return;
+function alternarCamposLogin(tipo) {
+    if (tipo === 'admin') {
+        document.getElementById('blocoLoginUsuario').style.display = 'none';
+        document.getElementById('blocoLoginAdmin').style.display = 'block';
+    } else {
+        document.getElementById('blocoLoginUsuario').style.display = 'block';
+        document.getElementById('blocoLoginAdmin').style.display = 'none';
     }
+}
 
-    clienteAtual = { id: Date.now(), nome, wpp, local, selos: 0, indicacoesCompradoras: 0 };
-    document.getElementById('clientNameDisplay').innerText = nome;
-    document.getElementById('fidelityCardBox').style.display = 'block';
-    
-    const linkInd = `https://orla-inteligente.app/convite?ref=${encodeURIComponent(nome)}`;
-    document.getElementById('linkIndicacaoInput').value = linkInd;
+function entrarNaPlataforma() {
+    const tipoAcesso = document.getElementById('tipoAcessoSelect').value;
 
-    atualizarCartaoFidelidade();
-    atualizarPainelIndique();
-    mudarLocalizacao(local);
+    if (tipoAcesso === 'admin') {
+        const senha = document.getElementById('loginSenhaAdmin').value.trim();
+        if (senha === SENHA_ADMIN_MESTRE) {
+            clienteAtual = { id: 0, nome: "Administrador Master", local: "prainha", selos: 0, indicacoesCompradoras: 0 };
+            document.getElementById('navAdminBtn').style.display = 'block';
+            document.getElementById('loginTelaInicio').style.display = 'none';
+            mudarAba('admin');
+            alert("🔒 Bem-vindo ao Painel Master Administrator & Auditoria!");
+        } else {
+            alert("❌ Senha Master incorreta!");
+        }
+    } else {
+        const nome = document.getElementById('loginNome').value.trim();
+        const wpp = document.getElementById('loginWpp').value.trim();
+        const local = document.getElementById('loginLocal').value;
 
-    // Fecha a tela de login inicial
-    document.getElementById('loginTelaInicio').style.display = 'none';
+        if (!nome || !wpp) {
+            alert('Por favor, informe seu Nome e WhatsApp.');
+            return;
+        }
+
+        clienteAtual = { id: Date.now(), nome, wpp, local, selos: 0, indicacoesCompradoras: 0 };
+        document.getElementById('clientNameDisplay').innerText = nome;
+        document.getElementById('fidelityCardBox').style.display = 'block';
+        
+        const linkInd = `https://orla-inteligente.app/convite?ref=${encodeURIComponent(nome)}`;
+        document.getElementById('linkIndicacaoInput').value = linkInd;
+
+        document.getElementById('navAdminBtn').style.display = 'none';
+
+        atualizarCartaoFidelidade();
+        atualizarPainelIndique();
+        mudarLocalizacao(local);
+
+        document.getElementById('loginTelaInicio').style.display = 'none';
+        mudarAba('vitrine');
+    }
 }
 
 function sairDaPagina() {
@@ -71,25 +129,30 @@ function sairDaPagina() {
         clienteAtual = null;
         document.getElementById('loginNome').value = '';
         document.getElementById('loginWpp').value = '';
+        document.getElementById('loginSenhaAdmin').value = '';
+        document.getElementById('tipoAcessoSelect').value = 'usuario';
+        alternarCamposLogin('usuario');
         document.getElementById('loginTelaInicio').style.display = 'flex';
-        mudarAba('vitrine');
     }
 }
 
 function mudarAba(abaId) {
     if (abaId === 'admin') {
-        // Exige senha antes de abrir o painel admin
-        document.getElementById('senhaAdminInput').value = '';
-        document.getElementById('adminSenhaModal').style.display = 'flex';
-        return;
+        const navAdminBtn = document.getElementById('navAdminBtn');
+        if (navAdminBtn.style.display === 'none') {
+            alert("❌ Acesso restrito apenas para o perfil Administrador.");
+            return;
+        }
     }
 
     document.querySelectorAll('.aba-content').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active'));
 
-    document.getElementById(`aba-${abaId}`).style.display = 'block';
+    const abaAlvo = document.getElementById(abaId === 'vitrineQuiosque' ? 'abaVitrineQuiosque' : `aba-${abaId}`);
+    if (abaAlvo) {
+        abaAlvo.style.display = 'block';
+    }
     
-    // Ativa visualmente o botão correspondente
     const botoesNav = document.querySelectorAll('.nav-tabs button');
     botoesNav.forEach(btn => {
         if(btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(abaId)) {
@@ -97,41 +160,43 @@ function mudarAba(abaId) {
         }
     });
 
-    if (abaId === 'ranking') {
+    if (abaId === 'vitrine') {
+        renderizarStoriesQuiosques();
+    } else if (abaId === 'ranking') {
         atualizarRankingTop10();
-    }
-}
-
-function validarSenhaAdmin() {
-    const senhaDigitada = document.getElementById('senhaAdminInput').value.trim();
-    if (senhaDigitada === SENHA_ADMIN_MESTRE) {
-        document.getElementById('adminSenhaModal').style.display = 'none';
-        
-        document.querySelectorAll('.aba-content').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active'));
-        
-        document.getElementById('aba-admin').style.display = 'block';
-        
-        // Ativa botão admin
-        const botoesNav = document.querySelectorAll('.nav-tabs button');
-        botoesNav.forEach(btn => {
-            if(btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('admin')) {
-                btn.classList.add('active');
-            }
-        });
-
+    } else if (abaId === 'admin') {
         atualizarPainelAdmin();
-    } else {
-        alert("❌ Senha incorreta! Acesso negado.");
     }
 }
 
-function fecharAdminSenha() {
-    document.getElementById('adminSenhaModal').style.display = 'none';
+// 🌴 Renderizar Stories / Bolinhas de Quiosques no Topo
+function renderizarStoriesQuiosques() {
+    const storiesContainer = document.getElementById('storiesContainer');
+    const contadorStories = document.getElementById('contadorQuiosquesStories');
+    if (!storiesContainer) return;
+
+    contadorStories.innerText = quiosquesData.length;
+    storiesContainer.innerHTML = '';
+
+    quiosquesData.forEach(q => {
+        let logo = q.logomarca || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=150';
+        let div = document.createElement('div');
+        div.className = 'story-item';
+        div.onclick = () => abrirComandaQuiosque(q.id);
+        div.innerHTML = `
+            <div class="story-circle">
+                <img src="${logo}" alt="${q.nome}">
+            </div>
+            <span class="story-name">${q.nome}</span>
+        `;
+        storiesContainer.appendChild(div);
+    });
 }
 
 function mudarLocalizacao(polo) {
+    renderizarStoriesQuiosques();
     const container = document.getElementById('listaQuiosquesContainer');
+    if (!container) return;
     container.innerHTML = '';
 
     const filtrados = quiosquesData.filter(q => q.localizacao === polo);
@@ -144,33 +209,200 @@ function mudarLocalizacao(polo) {
         let div = document.createElement('div');
         div.className = 'card quiosque-item';
         div.innerHTML = `
-            <h4 style="font-size: 0.9rem; color: var(--secondary);">${q.nome}</h4>
-            <p style="font-size: 0.75rem; color: #555;">Resp: ${q.responsavel} | Pag: ${q.pagamento}</p>
-            <button class="btn-submit" style="margin-top: 8px; padding: 6px; font-size: 0.75rem;" onclick="abrirModalProdutos(${q.id})">Ver Vitrine & Pedir 🛍️</button>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="${q.logomarca || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=150'}" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                <div>
+                    <h4 style="font-size: 0.9rem; color: var(--secondary);">${q.nome}</h4>
+                    <p style="font-size: 0.75rem; color: #555;">Resp: ${q.responsavel} | Pag: ${q.pagamento}</p>
+                </div>
+            </div>
+            <button class="btn-submit" style="margin-top: 10px; padding: 6px; font-size: 0.75rem;" onclick="abrirComandaQuiosque(${q.id})">Abrir Comanda Digital 📋</button>
         `;
         container.appendChild(div);
     });
 }
 
+function abrirComandaQuiosque(quiosqueId) {
+    quiosqueSelecionadoId = quiosqueId;
+    const q = quiosquesData.find(item => item.id === quiosqueId);
+    if (!q) return;
+
+    document.getElementById('nomeQuiosqueComanda').innerText = q.nome;
+    if (clienteAtual && clienteAtual.name !== "Administrador Master") {
+        document.getElementById('comandaCliente').value = clienteAtual.nome;
+    }
+    document.getElementById('comandaMesa').value = '';
+    document.getElementById('comandaObservacoes').value = '';
+
+    const containerItens = document.getElementById('itensComandaContainer');
+    containerItens.innerHTML = '';
+
+    let categorias = {};
+    q.produtos.forEach(prod => {
+        let cat = prod.categoria || 'OUTROS';
+        if (!categorias[cat]) categorias[cat] = [];
+        categorias[cat].push(prod);
+    });
+
+    for (let cat in categorias) {
+        let headerBg = cat.includes('ESPET') ? '#ffecb3' : '#b2ebf2';
+        let headerColor = cat.includes('ESPET') ? '#8d6e63' : '#006064';
+
+        let catDiv = document.createElement('div');
+        catDiv.style.marginBottom = '15px';
+        catDiv.innerHTML = `<h4 style="background: ${headerBg}; padding: 5px 10px; margin: 0 0 8px 0; border-radius: 4px; color: ${headerColor}; font-size: 13px;">${cat}</h4>`;
+
+        categorias[cat].forEach(prod => {
+            let itemRow = document.createElement('div');
+            itemRow.className = 'item-comanda';
+            itemRow.style.cssText = 'display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #eee; font-size: 13px;';
+            itemRow.innerHTML = `
+                <label><input type="checkbox" class="chk-item" value="${prod.nome}" data-preco="${prod.preco}" onchange="calcularTotalComanda()"> ${prod.nome}</label>
+                <span>R$ ${prod.preco.toFixed(2).replace('.', ',')}</span>
+            `;
+            catDiv.appendChild(itemRow);
+        });
+
+        containerItens.appendChild(catDiv);
+    }
+
+    calcularTotalComanda();
+    mudarAba('vitrineQuiosque');
+}
+
+function calcularTotalComanda() {
+    let total = 0;
+    const checkboxes = document.querySelectorAll('.chk-item:checked');
+    checkboxes.forEach(chk => {
+        total += parseFloat(chk.getAttribute('data-preco')) || 0;
+    });
+    document.getElementById('valorTotalComanda').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+}
+
+function enviarComandaParaQuiosque() {
+    const cliente = document.getElementById('comandaCliente').value.trim();
+    const mesa = document.getElementById('comandaMesa').value.trim();
+    const obs = document.getElementById('comandaObservacoes').value.trim();
+    const checkboxes = document.querySelectorAll('.chk-item:checked');
+
+    if (!cliente) {
+        alert("Por favor, preencha o nome do cliente.");
+        return;
+    }
+    if (checkboxes.length === 0) {
+        alert("Selecione pelo menos um item na comanda.");
+        return;
+    }
+
+    const q = quiosquesData.find(item => item.id === quiosqueSelecionadoId);
+    if (!q) return;
+
+    quiosqueUltimaCompraId = q.id;
+    let itensSelecionadosStr = [];
+    let valorTotal = 0;
+
+    checkboxes.forEach(chk => {
+        let preco = parseFloat(chk.getAttribute('data-preco')) || 0;
+        valorTotal += preco;
+        itensSelecionadosStr.push(chk.value);
+        adminConfig.itensVendidosHistorico[chk.value] = (adminConfig.itensVendidosHistorico[chk.value] || 0) + 1;
+    });
+
+    adminConfig.pedidosRealizados += 1;
+    adminConfig.faturamentoQuiosques += valorTotal;
+
+    if (clienteAtual && clienteAtual.id !== 0) {
+        if (clienteAtual.selos < 6) {
+            clienteAtual.selos += 1;
+            atualizarCartaoFidelidade();
+        }
+        if (clienteAtual.indicacoesCompradoras < 3) {
+            clienteAtual.indicacoesCompradoras += 1;
+            atualizarPainelIndique();
+            if (clienteAtual.indicacoesCompradoras === 3) {
+                alert("🎉 PARABÉNS! Você completou 3 indicações e ganhou um brinde grátis!");
+            }
+        }
+    }
+
+    let mensagemWhatsApp = `*COMANDA DIGITAL - ${q.nome}*%0aCliente: ${cliente}%0aMesa/Retirada: ${mesa || 'Não informada'}%0a%0a*Itens:*%0a- ${itensSelecionadosStr.join('%0a- ')}%0a%0aObs: ${obs || 'Nenhuma'}%0a*TOTAL: R$ ${valorTotal.toFixed(2).replace('.', ',')}*`;
+
+    alert(`✅ Pedido gerado com sucesso!\n⭐️ +1 Selo adicionado ao seu cartão fidelidade!`);
+    window.open(`https://wa.me/${q.whatsapp}?text=${mensagemWhatsApp}`, '_blank');
+    mudarAba('vitrine');
+}
+
+// 💬 Funções do Bate-Papo com Envio de Mídia
+function enviarMensagemChat() {
+    const input = document.getElementById('chatInputMensagem');
+    const texto = input.value.trim();
+    if (!texto) return;
+
+    adicionarMensagemChatBox(clienteAtual ? clienteAtual.nome : "Visitante", texto, "sent", "text");
+    input.value = '';
+
+    // Resposta simulada automatizada
+    setTimeout(() => {
+        adicionarMensagemChatBox("Quiosque Central", "Recebido! Aproveite a orla com responsabilidade 🌊", "received", "text");
+    }, 1200);
+}
+
+function enviarMidiaChat(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const tipoMidia = file.type.startsWith('video') ? 'video' : 'image';
+            adicionarMensagemChatBox(clienteAtual ? clienteAtual.nome : "Visitante", e.target.result, "sent", tipoMidia);
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+function adicionarMensagemChatBox(remetente, conteudo, tipoEnvio, tipoMidia) {
+    const chatBox = document.getElementById('chatBoxContainer');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `chat-msg ${tipoEnvio}`;
+
+    let htmlConteudo = `<b>${remetente}:</b> `;
+    if (tipoMidia === 'text') {
+        htmlConteudo += `${conteudo}`;
+    } else if (tipoMidia === 'image') {
+        htmlConteudo += `<br><img src="${conteudo}">`;
+    } else if (tipoMidia === 'video') {
+        htmlConteudo += `<br><video src="${conteudo}" controls></video>`;
+    }
+
+    msgDiv.innerHTML = htmlConteudo;
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
 function atualizarCartaoFidelidade() {
     if (!clienteAtual) return;
     const totalSelos = clienteAtual.selos;
-    document.getElementById('fidelityStatusText').innerText = `${totalSelos}/6 Selos`;
+    const statusText = document.getElementById('fidelityStatusText');
+    if (statusText) statusText.innerText = `${totalSelos}/6 Selos`;
 
     for (let i = 1; i <= 6; i++) {
         const circle = document.getElementById(`stamp-${i}`);
-        if (i <= totalSelos) {
-            circle.classList.add('active');
-        } else {
-            circle.classList.remove('active');
+        if (circle) {
+            if (i <= totalSelos) {
+                circle.classList.add('active');
+            } else {
+                circle.classList.remove('active');
+            }
         }
     }
-    document.getElementById('btnAbrirCofreMain').style.display = totalSelos >= 6 ? 'block' : 'none';
+    const btnCofre = document.getElementById('btnAbrirCofreMain');
+    if (btnCofre) btnCofre.style.display = totalSelos >= 6 ? 'block' : 'none';
 }
 
 function atualizarPainelIndique() {
     if (!clienteAtual) return;
-    document.getElementById('indIndicacoesDisplay').innerText = `${clienteAtual.indicacoesCompradoras} / 3 Amigos`;
+    const disp = document.getElementById('indIndicacoesDisplay');
+    if (disp) disp.innerText = `${clienteAtual.indicacoesCompradoras} / 3 Amigos`;
 }
 
 function compartilharIndicação() {
@@ -180,7 +412,6 @@ function compartilharIndicação() {
     window.open(`https://wa.me/?text=${msg}`, '_blank');
 }
 
-// BOTÕES DE MOBILIDADE E REDES SOCIAIS
 function chamarMobilidade(servico) {
     if (servico === 'uber') {
         window.open('https://m.uber.com', '_blank');
@@ -223,7 +454,6 @@ function fecharSocial() {
     document.getElementById('socialContainer').innerHTML = '';
 }
 
-// REPÓRTER DA ORLA
 async function iniciarTransmissaoReporter() {
     const titulo = document.getElementById('reporterTitulo').value.trim();
     if (!titulo) {
@@ -261,100 +491,6 @@ function encerrarTransmissaoReporter() {
     alert("Transmissão encerrada.");
 }
 
-function abrirModalProdutos(quiosqueId) {
-    quiosqueSelecionadoId = quiosqueId;
-    const q = quiosquesData.find(item => item.id === quiosqueId);
-    if (!q) return;
-
-    document.getElementById('modalQuiosqueNome').innerText = q.nome;
-    const listaDiv = document.getElementById('modalProdutosLista');
-    listaDiv.innerHTML = '';
-
-    q.produtos.forEach((prod, index) => {
-        let pItem = document.createElement('div');
-        pItem.className = 'produto-card';
-        pItem.innerHTML = `
-            <div>
-                <strong style="font-size: 0.85rem;">${prod.nome}</strong><br>
-                <small style="color: #666; font-size: 0.7rem;">${prod.desc} - ${prod.preco}</small>
-            </div>
-            <button class="btn-submit" style="width: auto; padding: 5px 10px; font-size: 0.75rem;" onclick="comprarProdutoVitrine(${index})">Comprar</button>
-        `;
-        listaDiv.appendChild(pItem);
-    });
-
-    document.getElementById('produtoModal').style.display = 'flex';
-}
-
-function fecharModal() {
-    document.getElementById('produtoModal').style.display = 'none';
-}
-
-function registrarItemVendido(nomeItem) {
-    adminConfig.itensVendidosHistorico[nomeItem] = (adminConfig.itensVendidosHistorico[nomeItem] || 0) + 1;
-}
-
-function comprarProdutoVitrine(produtoIndex) {
-    const q = quiosquesData.find(item => item.id === quiosqueSelecionadoId);
-    if (!q) return;
-
-    quiosqueUltimaCompraId = q.id;
-    const produto = q.produtos[produtoIndex];
-    const clienteInfo = clienteAtual ? `${clienteAtual.nome} (${clienteAtual.local})` : "Cliente";
-
-    let valorNumerico = 15.00;
-    let precoStr = produto.preco.replace('R$', '').replace(',', '.').trim();
-    let parsed = parseFloat(precoStr);
-    if (!isNaN(parsed)) valorNumerico = parsed;
-
-    adminConfig.pedidosRealizados += 1;
-    adminConfig.faturamentoQuiosques += valorNumerico;
-    registrarItemVendido(produto.nome);
-
-    if (clienteAtual) {
-        if (clienteAtual.selos < 6) {
-            clienteAtual.selos += 1;
-            atualizarCartaoFidelidade();
-        }
-        if (clienteAtual.indicacoesCompradoras < 3) {
-            clienteAtual.indicacoesCompradoras += 1;
-            atualizarPainelIndique();
-            if (clienteAtual.indicacoesCompradoras === 3) {
-                alert("🎉 PARABÉNS! Você completou 3 indicações e ganhou um brinde grátis!");
-            }
-        }
-    }
-
-    alert(`✅ Compra registrada!\nItem: ${produto.nome}\n⭐️ +1 Selo adicionado!`);
-    window.open(`https://wa.me/${q.whatsapp}?text=PEDIDO:%20${produto.nome}%20-%20${produto.preco}%20-%20Cliente:%20${clienteInfo}`, '_blank');
-}
-
-function comprarPedidoPersonalizado() {
-    const textoPedido = document.getElementById('customOrderInput').value.trim();
-    if (!textoPedido) {
-        alert("Digite o seu pedido.");
-        return;
-    }
-    const q = quiosquesData.find(item => item.id === quiosqueSelecionadoId);
-    if (!q) return;
-
-    quiosqueUltimaCompraId = q.id;
-    const clienteInfo = clienteAtual ? `${clienteAtual.nome} (${clienteAtual.local})` : "Cliente";
-
-    adminConfig.pedidosRealizados += 1;
-    adminConfig.faturamentoQuiosques += 20.00;
-    registrarItemVendido("Pedido Personalizado");
-
-    if (clienteAtual && clienteAtual.selos < 6) {
-        clienteAtual.selos += 1;
-        atualizarCartaoFidelidade();
-    }
-
-    alert(`✅ Pedido enviado!\n⭐️ +1 Selo adicionado!`);
-    window.open(`https://wa.me/${q.whatsapp}?text=PEDIDO:%20${textoPedido}%20-%20Cliente:%20${clienteInfo}`, '_blank');
-    fecharModal();
-}
-
 function abrirModalCofre() {
     document.getElementById('cofreSenhaInput').value = '';
     document.getElementById('cofreResultadoBox').style.display = 'none';
@@ -383,14 +519,14 @@ function tentarAbrirCofre() {
 
 function comprarBolao() {
     const numeros = document.getElementById('bolaoNumeros').value.trim();
-
     if (!numeros) {
         alert("Digite os números do Mini Bolão.");
         return;
     }
     adminConfig.arrecadacaoBolao += 3.00;
-    document.getElementById('poteBolaoDisplay').innerText = `R$ ${adminConfig.arrecadacaoBolao.toFixed(2)}`;
-    alert(`🎲 Aposta registrada com sucesso, ${clienteAtual.nome}!`);
+    const poteDisplay = document.getElementById('poteBolaoDisplay');
+    if (poteDisplay) poteDisplay.innerText = `R$ ${adminConfig.arrecadacaoBolao.toFixed(2)}`;
+    alert(`🎲 Aposta registrada com sucesso!`);
     document.getElementById('bolaoNumeros').value = '';
 }
 
@@ -405,20 +541,24 @@ function solicitarFranquia() {
 
     franquiasData.push({
         id: franquiasData.length + 1,
-        nome: clienteAtual.nome,
+        nome: clienteAtual ? clienteAtual.nome : "Parceiro",
         cidade: cidade,
         whatsapp: wpp,
-        status: "Ativa (Setup R$ 1.500)",
-        faturamentoPraça: 0.00
+        status: "Ativa",
+        faturamentoPraça: 1500.00,
+        historicoOperacoes: "Nova franquia recém implantada na região.",
+        oQueDáCerto: "Estrutura inicial pronta para captação de quiosques.",
+        oQueMelhorar: "Intensificar divulgação comercial local."
     });
 
     adminConfig.faturamentoFranquias += 1500.00;
 
-    alert(`🚀 Solicitação e Setup registrados com sucesso, ${clienteAtual.nome}!\nPraça de ${cidade} adicionada à sua rede master.`);
+    alert(`🚀 Solicitação e Setup registrados com sucesso!\nPraça de ${cidade} adicionada à rede master.`);
     document.getElementById('franqCidade').value = '';
     document.getElementById('franqWpp').value = '';
 }
 
+// 📝 Cadastro de Novos Quiosques com Logomarca e Produtos
 function salvarNovoQuiosque() {
     const local = document.getElementById('novoLocalSelect').value;
     const nome = document.getElementById('novoNome').value.trim();
@@ -428,30 +568,36 @@ function salvarNovoQuiosque() {
     const prodTexto = document.getElementById('novoProdTexto').value.trim();
     const senhaCofre = document.getElementById('novoSenhaCofre').value.trim();
     const premioCofre = document.getElementById('novoPremioCofre').value.trim();
+    const logoInput = document.getElementById('novoLogoInput');
 
     if (!nome || !resp || !wpp || senhaCofre.length !== 4) {
-        alert('Preencha os campos obrigatórios e senha de 4 dígitos para o cofre.');
+        alert('Preencha os campos obrigatórios e senha de cofre com 4 dígitos.');
         return;
+    }
+
+    let logomarcaUrl = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=150';
+    if (logoInput.files && logoInput.files[0]) {
+        logomarcaUrl = URL.createObjectURL(logoInput.files[0]);
     }
 
     let listaProdutos = [];
     if (prodTexto !== "") {
         prodTexto.split('|').forEach(item => {
             let sub = item.split('-');
-            listaProdutos.push({
-                nome: sub[0] ? sub[0].trim() : "Produto",
-                desc: "Disponível",
-                preco: sub[1] ? sub[1].trim() : "R$ 10,00"
-            });
+            let nomeProd = sub[0] ? sub[0].trim() : "Produto";
+            let precoStr = sub[1] ? sub[1].replace('R$', '').replace(',', '.').trim() : "10.00";
+            let precoNum = parseFloat(precoStr) || 10.00;
+            listaProdutos.push({ categoria: 'GELADOS & PORÇÕES', nome: nomeProd, preco: precoNum });
         });
     } else {
-        listaProdutos.push({ nome: "Item Padrão", desc: "Consulte", preco: "R$ 15,00" });
+        listaProdutos.push({ categoria: 'OUTROS', nome: 'Item Padrão', preco: 15.00 });
     }
 
     const novoId = quiosquesData.length > 0 ? quiosquesData[quiosquesData.length - 1].id + 1 : 1;
     quiosquesData.push({
         id: novoId, localizacao: local, nome, responsavel: resp, whatsapp: wpp,
-        pagamento: pag || 'Pix', senhaCofre, premioCofre: premioCofre || 'Brinde especial!', produtos: listaProdutos
+        pagamento: pag || 'Pix', logomarca: logomarcaUrl, senhaCofre, 
+        premioCofre: premioCofre || 'Brinde especial!', produtos: listaProdutos
     });
 
     document.getElementById('novoNome').value = '';
@@ -461,13 +607,15 @@ function salvarNovoQuiosque() {
     document.getElementById('novoProdTexto').value = '';
     document.getElementById('novoSenhaCofre').value = '';
     document.getElementById('novoPremioCofre').value = '';
+    logoInput.value = '';
 
     mudarLocalizacao(local);
-    alert('Quiosque cadastrado com sucesso!');
+    alert('Quiosque e logomarca cadastrados com sucesso na vitrine!');
 }
 
 function atualizarRankingTop10() {
     const container = document.getElementById('topTenContainer');
+    if (!container) return;
     const sortedItens = Object.entries(adminConfig.itensVendidosHistorico)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 10);
@@ -495,36 +643,69 @@ function atualizarRankingTop10() {
 function atualizarPainelAdmin() {
     const faturamentoQuiosques = adminConfig.faturamentoQuiosques;
     const arrecadacaoBolao = adminConfig.arrecadacaoBolao;
-    const retencaoBolao = arrecadacaoBolao * 0.30;
     const faturamentoFranquias = adminConfig.faturamentoFranquias;
-    const faturamentoTotalConsolidado = faturamentoQuiosques + retencaoBolao + faturamentoFranquias;
+    const faturamentoTotalConsolidado = faturamentoQuiosques + arrecadacaoBolao + faturamentoFranquias;
 
-    document.getElementById('adminFaturamentoQuiosques').innerText = `R$ ${faturamentoQuiosques.toFixed(2)}`;
-    document.getElementById('adminArrecadacaoBolao').innerText = `R$ ${arrecadacaoBolao.toFixed(2)}`;
-    document.getElementById('adminRetencaoBolao').innerText = `R$ ${retencaoBolao.toFixed(2)} (30%)`;
-    document.getElementById('adminFaturamentoFranquias').innerText = `R$ ${faturamentoFranquias.toFixed(2)}`;
-    document.getElementById('adminFaturamentoTotal').innerText = `R$ ${faturamentoTotalConsolidado.toFixed(2)}`;
+    const elContadorFrq = document.getElementById('contadorFranqueadosAtivos');
+    const elFatQ = document.getElementById('adminFaturamentoQuiosques');
+    const elArrecB = document.getElementById('adminArrecadacaoBolao');
+    const elFatF = document.getElementById('adminFaturamentoFranquias');
+    const elFatT = document.getElementById('adminFaturamentoTotal');
+
+    if (elContadorFrq) elContadorFrq.innerText = franquiasData.length;
+    if (elFatQ) elFatQ.innerText = `R$ ${faturamentoQuiosques.toFixed(2)}`;
+    if (elArrecB) elArrecB.innerText = `R$ ${arrecadacaoBolao.toFixed(2)}`;
+    if (elFatF) elFatF.innerText = `R$ ${faturamentoFranquias.toFixed(2)}`;
+    if (elFatT) elFatT.innerText = `R$ ${faturamentoTotalConsolidado.toFixed(2)}`;
 
     const franquiasContainer = document.getElementById('listaFranquiasAdminContainer');
-    if (franquiasData.length === 0) {
-        franquiasContainer.innerHTML = `<p style="font-size: 0.75rem; color: #888;">Nenhuma franquia ativa.</p>`;
-        return;
-    }
+    if (franquiasContainer) {
+        if (franquiasData.length === 0) {
+            franquiasContainer.innerHTML = `<p style="font-size: 0.75rem; color: #888;">Nenhuma franquia ativa.</p>`;
+            return;
+        }
 
-    franquiasContainer.innerHTML = '';
-    franquiasData.forEach(f => {
-        let row = document.createElement('div');
-        row.className = 'franquia-row';
-        row.innerHTML = `
-            <div>
-                <strong>${f.cidade}</strong><br>
-                <small style="color: #666;">Franqueado: ${f.nome} (${f.whatsapp})</small>
-            </div>
-            <div style="text-align: right;">
-                <span style="color: #2E7D32; font-weight: bold; font-size: 0.75rem;">${f.status}</span><br>
-                <small style="color: #555;">Movimento: R$ ${f.faturamentoPraça.toFixed(2)}</small>
-            </div>
-        `;
-        franquiasContainer.appendChild(row);
-    });
+        franquiasContainer.innerHTML = '';
+        franquiasData.forEach(f => {
+            let row = document.createElement('div');
+            row.className = 'franquia-row';
+            row.onclick = () => abrirAuditoriaFranquia(f.id);
+            row.innerHTML = `
+                <div>
+                    <strong>🏢 ${f.cidade}</strong><br>
+                    <small style="color: #555;">Franqueado: ${f.nome} (${f.whatsapp})</small>
+                </div>
+                <div style="text-align: right;">
+                    <span style="color: #2E7D32; font-weight: bold; font-size: 0.75rem;">${f.status}</span><br>
+                    <small style="color: #0288D1; font-weight: bold;">Auditar 🔍</small>
+                </div>
+            `;
+            franquiasContainer.appendChild(row);
+        });
+    }
+}
+
+// ⚙️ Funções de Auditoria Interativa de Franquias
+function abrirAuditoriaFranquia(id) {
+    const f = franquiasData.find(item => item.id === id);
+    if (!f) return;
+
+    document.getElementById('auditoriaTitulo').innerText = `Auditoria: ${f.cidade}`;
+    const conteudo = document.getElementById('auditoriaDetalhesConteudo');
+    conteudo.innerHTML = `
+        <p><b>Franqueado:</b> ${f.nome}</p>
+        <p><b>WhatsApp:</b> ${f.whatsapp}</p>
+        <p><b>Status:</b> <span style="color: #2E7D32;">${f.status}</span></p>
+        <p><b>Faturamento da Praça:</b> R$ ${f.faturamentoPraça.toFixed(2)}</p>
+        <hr style="margin: 8px 0; border: 0; border-top: 1px solid #ddd;">
+        <p><b>Histórico de Operações:</b><br>${f.historicoOperacoes}</p>
+        <p style="margin-top: 6px; color: #2E7D32;"><b>O que está dando certo:</b><br>${f.oQueDáCerto}</p>
+        <p style="margin-top: 6px; color: #D32F2F;"><b>O que precisa melhorar:</b><br>${f.oQueMelhorar}</p>
+    `;
+
+    document.getElementById('auditoriaModal').style.display = 'flex';
+}
+
+function fecharAuditoria() {
+    document.getElementById('auditoriaModal').style.display = 'none';
 }
