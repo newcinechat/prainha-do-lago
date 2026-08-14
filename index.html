@@ -15,21 +15,12 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg-light); color: var(--text-dark); padding-bottom: 70px; }
         
-        /* TELA DE LOGIN PRÉVIA COM A FOTO DA PONTE JK DO USUÁRIO */
         #loginTelaInicio {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), 
                         url('ponte-jk.jpg') no-repeat center center;
-            background-size: cover;
-            z-index: 3000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            background-size: cover; z-index: 3000;
+            display: flex; justify-content: center; align-items: center; padding: 20px;
         }
         .login-card {
             background: white; width: 100%; max-width: 400px; border-radius: 12px;
@@ -50,9 +41,17 @@
         .card { background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .btn-submit { background: var(--primary); color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; text-align: center; }
         
-        .form-group { margin-bottom: 10px; }
+        .form-group { margin-bottom: 10px; text-align: left; }
         .form-group label { display: block; font-size: 0.75rem; margin-bottom: 3px; font-weight: bold; }
-        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem; }
+
+        /* Estilo Stories (Bolinhas de Quiosques) */
+        .stories-container { display: flex; gap: 12px; overflow-x: auto; padding: 5px 0 15px 0; margin-bottom: 10px; scrollbar-width: none; }
+        .stories-container::-webkit-scrollbar { display: none; }
+        .story-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; min-width: 65px; }
+        .story-circle { width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--accent); padding: 2px; background: white; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
+        .story-circle img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .story-name { font-size: 0.65rem; text-align: center; margin-top: 4px; font-weight: bold; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70px; }
 
         .fidelity-card-box { background: linear-gradient(135deg, #004D40, #00796B); color: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; display: none; }
         .fidelity-header { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: bold; margin-bottom: 8px; }
@@ -60,7 +59,6 @@
         .stamp-circle { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; border: 1px dashed white; }
         .stamp-circle.active { background: #FFC107; color: #333; border: 1px solid #FFC107; }
 
-        /* BARRAS DE MOBILIDADE E REDES SOCIAIS */
         .social-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
         .mobility-bar { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 15px; }
         .social-btn { padding: 8px; border: none; border-radius: 5px; color: white; font-weight: bold; font-size: 0.7rem; cursor: pointer; text-align: center; }
@@ -82,54 +80,75 @@
         .close-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; }
 
         .quiosque-item { border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 10px; background: #fafafa; padding: 8px; border-radius: 4px; }
-        .produto-card { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 8px 0; }
-        .franquia-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.8rem; }
+        .franquia-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 6px; margin-bottom: 8px; border: 1px solid #ddd; cursor: pointer; }
+        .franquia-row:hover { background: #f1f1f1; }
+
+        /* Estilos do Chat ao Vivo */
+        .chat-box { height: 320px; background: #eef2f3; border-radius: 6px; border: 1px solid #ddd; overflow-y: auto; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .chat-msg { max-width: 80%; padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; line-height: 1.3; word-break: break-word; }
+        .chat-msg.sent { background: #dcf8c6; align-self: flex-end; }
+        .chat-msg.received { background: white; align-self: flex-start; border: 1px solid #e0e0e0; }
+        .chat-msg img, .chat-msg video { max-width: 100%; border-radius: 6px; margin-top: 5px; max-height: 150px; display: block; object-fit: cover; }
     </style>
 </head>
 <body>
 
-    <!-- TELA DE INÍCIO / LOGIN PRÉVIO -->
     <div id="loginTelaInicio">
         <div class="login-card">
             <h2>🌅 Orla Inteligente</h2>
-            <p>Identifique-se para acessar a vitrine, quiosques, bolão e transmissões da orla.</p>
-            <div class="form-group"><input type="text" id="loginNome" placeholder="Seu Nome Completo"></div>
-            <div class="form-group"><input type="text" id="loginWpp" placeholder="Seu WhatsApp (com DDD)"></div>
+            <p>Selecione o perfil de acesso para entrar na plataforma.</p>
+            
             <div class="form-group">
-                <select id="loginLocal">
-                    <option value="prainha">Prainha do Lago</option>
-                    <option value="pontao">Pontão do Lago Sul</option>
+                <label>Tipo de Acesso:</label>
+                <select id="tipoAcessoSelect" onchange="alternarCamposLogin(this.value)">
+                    <option value="usuario">👤 Usuário / Cliente / Quiosqueiro</option>
+                    <option value="admin">🔒 Administrador Master</option>
                 </select>
             </div>
+
+            <div id="blocoLoginUsuario">
+                <div class="form-group"><input type="text" id="loginNome" placeholder="Seu Nome Completo"></div>
+                <div class="form-group"><input type="text" id="loginWpp" placeholder="Seu WhatsApp (com DDD)"></div>
+                <div class="form-group">
+                    <select id="loginLocal">
+                        <option value="prainha">Prainha do Lago</option>
+                        <option value="pontao">Pontão do Lago Sul</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="blocoLoginAdmin" style="display: none;">
+                <div class="form-group"><input type="password" id="loginSenhaAdmin" placeholder="Senha Master (00256383)" style="text-align: center; letter-spacing: 2px;"></div>
+            </div>
+
             <button class="btn-submit" onclick="entrarNaPlataforma()">Entrar na Plataforma 🚀</button>
         </div>
     </div>
 
     <header>
         <h1>🌅 Marketplace da Orla</h1>
-        <button class="btn-sair" onclick="sairDaPagina()">🚪 Sair / Trocar Usuário</button>
+        <button class="btn-sair" onclick="sairDaPagina()">🚪 Sair / Trocar Conta</button>
     </header>
 
-    <div class="nav-tabs">
+    <div class="nav-tabs" id="navTabsContainer">
         <button class="active" onclick="mudarAba('vitrine')">🛍️ Vitrine</button>
+        <button onclick="mudarAba('chat')">💬 Bate-Papo</button>
         <button onclick="mudarAba('indique')">🎁 Indique</button>
         <button onclick="mudarAba('bolao')">🎯 Bolão</button>
         <button onclick="mudarAba('live')">🔴 Repórter</button>
         <button onclick="mudarAba('ranking')">📈 Top 10</button>
         <button onclick="mudarAba('franquia')">💼 Franquias</button>
         <button onclick="mudarAba('parceiro')">➕ Quiosque</button>
-        <button onclick="mudarAba('admin')">📊 Admin</button>
+        <button id="navAdminBtn" onclick="mudarAba('admin')" style="background: #C62828; display: none;">📊 Admin</button>
     </div>
 
     <div class="container">
 
-        <!-- BARRA DE MOBILIDADE (UBER / 99) -->
         <div class="mobility-bar">
             <button class="social-btn btn-uber" onclick="chamarMobilidade('uber')">🚗 Chamar Uber</button>
             <button class="social-btn btn-99" onclick="chamarMobilidade('99')">🚕 Chamar 99</button>
         </div>
 
-        <!-- BARRA DE REDES SOCIAIS -->
         <div class="social-bar">
             <button class="social-btn btn-tiktok" onclick="abrirSocial('tiktok')">🎵 TikTok</button>
             <button class="social-btn btn-kwai" onclick="abrirSocial('kwai')">⚡ Kwai</button>
@@ -139,10 +158,21 @@
             <button class="social-btn btn-fb" onclick="abrirSocial('fb')">👥 Facebook</button>
         </div>
 
-        <!-- ABA 1: VITRINE -->
+        <!-- ABA 1: VITRINE & STORIES DE QUIOSQUES -->
         <div id="aba-vitrine" class="aba-content">
             <div id="clientWelcomeBox" class="card" style="background: #E0F7FA; border: 1px solid #B2EBF2;">
-                <p style="font-size: 0.8rem;">Bem-vindo de volta, <b id="clientNameDisplay"></b>! Seu perfil e link de indicação estão ativos.</p>
+                <p style="font-size: 0.8rem;">Bem-vindo, <b id="clientNameDisplay"></b>! Seu perfil e link de indicação estão ativos.</p>
+            </div>
+
+            <!-- Seção Stories / Bolinhas de Quiosques -->
+            <div class="card" style="padding: 10px 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <h4 style="font-size: 0.8rem; color: var(--secondary);">🌴 Quiosques Parceiros (<span id="contadorQuiosquesStories">0</span>)</h4>
+                    <span style="font-size: 0.65rem; color: #666;">Toque para abrir comanda</span>
+                </div>
+                <div class="stories-container" id="storiesContainer">
+                    <!-- Gerado dinamicamente -->
+                </div>
             </div>
 
             <div id="fidelityCardBox" class="fidelity-card-box">
@@ -173,7 +203,75 @@
             <div id="listaQuiosquesContainer"></div>
         </div>
 
-        <!-- ABA 2: INDIQUE E GANHE -->
+        <!-- TELA DA VITRINE / COMANDA DIGITAL DO QUIOSQUE -->
+        <div id="abaVitrineQuiosque" class="aba-content" style="display:none; padding: 0;">
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); border: 2px solid #ffcc00;">
+                
+                <!-- Cabeçalho Estilo Bloco de Comanda -->
+                <div style="text-align: center; border-bottom: 2px dashed #ddd; padding-bottom: 12px; margin-bottom: 12px;">
+                    <h2 id="nomeQuiosqueComanda" style="margin: 0; color: #d32f2f; font-size: 22px; text-transform: uppercase;">Nome do Quiosque</h2>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Comanda Digital Integrada</p>
+                </div>
+
+                <!-- Dados do Pedido (Mesa / Cliente) -->
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; font-size: 13px;">
+                    <div style="flex: 2;">
+                        <label><b>Cliente:</b></label><br>
+                        <input type="text" id="comandaCliente" placeholder="Seu Nome" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label><b>Mesa / Retirada:</b></label><br>
+                        <input type="text" id="comandaMesa" placeholder="Ex: Mesa 4" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+                    </div>
+                </div>
+
+                <!-- Itens da Comanda Organizados por Categorias (Estilo Bloco Dinâmico) -->
+                <div id="itensComandaContainer" style="max-height: 350px; overflow-y: auto; padding-right: 5px; margin-bottom: 15px;">
+                    <!-- Preenchido via Script Dinamicamente por Quiosque -->
+                </div>
+
+                <!-- Observações do Pedido -->
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 12px;"><b>Observações Especiais:</b></label><br>
+                    <textarea id="comandaObservacoes" placeholder="Ex: Ponha gelo e limão separado." style="width: 100%; height: 50px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;"></textarea>
+                </div>
+
+                <!-- Rodapé com Total e Botão de Enviar -->
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #fffde7; padding: 12px; border-radius: 8px; border: 1px solid #fbc02d; margin-bottom: 10px;">
+                    <span style="font-size: 16px; font-weight: bold; color: #d32f2f;">TOTAL: <span id="valorTotalComanda">R$ 0,00</span></span>
+                    <button onclick="enviarComandaParaQuiosque()" style="background: #2e7d32; color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px;">Enviar Pedido 🚀</button>
+                </div>
+
+                <div style="text-align: center;">
+                    <button onclick="mudarAba('vitrine')" style="background: #757575; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">← Voltar para a Vitrine Principal</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ABA 2: BATE-PAPO AO VIVO COM MÍDIA -->
+        <div id="aba-chat" class="aba-content" style="display: none;">
+            <div class="card">
+                <h3 style="font-size: 0.9rem; color: var(--secondary); margin-bottom: 5px;">💬 Bate-Papo da Orla & Quiosques</h3>
+                <p style="font-size: 0.75rem; color: #666; margin-bottom: 10px;">Converse com frequentadores e compartilhe fotos ou vídeos do momento.</p>
+                
+                <div class="chat-box" id="chatBoxContainer">
+                    <div class="chat-msg received"><b>Orla Bot:</b> Bem-vindo ao chat interativo! Envie mensagens, fotos ou vídeos.</div>
+                </div>
+
+                <div style="display: flex; gap: 6px; align-items: center;">
+                    <input type="text" id="chatInputMensagem" placeholder="Digite sua mensagem..." style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.8rem;" onkeypress="if(event.key === 'Enter') enviarMensagemChat()">
+                    
+                    <label style="background: var(--primary); color: white; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" title="Enviar Mídia">
+                        📎<input type="file" id="chatInputMidia" accept="image/*,video/*" style="display: none;" onchange="enviarMidiaChat(this)">
+                    </label>
+
+                    <button class="btn-submit" style="width: auto; padding: 8px 14px;" onclick="enviarMensagemChat()">Enviar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA 3: INDIQUE E GANHE -->
         <div id="aba-indique" class="aba-content" style="display: none;">
             <div class="card" style="background: linear-gradient(135deg, #E8F5E9, #C8E6C9); border: 1px solid #A5D6A7;">
                 <h3 style="color: #2E7D32; font-size: 1rem; margin-bottom: 5px;">🎁 Indique e Ganhe um Brinde</h3>
@@ -190,7 +288,7 @@
             </div>
         </div>
 
-        <!-- ABA 3: MINI BOLÃO -->
+        <!-- ABA 4: MINI BOLÃO -->
         <div id="aba-bolao" class="aba-content" style="display: none;">
             <div class="card" style="background: linear-gradient(135deg, #FFF3E0, #FFE0B2); border: 1px solid #FFB74D;">
                 <h3 style="color: #E65100; font-size: 1rem; margin-bottom: 5px;">🎯 Mini Bolão da Orla</h3>
@@ -204,7 +302,7 @@
             </div>
         </div>
 
-        <!-- ABA 4: REPÓRTER DA PRAIA -->
+        <!-- ABA 5: REPÓRTER DA PRAIA -->
         <div id="aba-live" class="aba-content" style="display: none;">
             <div class="card">
                 <h3 style="font-size: 0.9rem; color: var(--secondary); margin-bottom: 5px;">🔴 Repórter da Orla por 1 Dia</h3>
@@ -227,7 +325,7 @@
             </div>
         </div>
 
-        <!-- ABA 5: TOP 10 -->
+        <!-- ABA 6: TOP 10 -->
         <div id="aba-ranking" class="aba-content" style="display: none;">
             <div class="card">
                 <h3 style="font-size: 0.9rem; color: var(--secondary); margin-bottom: 5px;">📈 Ranking Top 10 da Orla</h3>
@@ -237,7 +335,7 @@
             </div>
         </div>
 
-        <!-- ABA 6: FRANQUIAS -->
+        <!-- ABA 7: FRANQUIAS -->
         <div id="aba-franquia" class="aba-content" style="display: none;">
             <div class="card" style="border: 2px solid var(--secondary);">
                 <h3 style="font-size: 1rem; color: var(--secondary); margin-bottom: 8px;">💼 Seja Franqueado da Plataforma</h3>
@@ -259,21 +357,34 @@
             </div>
         </div>
 
-        <!-- ABA 7: CADASTRAR QUIOSQUE -->
+        <!-- ABA 8: CADASTRAR QUIOSQUE & LOGOMARCA -->
         <div id="aba-parceiro" class="aba-content" style="display: none;">
             <div class="card">
-                <h3 style="font-size: 0.9rem; margin-bottom: 10px; color: var(--accent);">Cadastrar Quiosque / Ambulante</h3>
-                <div class="form-group"><label>Polo</label>
+                <h3 style="font-size: 0.9rem; margin-bottom: 10px; color: var(--accent);">➕ Cadastrar Novo Quiosque & Logomarca</h3>
+                <div class="form-group"><label>Polo / Localização</label>
                     <select id="novoLocalSelect">
                         <option value="prainha">Prainha do Lago</option>
                         <option value="pontao">Pontão do Lago Sul</option>
                     </select>
                 </div>
-                <div class="form-group"><label>Nome do Quiosque</label><input type="text" id="novoNome" placeholder="Ex: Quiosque do Lago"></div>
+                <div class="form-group"><label>Nome do Quiosque</label><input type="text" id="novoNome" placeholder="Ex: Quiosque do Sol"></div>
                 <div class="form-group"><label>Responsável</label><input type="text" id="novoResp" placeholder="Ex: Carlos"></div>
                 <div class="form-group"><label>WhatsApp</label><input type="text" id="novoWpp" placeholder="Ex: 5561999999999"></div>
+                
+                <!-- Upload de Logomarca -->
+                <div class="form-group">
+                    <label>🖼️ Logomarca do Quiosque (Imagem)</label>
+                    <input type="file" id="novoLogoInput" accept="image/*">
+                </div>
+
                 <div class="form-group"><label>Formas de Pagamento</label><input type="text" id="novoPag" placeholder="Pix / Dinheiro"></div>
-                <div class="form-group"><label>Produtos (Nome - Preço | ...)</label><input type="text" id="novoProdTexto" placeholder="Cerveja - R$ 8,00 | Água - R$ 4,00"></div>
+                
+                <!-- Cadastro de Produtos com Valor -->
+                <div class="form-group" style="background: #f1f8e9; padding: 10px; border-radius: 5px; border: 1px solid #c8e6c9;">
+                    <label style="color: #2e7d32;">🍔 Adicionar Produtos e Preços para a Comanda</label>
+                    <p style="font-size: 0.7rem; color: #555; margin-bottom: 6px;">Exemplo: Cerveja - 10.00 | Porção de Fritas - 25.00</p>
+                    <textarea id="novoProdTexto" placeholder="Cerveja - 10.00 | Água - 5.00" style="height: 60px;"></textarea>
+                </div>
                 
                 <div class="form-group" style="background: #FFF3E0; padding: 8px; border-radius: 5px; border: 1px solid #FFE0B2;">
                     <label style="color: #E65100;">🔐 Senha do Mini Cofre (4 Dígitos)</label>
@@ -284,15 +395,23 @@
                     <input type="text" id="novoPremioCofre" placeholder="Ex: Chopp grátis">
                 </div>
 
-                <button class="btn-submit" style="background: var(--accent);" onclick="salvarNovoQuiosque()">Cadastrar Quiosque</button>
+                <button class="btn-submit" style="background: var(--accent);" onclick="salvarNovoQuiosque()">Cadastrar Quiosque 🚀</button>
             </div>
         </div>
 
-        <!-- ABA 8: MASTER ADMIN (PROTEGIDA POR SENHA) -->
+        <!-- ABA 9: MASTER ADMIN & AUDITORIA DE FRANQUIAS -->
         <div id="aba-admin" class="aba-content" style="display: none;">
             <div class="card">
-                <h3 style="font-size: 0.95rem; color: var(--secondary); margin-bottom: 10px;">📊 Painel Master Admin & Franquias</h3>
+                <h3 style="font-size: 0.95rem; color: var(--secondary); margin-bottom: 10px;">📊 Painel Master Admin & Auditoria</h3>
                 
+                <div style="background: #E8F5E9; padding: 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #C8E6C9; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="font-size: 0.75rem; color: #2E7D32; font-weight: bold;">Franqueados Ativos na Rede:</span>
+                        <h3 id="contadorFranqueadosAtivos" style="color: #2E7D32; font-size: 1.3rem;">0</h3>
+                    </div>
+                    <span style="font-size: 1.8rem;">🏢</span>
+                </div>
+
                 <div style="background: #f9f9f9; padding: 10px; border-radius: 6px; margin-bottom: 8px;">
                     <span style="font-size: 0.75rem;">Faturamento Comercial (Rede de Quiosques):</span>
                     <h4 id="adminFaturamentoQuiosques" style="color: var(--primary);">R$ 0,00</h4>
@@ -301,11 +420,6 @@
                 <div style="background: #FFF3E0; padding: 10px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #FFE0B2;">
                     <span style="font-size: 0.75rem; color: #E65100;">Arrecadação Total do Mini Bolão:</span>
                     <h4 id="adminArrecadacaoBolao" style="color: #E65100;">R$ 0,00</h4>
-                </div>
-
-                <div style="background: #E8F5E9; padding: 10px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #C8E6C9;">
-                    <span style="font-size: 0.75rem; color: #2E7D32;">Retenção da Plataforma no Bolão (30%):</span>
-                    <h4 id="adminRetencaoBolao" style="color: #2E7D32;">R$ 0,00</h4>
                 </div>
 
                 <div style="background: #EDE7F6; padding: 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #D1C4E9;">
@@ -318,43 +432,27 @@
                     <h3 id="adminFaturamentoTotal" style="color: var(--secondary);">R$ 0,00</h3>
                 </div>
 
-                <h4 style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 8px;">🌐 Franquias Cadastradas na Rede:</h4>
+                <h4 style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 8px;">🔍 Auditoria Interativa de Franquias:</h4>
+                <p style="font-size: 0.75rem; color: #666; margin-bottom: 8px;">Clique em uma franquia abaixo para abrir o relatório detalhado de auditoria:</p>
                 <div id="listaFranquiasAdminContainer">
-                    <p style="font-size: 0.75rem; color: #888;">Nenhuma franquia comercializada ainda.</p>
+                    <p style="font-size: 0.75rem; color: #888;">Nenhuma franquia cadastrada.</p>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- MODAL DE SENHA ADMIN -->
-    <div id="adminSenhaModal" class="modal">
-        <div class="modal-content" style="text-align: center; max-width: 320px;">
-            <div class="modal-header">
-                <h3 style="color: var(--secondary); font-size: 0.95rem;">🔒 Acesso Restrito</h3>
-                <button class="close-btn" onclick="fecharAdminSenha()">&times;</button>
-            </div>
-            <p style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">Digite a senha do administrador:</p>
-            <div class="form-group">
-                <input type="password" id="senhaAdminInput" placeholder="Senha" style="text-align: center; font-size: 1.2rem; letter-spacing: 5px;">
-            </div>
-            <button class="btn-submit" style="background: var(--secondary); margin-top: 10px;" onclick="validarSenhaAdmin()">Entrar no Painel 🔐</button>
-        </div>
-    </div>
-
-    <!-- MODAL DE PRODUTO -->
-    <div id="produtoModal" class="modal">
+    <!-- MODAL DE AUDITORIA DA FRANQUIA -->
+    <div id="auditoriaModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalQuiosqueNome" style="font-size: 0.9rem; color: var(--secondary);">Detalhes</h3>
-                <button class="close-btn" onclick="fecharModal()">&times;</button>
+                <h3 id="auditoriaTitulo" style="font-size: 1rem; color: var(--secondary);">Relatório de Auditoria</h3>
+                <button class="close-btn" onclick="fecharAuditoria()">&times;</button>
             </div>
-            <div id="modalProdutosLista"></div>
-            <div style="margin-top: 15px;">
-                <label style="font-size: 0.75rem; font-weight: bold;">Pedido Personalizado:</label>
-                <input type="text" id="customOrderInput" placeholder="Ex: Porção extra" style="margin-top: 5px; margin-bottom: 10px;">
-                <button class="btn-submit" onclick="comprarPedidoPersonalizado()">Enviar no WhatsApp 📱</button>
+            <div id="auditoriaDetalhesConteudo" style="font-size: 0.8rem; line-height: 1.5; color: #333;">
+                <!-- Preenchido via script -->
             </div>
+            <button class="btn-submit" style="margin-top: 15px; background: var(--secondary);" onclick="fecharAuditoria()">Fechar Auditoria</button>
         </div>
     </div>
 
