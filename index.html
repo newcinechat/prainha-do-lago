@@ -9,11 +9,17 @@
             --primary: #0288D1;
             --secondary: #004D40;
             --accent: #FF6F00;
-            --bg-light: #F4F6F7;
+            --bg-light: rgba(244, 246, 247, 0.92);
             --text-dark: #333333;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-light); color: var(--text-dark); padding-bottom: 70px; }
+        body { 
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), 
+                        url('ponte-jk.jpg') no-repeat center center fixed;
+            background-size: cover; 
+            color: var(--text-dark); 
+            padding-bottom: 70px; 
+        }
         
         #loginTelaInicio {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -38,14 +44,15 @@
         .nav-tabs button.active { background: var(--accent); font-weight: bold; }
 
         .container { padding: 15px; max-width: 600px; margin: 0 auto; }
-        .card { background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card { background: rgba(255, 255, 255, 0.95); border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .btn-submit { background: var(--primary); color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; text-align: center; }
         
         .form-group { margin-bottom: 10px; text-align: left; }
         .form-group label { display: block; font-size: 0.75rem; margin-bottom: 3px; font-weight: bold; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem; }
 
-        /* Estilo Stories (Bolinhas de Quiosques) */
+        .supermarket-top-bar { background: linear-gradient(135deg, #FF6F00, #E65100); color: white; padding: 12px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 3px 10px rgba(255,111,0,0.3); }
+
         .stories-container { display: flex; gap: 12px; overflow-x: auto; padding: 5px 0 15px 0; margin-bottom: 10px; scrollbar-width: none; }
         .stories-container::-webkit-scrollbar { display: none; }
         .story-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; min-width: 65px; }
@@ -75,20 +82,20 @@
         .ranking-pos { font-weight: bold; color: var(--accent); width: 30px; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .close-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; }
 
         .quiosque-item { border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 10px; background: #fafafa; padding: 8px; border-radius: 4px; }
-        .franquia-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 6px; margin-bottom: 8px; border: 1px solid #ddd; cursor: pointer; }
-        .franquia-row:hover { background: #f1f1f1; }
+        .franquia-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 6px; margin-bottom: 8px; border: 1px solid #ddd; }
 
-        /* Estilos do Chat ao Vivo */
         .chat-box { height: 320px; background: #eef2f3; border-radius: 6px; border: 1px solid #ddd; overflow-y: auto; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
         .chat-msg { max-width: 80%; padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; line-height: 1.3; word-break: break-word; }
         .chat-msg.sent { background: #dcf8c6; align-self: flex-end; }
         .chat-msg.received { background: white; align-self: flex-start; border: 1px solid #e0e0e0; }
         .chat-msg img, .chat-msg video { max-width: 100%; border-radius: 6px; margin-top: 5px; max-height: 150px; display: block; object-fit: cover; }
+
+        .produto-card-adm { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 6px 10px; border-radius: 4px; margin-bottom: 5px; border: 1px solid #ddd; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -144,6 +151,14 @@
 
     <div class="container">
 
+        <div class="supermarket-top-bar" onclick="abrirModalSupermercados()">
+            <div>
+                <h3 style="font-size: 0.95rem; margin-bottom: 2px;">🛒 Supermercados, Robô de Promoções & Comparativo</h3>
+                <p style="font-size: 0.7rem; opacity: 0.9;">Escuta de preços reais por região e listas inteligentes</p>
+            </div>
+            <span style="font-size: 1.3rem;">➔</span>
+        </div>
+
         <div class="mobility-bar">
             <button class="social-btn btn-uber" onclick="chamarMobilidade('uber')">🚗 Chamar Uber</button>
             <button class="social-btn btn-99" onclick="chamarMobilidade('99')">🚕 Chamar 99</button>
@@ -158,26 +173,22 @@
             <button class="social-btn btn-fb" onclick="abrirSocial('fb')">👥 Facebook</button>
         </div>
 
-        <!-- ABA 1: VITRINE & STORIES DE QUIOSQUES -->
         <div id="aba-vitrine" class="aba-content">
             <div id="clientWelcomeBox" class="card" style="background: #E0F7FA; border: 1px solid #B2EBF2;">
                 <p style="font-size: 0.8rem;">Bem-vindo, <b id="clientNameDisplay"></b>! Seu perfil e link de indicação estão ativos.</p>
             </div>
 
-            <!-- Seção Stories / Bolinhas de Quiosques -->
             <div class="card" style="padding: 10px 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <h4 style="font-size: 0.8rem; color: var(--secondary);">🌴 Quiosques Parceiros (<span id="contadorQuiosquesStories">0</span>)</h4>
                     <span style="font-size: 0.65rem; color: #666;">Toque para abrir comanda</span>
                 </div>
-                <div class="stories-container" id="storiesContainer">
-                    <!-- Gerado dinamicamente -->
-                </div>
+                <div class="stories-container" id="storiesContainer"></div>
             </div>
 
             <div id="fidelityCardBox" class="fidelity-card-box">
                 <div class="fidelity-header">
-                    <span>⭐ Cartão Fidelidade (6 Selos)</span>
+                    <span>⭐ Cofre Fidelidade (6 Selos por Quiosque - R$ 30,00/selo)</span>
                     <span id="fidelityStatusText">0/6 Selos</span>
                 </div>
                 <p style="font-size: 0.7rem; opacity: 0.9;">Complete 6 selos para desbloquear o Mini Cofre!</p>
@@ -192,6 +203,16 @@
                 <button id="btnAbrirCofreMain" style="display: none; width: 100%; margin-top: 10px; background: #FFC107; color: #333; border: none; padding: 6px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; cursor: pointer;" onclick="abrirModalCofre()">🔓 Abrir Mini Cofre!</button>
             </div>
 
+            <div class="card" style="background: #FFF8E1; border: 1px solid #FFE082;">
+                <h4 style="font-size: 0.9rem; color: #F57F17; margin-bottom: 6px;">📸 Galeria "Momento Lazer"</h4>
+                <p style="font-size: 0.75rem; color: #555; margin-bottom: 8px;">Espaço interativo para compartilhamento de fotos entre os usuários.</p>
+                <div class="form-group">
+                    <label style="font-size: 0.75rem;">Enviar Foto do seu Lazer:</label>
+                    <input type="file" accept="image/*" onchange="publicarMomentoLazer(this)" style="font-size: 0.75rem;">
+                </div>
+                <div id="galeriaLazerContainer" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; max-height: 200px; overflow-y: auto;"></div>
+            </div>
+
             <div class="card">
                 <label style="font-size: 0.75rem; font-weight: bold;">Selecione o Polo:</label>
                 <select id="poloSelect" onchange="mudarLocalizacao(this.value)" style="margin-top: 5px;">
@@ -203,17 +224,22 @@
             <div id="listaQuiosquesContainer"></div>
         </div>
 
-        <!-- TELA DA VITRINE / COMANDA DIGITAL DO QUIOSQUE -->
         <div id="abaVitrineQuiosque" class="aba-content" style="display:none; padding: 0;">
             <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); border: 2px solid #ffcc00;">
                 
-                <!-- Cabeçalho Estilo Bloco de Comanda -->
                 <div style="text-align: center; border-bottom: 2px dashed #ddd; padding-bottom: 12px; margin-bottom: 12px;">
                     <h2 id="nomeQuiosqueComanda" style="margin: 0; color: #d32f2f; font-size: 22px; text-transform: uppercase;">Nome do Quiosque</h2>
-                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Comanda Digital Integrada</p>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Comanda Digital</p>
                 </div>
 
-                <!-- Dados do Pedido (Mesa / Cliente) -->
+                <div id="statusRetornoPainel" style="display: none; background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; padding: 10px; border-radius: 6px; font-size: 12px; font-weight: bold; text-align: center; margin-bottom: 12px;">
+                    Seu pedido já foi entregue ao quiosque, aguarde....
+                </div>
+
+                <div id="contadorEsperaComanda" style="display: none; background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; padding: 10px; border-radius: 6px; font-size: 12px; font-weight: bold; text-align: center; margin-bottom: 12px;">
+                    ⏳ Tempo estimado de atendimento: <span id="tempoEsperaSegundos" style="font-size: 14px;">5:00</span>
+                </div>
+
                 <div style="display: flex; gap: 10px; margin-bottom: 15px; font-size: 13px;">
                     <div style="flex: 2;">
                         <label><b>Cliente:</b></label><br>
@@ -225,59 +251,46 @@
                     </div>
                 </div>
 
-                <!-- Itens da Comanda Organizados por Categorias (Estilo Bloco Dinâmico) -->
-                <div id="itensComandaContainer" style="max-height: 350px; overflow-y: auto; padding-right: 5px; margin-bottom: 15px;">
-                    <!-- Preenchido via Script Dinamicamente por Quiosque -->
-                </div>
+                <div id="itensComandaContainer" style="max-height: 300px; overflow-y: auto; padding-right: 5px; margin-bottom: 15px;"></div>
 
-                <!-- Observações do Pedido -->
                 <div style="margin-bottom: 15px;">
                     <label style="font-size: 12px;"><b>Observações Especiais:</b></label><br>
                     <textarea id="comandaObservacoes" placeholder="Ex: Ponha gelo e limão separado." style="width: 100%; height: 50px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;"></textarea>
                 </div>
 
-                <!-- Rodapé com Total e Botão de Enviar -->
-                <div style="display: flex; justify-content: space-between; align-items: center; background: #fffde7; padding: 12px; border-radius: 8px; border: 1px solid #fbc02d; margin-bottom: 10px;">
-                    <span style="font-size: 16px; font-weight: bold; color: #d32f2f;">TOTAL: <span id="valorTotalComanda">R$ 0,00</span></span>
-                    <button onclick="enviarComandaParaQuiosque()" style="background: #2e7d32; color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px;">Enviar Pedido 🚀</button>
+                <div style="display: flex; flex-direction: column; gap: 8px; background: #fffde7; padding: 12px; border-radius: 8px; border: 1px solid #fbc02d; margin-bottom: 10px;">
+                    <span style="font-size: 15px; font-weight: bold; color: #d32f2f;">TOTAL: <span id="valorTotalComanda">R$ 0,00</span></span>
+                    <button onclick="enviarComandaParaQuiosque('whatsapp')" style="width: 100%; background: #25D366; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">📲 Enviar Pedido direto p/ WhatsApp do Quiosque</button>
+                    <button onclick="enviarComandaParaQuiosque('comparador')" style="width: 100%; background: #E65100; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">🛒 Direcionar ao Comparador / Lista de Mercado</button>
                 </div>
 
                 <div style="text-align: center;">
                     <button onclick="mudarAba('vitrine')" style="background: #757575; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">← Voltar para a Vitrine Principal</button>
                 </div>
-
             </div>
         </div>
 
-        <!-- ABA 2: BATE-PAPO AO VIVO COM MÍDIA -->
         <div id="aba-chat" class="aba-content" style="display: none;">
             <div class="card">
                 <h3 style="font-size: 0.9rem; color: var(--secondary); margin-bottom: 5px;">💬 Bate-Papo da Orla & Quiosques</h3>
-                <p style="font-size: 0.75rem; color: #666; margin-bottom: 10px;">Converse com frequentadores e compartilhe fotos ou vídeos do momento.</p>
-                
                 <div class="chat-box" id="chatBoxContainer">
                     <div class="chat-msg received"><b>Orla Bot:</b> Bem-vindo ao chat interativo! Envie mensagens, fotos ou vídeos.</div>
                 </div>
-
                 <div style="display: flex; gap: 6px; align-items: center;">
                     <input type="text" id="chatInputMensagem" placeholder="Digite sua mensagem..." style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.8rem;" onkeypress="if(event.key === 'Enter') enviarMensagemChat()">
-                    
                     <label style="background: var(--primary); color: white; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" title="Enviar Mídia">
                         📎<input type="file" id="chatInputMidia" accept="image/*,video/*" style="display: none;" onchange="enviarMidiaChat(this)">
                     </label>
-
                     <button class="btn-submit" style="width: auto; padding: 8px 14px;" onclick="enviarMensagemChat()">Enviar</button>
                 </div>
             </div>
         </div>
 
-        <!-- ABA 3: INDIQUE E GANHE -->
         <div id="aba-indique" class="aba-content" style="display: none;">
             <div class="card" style="background: linear-gradient(135deg, #E8F5E9, #C8E6C9); border: 1px solid #A5D6A7;">
-                <h3 style="color: #2E7D32; font-size: 1rem; margin-bottom: 5px;">🎁 Indique e Ganhe um Brinde</h3>
-                <p style="font-size: 0.8rem; margin-bottom: 15px; color: #333;">Indique 3 amigos que comprem em qualquer quiosque para ganhar um brinde grátis!</p>
+                <h3 style="color: #2E7D32; font-size: 1rem; margin-bottom: 5px;">🎁 Indique e Ganhe (Regra Restrita: 3 Cadastros c/ Compras)</h3>
                 <div style="background: white; padding: 12px; border-radius: 6px; text-align: center; margin-bottom: 12px;">
-                    <span style="font-size: 0.75rem; color: #666;">Progresso:</span>
+                    <span style="font-size: 0.75rem; color: #666;">Progresso Necessário:</span>
                     <h2 id="indIndicacoesDisplay" style="color: #2E7D32; font-size: 1.4rem; margin-top: 5px;">0 / 3 Amigos</h2>
                 </div>
                 <div class="form-group">
@@ -288,26 +301,27 @@
             </div>
         </div>
 
-        <!-- ABA 4: MINI BOLÃO -->
         <div id="aba-bolao" class="aba-content" style="display: none;">
             <div class="card" style="background: linear-gradient(135deg, #FFF3E0, #FFE0B2); border: 1px solid #FFB74D;">
-                <h3 style="color: #E65100; font-size: 1rem; margin-bottom: 5px;">🎯 Mini Bolão da Orla</h3>
-                <p style="font-size: 0.8rem; margin-bottom: 10px;">R$ 3,00 por aposta (3 números).</p>
+                <h3 style="color: #E65100; font-size: 1rem; margin-bottom: 5px;">🎯 Mini Bolão com Pix e Validade (24h)</h3>
+                <p id="exibicaoAoVivoSorteio" style="font-size: 0.75rem; color: #d32f2f; font-weight: bold; margin-bottom: 8px;"></p>
                 <div style="background: white; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 10px;">
                     <span style="font-size: 0.75rem; color: #666;">Pote Acumulado:</span>
                     <h2 id="poteBolaoDisplay" style="color: #E65100; font-size: 1.4rem;">R$ 0,00</h2>
                 </div>
                 <div class="form-group"><input type="text" id="bolaoNumeros" maxlength="11" placeholder="Ex: 05, 14, 22"></div>
-                <button class="btn-submit" style="background: #E65100;" onclick="comprarBolao()">Participar por R$ 3,00 🎲</button>
+                <button class="btn-submit" style="background: #E65100;" onclick="comprarBolao()">Participar via Pix por R$ 3,00 🎲</button>
+                
+                <div id="comprovanteApostaBox" style="display: none; margin-top: 10px; background: white; padding: 10px; border-radius: 6px; font-size: 0.75rem; border: 1px solid #4CAF50;">
+                    <h4 style="color: #2E7D32; margin-bottom: 4px;">🧾 Comprovante de Aposta</h4>
+                    <p id="comprovanteTextoInfo"></p>
+                </div>
             </div>
         </div>
 
-        <!-- ABA 5: REPÓRTER DA PRAIA -->
         <div id="aba-live" class="aba-content" style="display: none;">
             <div class="card">
-                <h3 style="font-size: 0.9rem; color: var(--secondary); margin-bottom: 5px;">🔴 Repórter da Orla por 1 Dia</h3>
-                <p style="font-size: 0.75rem; color: #555; margin-bottom: 12px;">Transmita ao vivo o movimento da praia para todos os usuários conectados na plataforma!</p>
-                
+                <h3 style="font-size: 0.9rem; color: var(--secondary); margin-bottom: 5px;">🔴 Repórter da Orla - Gravação de Live & Redes Sociais</h3>
                 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000; margin-bottom: 12px;">
                     <video id="liveVideoFeed" autoplay playsinline muted style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none;"></video>
                     <div id="livePlaceholder" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #111; color: white; text-align: center; padding: 10px;">
@@ -315,17 +329,25 @@
                         <p style="font-size: 0.8rem;" id="liveStatusText">Nenhuma transmissão ativa no momento.</p>
                     </div>
                 </div>
-
                 <div class="form-group"><label>Título da Transmissão</label><input type="text" id="reporterTitulo" placeholder="Ex: Calor de 35 graus na Prainha!"></div>
                 
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn-submit" style="background: #D32F2F;" onclick="iniciarTransmissaoReporter()">🔴 Entrar ao Vivo</button>
-                    <button class="btn-submit" style="background: #555; display: none;" id="btnEncerrarLive" onclick="encerrarTransmissaoReporter()">⏹️ Encerrar</button>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;">
+                    <button class="btn-submit" style="background: #D32F2F; flex: 1;" onclick="iniciarTransmissaoReporter()">🔴 Gravar / Live</button>
+                    <button class="btn-submit" style="background: #FF6F00; flex: 1; display: none;" id="btnPausarLive" onclick="pausarContinuarLive()">⏸️ Pausar</button>
+                    <button class="btn-submit" style="background: #555; flex: 1; display: none;" id="btnEncerrarLive" onclick="encerrarTransmissaoReporter()">⏹️ Parar / Salvar</button>
+                </div>
+
+                <div style="background: #f9f9f9; padding: 8px; border-radius: 6px; border: 1px solid #ddd; text-align: center;">
+                    <p style="font-size: 0.75rem; font-weight: bold; margin-bottom: 6px;">Compartilhamento em Massa nas Redes Sociais:</p>
+                    <div style="display: flex; gap: 5px; justify-content: center;">
+                        <button onclick="compartilharLiveRedesSociais('whatsapp')" style="background: #25D366; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">WhatsApp</button>
+                        <button onclick="compartilharLiveRedesSociais('telegram')" style="background: #0088cc; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">Telegram</button>
+                        <button onclick="compartilharLiveRedesSociais('facebook')" style="background: #1877F2; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">Facebook</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- ABA 6: TOP 10 -->
         <div id="aba-ranking" class="aba-content" style="display: none;">
             <div class="card">
                 <h3 style="font-size: 0.9rem; color: var(--secondary); margin-bottom: 5px;">📈 Ranking Top 10 da Orla</h3>
@@ -335,32 +357,18 @@
             </div>
         </div>
 
-        <!-- ABA 7: FRANQUIAS -->
         <div id="aba-franquia" class="aba-content" style="display: none;">
             <div class="card" style="border: 2px solid var(--secondary);">
                 <h3 style="font-size: 1rem; color: var(--secondary); margin-bottom: 8px;">💼 Seja Franqueado da Plataforma</h3>
-                <p style="font-size: 0.8rem; color: #555; margin-bottom: 12px; line-height: 1.4;">Tenha seu próprio aplicativo de orla e quiosques na sua região com suporte total e tecnologia escalável.</p>
-                
-                <div style="background: #E0F7FA; padding: 12px; border-radius: 6px; margin-bottom: 12px; border: 1px solid #B2EBF2;">
-                    <h4 style="color: var(--secondary); font-size: 0.9rem; margin-bottom: 5px;">💡 Planos Disponíveis:</h4>
-                    <p style="font-size: 0.75rem; color: #333; line-height: 1.4;">
-                        • <b>Taxa de Implantação (Setup):</b> R$ 1.500,00 (Único)<br>
-                        • <b>Royalties Mensais:</b> R$ 400,00 / mês<br>
-                        • <b>Lucro:</b> 100% das comissões dos quiosques e bolões da sua cidade são seus!
-                    </p>
-                </div>
-
                 <div class="form-group"><label>Cidade / Polo de Atuação</label><input type="text" id="franqCidade" placeholder="Ex: Florianópolis / SC"></div>
                 <div class="form-group"><label>WhatsApp de Contato</label><input type="text" id="franqWpp" placeholder="Ex: 5548999999999"></div>
-
                 <button class="btn-submit" style="background: var(--secondary); margin-top: 5px;" onclick="solicitarFranquia()">Solicitar Franquia 📈</button>
             </div>
         </div>
 
-        <!-- ABA 8: CADASTRAR QUIOSQUE & LOGOMARCA -->
         <div id="aba-parceiro" class="aba-content" style="display: none;">
             <div class="card">
-                <h3 style="font-size: 0.9rem; margin-bottom: 10px; color: var(--accent);">➕ Cadastrar Novo Quiosque & Logomarca</h3>
+                <h3 style="font-size: 0.9rem; margin-bottom: 10px; color: var(--accent);">➕ Cadastrar / Atualizar Quiosque & Produtos</h3>
                 <div class="form-group"><label>Polo / Localização</label>
                     <select id="novoLocalSelect">
                         <option value="prainha">Prainha do Lago</option>
@@ -370,124 +378,1512 @@
                 <div class="form-group"><label>Nome do Quiosque</label><input type="text" id="novoNome" placeholder="Ex: Quiosque do Sol"></div>
                 <div class="form-group"><label>Responsável</label><input type="text" id="novoResp" placeholder="Ex: Carlos"></div>
                 <div class="form-group"><label>WhatsApp</label><input type="text" id="novoWpp" placeholder="Ex: 5561999999999"></div>
-                
-                <!-- Upload de Logomarca -->
-                <div class="form-group">
-                    <label>🖼️ Logomarca do Quiosque (Imagem)</label>
-                    <input type="file" id="novoLogoInput" accept="image/*">
-                </div>
-
+                <div class="form-group"><label>🖼️ Logomarca do Quiosque (Imagem)</label><input type="file" id="novoLogoInput" accept="image/*"></div>
                 <div class="form-group"><label>Formas de Pagamento</label><input type="text" id="novoPag" placeholder="Pix / Dinheiro"></div>
                 
-                <!-- Cadastro de Produtos com Valor -->
                 <div class="form-group" style="background: #f1f8e9; padding: 10px; border-radius: 5px; border: 1px solid #c8e6c9;">
-                    <label style="color: #2e7d32;">🍔 Adicionar Produtos e Preços para a Comanda</label>
-                    <p style="font-size: 0.7rem; color: #555; margin-bottom: 6px;">Exemplo: Cerveja - 10.00 | Porção de Fritas - 25.00</p>
-                    <textarea id="novoProdTexto" placeholder="Cerveja - 10.00 | Água - 5.00" style="height: 60px;"></textarea>
+                    <label style="color: #2e7d32; font-weight: bold;">🍔 Adicionar / Editar Produtos na Comanda</label>
+                    <div style="display: flex; gap: 5px; margin-top: 5px;">
+                        <input type="text" id="inputNomeProduto" placeholder="Nome do Produto" style="flex: 2;">
+                        <input type="number" step="0.01" id="inputPrecoProduto" placeholder="Preço (R$)" style="flex: 1;">
+                        <button type="button" onclick="adicionarProdutoTemporario()" style="background: #2e7d32; color: white; border: none; padding: 8px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;">+</button>
+                    </div>
+                    <div id="listaProdutosTemporariosContainer" style="margin-top: 8px; max-height: 150px; overflow-y: auto;">
+                        <p style="font-size: 0.75rem; color: #888; text-align: center;">Nenhum produto adicionado ainda.</p>
+                    </div>
                 </div>
                 
-                <div class="form-group" style="background: #FFF3E0; padding: 8px; border-radius: 5px; border: 1px solid #FFE0B2;">
-                    <label style="color: #E65100;">🔐 Senha do Mini Cofre (4 Dígitos)</label>
-                    <input type="text" id="novoSenhaCofre" maxlength="4" placeholder="Ex: 5892">
-                </div>
-                <div class="form-group" style="background: #FFF3E0; padding: 8px; border-radius: 5px; border: 1px solid #FFE0B2;">
-                    <label style="color: #E65100;">🎁 Prêmio do Cofre</label>
-                    <input type="text" id="novoPremioCofre" placeholder="Ex: Chopp grátis">
-                </div>
-
-                <button class="btn-submit" style="background: var(--accent);" onclick="salvarNovoQuiosque()">Cadastrar Quiosque 🚀</button>
+                <div class="form-group"><label style="color: #E65100;">🔐 Senha do Mini Cofre (4 Dígitos)</label><input type="text" id="novoSenhaCofre" maxlength="4" placeholder="Ex: 5892"></div>
+                <div class="form-group"><label style="color: #E65100;">🎁 Prêmio do Cofre</label><input type="text" id="novoPremioCofre" placeholder="Ex: Chopp grátis"></div>
+                <button class="btn-submit" style="background: var(--accent);" onclick="salvarNovoQuiosque()">Salvar / Atualizar Quiosque 🚀</button>
             </div>
         </div>
 
-        <!-- ABA 9: MASTER ADMIN & AUDITORIA DE FRANQUIAS -->
         <div id="aba-admin" class="aba-content" style="display: none;">
             <div class="card">
-                <h3 style="font-size: 0.95rem; color: var(--secondary); margin-bottom: 10px;">📊 Painel Master Admin & Auditoria</h3>
+                <h3 style="font-size: 0.95rem; color: var(--secondary); margin-bottom: 10px;">📊 Painel Master Admin, Contabilidade & RH</h3>
                 
                 <div style="background: #E8F5E9; padding: 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #C8E6C9; display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <span style="font-size: 0.75rem; color: #2E7D32; font-weight: bold;">Franqueados Ativos na Rede:</span>
+                        <span style="font-size: 0.75rem; color: #2E7D32; font-weight: bold;">Franqueados Ativos:</span>
                         <h3 id="contadorFranqueadosAtivos" style="color: #2E7D32; font-size: 1.3rem;">0</h3>
                     </div>
                     <span style="font-size: 1.8rem;">🏢</span>
                 </div>
-
-                <div style="background: #f9f9f9; padding: 10px; border-radius: 6px; margin-bottom: 8px;">
-                    <span style="font-size: 0.75rem;">Faturamento Comercial (Rede de Quiosques):</span>
-                    <h4 id="adminFaturamentoQuiosques" style="color: var(--primary);">R$ 0,00</h4>
+                
+                <div style="background: #f9f9f9; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="abrirModalFaturamentoQuiosques()">
+                    <div>
+                        <span style="font-size: 0.75rem;">Faturamento Comercial (Quiosques) <small style="color: #0288D1;">(Clique para ver modal detalhado)</small>:</span>
+                        <h4 id="adminFaturamentoQuiosques" style="color: var(--primary);">R$ 0,00</h4>
+                    </div>
+                    <button style="background: #0288D1; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Ver Detalhes ➔</button>
                 </div>
 
                 <div style="background: #FFF3E0; padding: 10px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #FFE0B2;">
-                    <span style="font-size: 0.75rem; color: #E65100;">Arrecadação Total do Mini Bolão:</span>
+                    <span style="font-size: 0.75rem; color: #E65100;">Arrecadação Bolão:</span>
                     <h4 id="adminArrecadacaoBolao" style="color: #E65100;">R$ 0,00</h4>
                 </div>
-
                 <div style="background: #EDE7F6; padding: 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #D1C4E9;">
-                    <span style="font-size: 0.75rem; color: #512DA8; font-weight: bold;">Faturamento de Franquias (Setup + Royalties):</span>
+                    <span style="font-size: 0.75rem; color: #512DA8; font-weight: bold;">Faturamento Franquias:</span>
                     <h4 id="adminFaturamentoFranquias" style="color: #512DA8;">R$ 0,00</h4>
                 </div>
-
                 <div style="background: #E0F7FA; padding: 10px; border-radius: 6px; border: 1px solid #B2EBF2; margin-bottom: 15px;">
-                    <span style="font-size: 0.75rem; color: #006064; font-weight: bold;">Faturamento Master Consolidado:</span>
+                    <span style="font-size: 0.75rem; color: #006064; font-weight: bold;">Faturamento Total Consolidado:</span>
                     <h3 id="adminFaturamentoTotal" style="color: var(--secondary);">R$ 0,00</h3>
                 </div>
 
-                <h4 style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 8px;">🔍 Auditoria Interativa de Franquias:</h4>
-                <p style="font-size: 0.75rem; color: #666; margin-bottom: 8px;">Clique em uma franquia abaixo para abrir o relatório detalhado de auditoria:</p>
-                <div id="listaFranquiasAdminContainer">
-                    <p style="font-size: 0.75rem; color: #888;">Nenhuma franquia cadastrada.</p>
+                <button class="btn-submit" style="background: #C2185B; margin-bottom: 15px;" onclick="gerarTabelaPdfEmpresa()">📄 Gerar Tabela em PDF (Empresa & Dados)</button>
+
+                <h4 style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 8px;">🏢 Gestão & Exclusão de Franquias:</h4>
+                <div id="listaFranquiasAdminContainer" style="margin-bottom: 15px;"></div>
+
+                <div style="background: #F3E5F5; padding: 12px; border-radius: 6px; border: 1px solid #CE93D8; margin-bottom: 15px;">
+                    <h4 style="font-size: 0.9rem; color: #6A1B9A; margin-bottom: 8px;">💼 Mini Escritório Contábil & RH</h4>
+                    
+                    <div class="form-group"><input type="text" id="rhNome" placeholder="Nome do Funcionário / Sócio"></div>
+                    <div class="form-group"><input type="text" id="rhCargo" placeholder="Cargo / Função"></div>
+                    <div class="form-group"><input type="text" id="rhEndereco" placeholder="Endereço Completo"></div>
+                    <div class="form-group"><input type="text" id="rhTelefone" placeholder="Telefone"></div>
+                    <div class="form-group"><input type="text" id="rhEmail" placeholder="E-mail"></div>
+                    <div style="display: flex; gap: 6px;">
+                        <div class="form-group" style="flex: 1;"><input type="number" step="0.01" id="rhBruto" placeholder="Salário Bruto (R$)"></div>
+                        <div class="form-group" style="flex: 1;"><input type="number" step="0.01" id="rhDescontos" placeholder="Descontos (R$)"></div>
+                    </div>
+                    <button class="btn-submit" style="background: #6A1B9A; margin-bottom: 10px;" onclick="cadastrarFuncionarioRH()">Cadastrar Funcionário / Sócio 📋</button>
+
+                    <h5 style="font-size: 0.8rem; color: #4A148C; margin-bottom: 6px;">👥 Colaboradores Cadastrados:</h5>
+                    <div id="listaFuncionariosRHContainer" style="max-height: 180px; overflow-y: auto; margin-bottom: 10px;"></div>
+
+                    <div style="background: white; padding: 8px; border-radius: 4px; font-size: 0.75rem; border: 1px solid #BA68C8; margin-bottom: 8px;" id="relatorioContabilResumo">
+                        <b>Folha de Pagamento Consolidada:</b> Aguardando cadastros...
+                    </div>
+                    <button class="btn-submit" style="background: #2E7D32; padding: 8px; font-size: 0.75rem;" onclick="enviarRelatorioContadorWpp()">Enviar Relatório Direto ao Contador (WhatsApp) 📤</button>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- MODAL DE AUDITORIA DA FRANQUIA -->
-    <div id="auditoriaModal" class="modal">
-        <div class="modal-content">
+    <!-- MODAL DE SUPERMERCADOS COM PESQUISA REAL E ADIÇÃO À LISTA -->
+    <div id="supermercadosModal" class="modal">
+        <div class="modal-content" style="max-width: 520px;">
             <div class="modal-header">
-                <h3 id="auditoriaTitulo" style="font-size: 1rem; color: var(--secondary);">Relatório de Auditoria</h3>
-                <button class="close-btn" onclick="fecharAuditoria()">&times;</button>
+                <h3 style="color: #E65100; font-size: 1rem;">🛒 Robô de Promoções, Supermercados & Comparativo</h3>
+                <button class="close-btn" onclick="fecharModalSupermercados()">&times;</button>
             </div>
-            <div id="auditoriaDetalhesConteudo" style="font-size: 0.8rem; line-height: 1.5; color: #333;">
-                <!-- Preenchido via script -->
+            
+            <div style="display: flex; gap: 5px; margin-bottom: 12px;">
+                <button onclick="mudarAbaSupermercado('ofertas')" id="btnSupOfertas" style="flex: 1; padding: 6px; font-size: 0.75rem; background: #E65100; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Cadastrar / Robô</button>
+                <button onclick="mudarAbaSupermercado('comparativo')" id="btnSupComparativo" style="flex: 1; padding: 6px; font-size: 0.75rem; background: #ddd; color: #333; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Comparar & Pesquisar</button>
+                <button onclick="mudarAbaSupermercado('lista')" id="btnSupLista" style="flex: 1; padding: 6px; font-size: 0.75rem; background: #ddd; color: #333; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Lista Inteligente</button>
             </div>
-            <button class="btn-submit" style="margin-top: 15px; background: var(--secondary);" onclick="fecharAuditoria()">Fechar Auditoria</button>
+
+            <!-- SEÇÃO 1: ROBÔ DE PROMOÇÕES -->
+            <div id="supSecOfertas">
+                <div style="background: #FFF3E0; padding: 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #FFE0B2;">
+                    <h4 style="font-size: 0.8rem; color: #E65100; margin-bottom: 5px;">🤖 Robô de Promoções: Entrada Direta com Preços Reais</h4>
+                    <div class="form-group"><input type="text" id="supMercadoNome" placeholder="Nome do Supermercado (Ex: Extra)"></div>
+                    <div class="form-group"><input type="text" id="supRegiaoNome" placeholder="Região / Polo (Ex: Prainha / Asa Norte)"></div>
+                    <div class="form-group"><input type="text" id="supGerenteNome" placeholder="Nome do Gerente da Loja"></div>
+                    <div class="form-group"><input type="text" id="supEnderecoLoja" placeholder="Endereço Completo"></div>
+                    <div class="form-group"><input type="text" id="supSiteUrl" placeholder="Link Direto para o Site (https://...)"></div>
+                    <div class="form-group"><input type="text" id="supProdutoNome" placeholder="Produto em Oferta"></div>
+                    <div class="form-group"><input type="number" step="0.01" id="supProdutoPreco" placeholder="Preço Real (R$)"></div>
+                    <div class="form-group">
+                        <label>Avaliação de Custo-Benefício:</label>
+                        <select id="supCompensaSelect">
+                            <option value="sim">✅ Compensa Comprar</option>
+                            <option value="nao">❌ Não Compensa</option>
+                        </select>
+                    </div>
+                    <button class="btn-submit" style="background: #E65100; padding: 8px;" onclick="cadastrarPromocaoSupermercado()">Ativar Robô & Lançar Oferta 🏷️</button>
+                </div>
+
+                <h4 style="font-size: 0.8rem; color: var(--secondary); margin-bottom: 6px;">🔥 Ofertas Varridas nos Mercados:</h4>
+                <div id="listaOfertasSupermercados" style="max-height: 180px; overflow-y: auto;"></div>
+            </div>
+
+            <!-- SEÇÃO 2: COMPARATIVO E PESQUISA DE MERCADOS POR REGIÃO -->
+            <div id="supSecComparativo" style="display: none;">
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label>🔍 Pesquisar Mercados por Região ou Produto:</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="text" id="inputBuscaRegiaoSup" placeholder="Ex: Prainha, Carrefour, Cerveja..." oninput="pesquisarMercadosRegiao()" style="flex: 1;">
+                        <button onclick="pesquisarMercadosRegiao()" style="background: var(--primary); color: white; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; cursor: pointer;">Buscar</button>
+                    </div>
+                </div>
+                <div id="tabelaComparativoContainer" style="max-height: 250px; overflow-y: auto;"></div>
+            </div>
+
+            <!-- SEÇÃO 3: LISTA DE COMPRAS INTELIGENTE -->
+            <div id="supSecLista" style="display: none;">
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label>🛒 Adicionar Produto à Lista:</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="text" id="inputItemListaCompras" placeholder="Ex: Arroz, Cerveja, Frango..." style="flex: 1;">
+                        <button onclick="adicionarItemListaCompras()" style="background: #2e7d32; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;">Adicionar</button>
+                    </div>
+                </div>
+                <div id="containerItensListaCompras" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px; border: 1px solid #eee; padding: 5px; border-radius: 4px;"></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #e8f5e9; padding: 8px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px;">
+                    <strong id="contadorValoresListaCompras" style="color: #2e7d32;">Total Estimado de Itens: R$ 0,00</strong>
+                    <button onclick="compartilharListaComprasWpp()" style="background: #25D366; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; cursor: pointer;">Enviar p/ WhatsApp 📲</button>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- MODAL DO MINI COFRE -->
-    <div id="cofreModal" class="modal">
-        <div class="modal-content" style="text-align: center;">
+    <!-- MODAL DE DETALHAMENTO DE FATURAMENTO E COMISSÕES DE QUIOSQUES -->
+    <div id="modalFaturamentoQuiosques" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <h3 style="color: #E65100; font-size: 1rem;">🔐 Mini Cofre da Orla</h3>
-                <button class="close-btn" onclick="fecharCofre()">&times;</button>
+                <h3 style="color: var(--primary); font-size: 1rem;">📊 Detalhamento de Faturamento & Comissões por Quiosque</h3>
+                <button class="close-btn" onclick="fecharModalFaturamentoQuiosques()">&times;</button>
             </div>
-            <p style="font-size: 0.8rem; color: #555; margin-bottom: 15px;">Digite a senha de 4 dígitos fornecida pelo quiosque:</p>
-            <div class="form-group">
-                <input type="password" id="cofreSenhaInput" maxlength="4" placeholder="••••" style="text-align: center; font-size: 1.5rem; letter-spacing: 10px; width: 160px; margin: 0 auto; display: block;">
-            </div>
-            <button class="btn-submit" style="background: var(--accent); max-width: 200px; margin: 10px auto;" onclick="tentarAbrirCofre()">Abrir Cofre 🔓</button>
-            <div id="cofreResultadoBox" style="display: none; margin-top: 15px; background: #E8F5E9; border: 1px solid #C8E6C9; padding: 15px; border-radius: 8px;">
-                <h4 style="color: var(--primary); font-size: 0.95rem; margin-bottom: 5px;">🎉 Cofre Aberto!</h4>
-                <p id="cofrePremioTexto" style="font-size: 0.85rem; color: #333; font-weight: bold;"></p>
-            </div>
+            <p style="font-size: 0.75rem; color: #666; margin-bottom: 10px;">Valores brutos semanais/mensais e comissões detalhadas por quiosque, ambulante e vendedor:</p>
+            <div id="detalhesQuiosquesComissaoContainer" style="max-height: 300px; overflow-y: auto;"></div>
+            <button class="btn-submit" style="margin-top: 10px; background: #757575;" onclick="fecharModalFaturamentoQuiosques()">Fechar</button>
         </div>
     </div>
 
-    <!-- MODAL SOCIAL -->
+    <!-- MODAL DE REDES SOCIAIS -->
     <div id="socialModal" class="modal">
-        <div class="modal-content" style="height: 80vh; display: flex; flex-direction: column;">
+        <div class="modal-content" style="max-width: 450px; height: 80vh; display: flex; flex-direction: column;">
             <div class="modal-header">
-                <h3 id="socialModalTitle" style="font-size: 0.9rem; color: var(--secondary);">Rede Social</h3>
+                <h3 id="socialModalTitle" style="color: var(--secondary);">Rede Social</h3>
                 <button class="close-btn" onclick="fecharSocial()">&times;</button>
             </div>
-            <div id="socialContainer" style="flex: 1; background: #eee; border-radius: 6px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px;">
-                <p style="font-size: 0.85rem; color: #666;">Carregando...</p>
+            <div id="socialContainer" style="flex: 1; width: 100%; height: 100%; background: #000; border-radius: 6px; overflow: hidden;"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DO COFRE -->
+    <div id="cofreModal" class="modal">
+        <div class="modal-content" style="text-align: center;">
+            <h3 style="color: #FF6F00; margin-bottom: 10px;">🔓 Desbloquear Mini Cofre Fidelidade</h3>
+            <p style="font-size: 0.8rem; margin-bottom: 15px;">Digite a senha de 4 dígitos fornecida pelo quiosque:</p>
+            <div class="form-group"><input type="password" id="cofreSenhaInput" maxlength="4" style="text-align: center; font-size: 1.2rem; letter-spacing: 4px;" placeholder="****"></div>
+            <button class="btn-submit" style="background: #FFC107; color: #333;" onclick="tentarAbrirCofre()">Abrir Cofre 🎁</button>
+            <div id="cofreResultadoBox" style="display: none; margin-top: 15px; padding: 10px; background: #E8F5E9; border-radius: 6px; color: #2E7D32; font-weight: bold;">
+                <p id="cofrePremioTexto"></p>
+            </div>
+            <button onclick="fecharCofre()" style="margin-top: 15px; background: none; border: none; color: #666; cursor: pointer; font-size: 0.8rem;">Fechar</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE PAGAMENTO PIX BOLÃO COM QR CODE -->
+    <div id="modalPagamentoPixBolao" class="modal">
+        <div class="modal-content" style="text-align: center; max-width: 380px;">
+            <h3 style="color: #E65100; margin-bottom: 8px;">💳 Pagamento Pix - Mini Bolão</h3>
+            <p style="font-size: 0.75rem; color: #666; margin-bottom: 15px;">Escaneie o QR Code abaixo com seu aplicativo de pagamento para confirmar a aposta de R$ 3,00:</p>
+            
+            <div style="background: white; padding: 10px; display: inline-block; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=PixOrlaInteligenteBolaoR3" alt="QR Code Pix" style="width: 180px; height: 180px; display: block; margin: 0 auto;">
+            </div>
+
+            <p style="font-size: 0.7rem; color: #444; margin-bottom: 15px;">Chave Pix (CNPJ): <b>00.123.456/0001-99</b></p>
+            
+            <div style="display: flex; gap: 8px;">
+                <button class="btn-submit" style="background: #25D366; flex: 1;" onclick="confirmarPagamentoPixBolao()">Já Fiz o Pix ✅</button>
+                <button class="btn-submit" style="background: #D32F2F; flex: 1;" onclick="fecharModalPixBolao()">Cancelar ❌</button>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        let clienteAtual = null;
+        let quiosqueSelecionadoId = null;
+        let quiosqueUltimaCompraId = null;
+        let mediaStreamAtiva = null;
+        const SENHA_ADMIN_MESTRE = "00256383";
+
+        let produtosTemporariosCadastro = [];
+        let listaComprasUsuario = [];
+
+        let superOfertasData = [
+            { mercado: "Supermercado Extra", regiao: "Prainha / Asa Norte", gerente: "Roberto Carlos", endereco: "SGAN 602", siteUrl: "https://www.extra.com.br", produto: "Cerveja Heineken 350ml", preco: 5.49, compensa: true },
+            { mercado: "Supermercado Carrefour", regiao: "Pontão / Lago Sul", gerente: "Ana Souza", endereco: "SHIS QI 7/9", siteUrl: "https://www.carrefour.com.br", produto: "Arroz Tipo 1 (5kg)", preco: 23.90, compensa: true },
+            { mercado: "Supermercado Pão de Açúcar", regiao: "Lago Sul", gerente: "Marcos Paulo", endereco: "SHIS QI 21", siteUrl: "https://www.paodeacucar.com", produto: "Água Mineral 500ml", preco: 2.50, compensa: false }
+        ];
+
+        let adminConfig = {
+            pedidosRealizados: 0,
+            faturamentoQuiosques: 0.00,
+            arrecadacaoBolao: 0.00,
+            faturamentoFranquias: 3000.00,
+            itensVendidosHistorico: {}
+        };
+
+        let funcionariosRHData = [
+            { id: 1, nome: "João da Silva", cargo: "Gerente Operacional", endereco: "Asa Sul Q. 302", telefone: "61988887777", email: "joao@orla.com", salarioBruto: 3500.00, descontos: 350.00 },
+            { id: 2, nome: "Carla Mendes", cargo: "Contadora / RH", endereco: "Lago Norte QI 4", telefone: "61977776666", email: "carla@orla.com", salarioBruto: 4200.00, descontos: 420.00 }
+        ];
+
+        let franquiasData = [
+            { 
+                id: 1, 
+                nome: "Carlos Eduardo", 
+                cidade: "Brasília / DF", 
+                whatsapp: "5561999999999", 
+                status: "Ativa", 
+                faturamentoPraça: 4200.00,
+                historicoOperacoes: "Implantado com 4 quiosques na Orla do Paranoá.",
+                oQueDáCerto: "Entrega rápida via comanda digital e bolões.",
+                oQueMelhorar: "Expandir cobertura de quiosques noturnos."
+            },
+            { 
+                id: 2, 
+                nome: "Fernanda Lima", 
+                cidade: "São Paulo / SP", 
+                whatsapp: "5511988888888", 
+                status: "Ativa", 
+                faturamentoPraça: 8900.00,
+                historicoOperacoes: "Parceria consolidada com quiosques na represa.",
+                oQueDáCerto: "Eventos semanais e divulgação no Instagram.",
+                oQueMelhorar: "Agilizar o atendimento nos horários de pico."
+            }
+        ];
+
+        let quiosquesData = [
+            { 
+                id: 1, 
+                localizacao: 'prainha', 
+                nome: 'Quiosque da Prainha', 
+                responsavel: 'Seu Carlos', 
+                whatsapp: '5561999999999', 
+                pagamento: 'Pix / Dinheiro', 
+                logomarca: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=150',
+                senhaCofre: '1234',
+                premioCofre: '10% de desconto na próxima porção!',
+                faturamentoSemanal: 3500.00,
+                comissaoGerada: 350.00,
+                vendedorDestaque: 'Carlos (Ambulante)',
+                produtos: [
+                    { categoria: 'ESPETINHOS', nome: 'Carne de sol c/ queijo', preco: 10.00 },
+                    { categoria: 'BEBIDAS', nome: 'Heineken 330ml', preco: 10.00 },
+                    { categoria: 'BEBIDAS', nome: 'Água Mineral', preco: 5.00 }
+                ] 
+            },
+            { 
+                id: 2, 
+                localizacao: 'pontao', 
+                nome: 'Quiosque do Pontão Sul', 
+                responsavel: 'Mariana', 
+                whatsapp: '5561988888888', 
+                pagamento: 'Pix / Cartão', 
+                logomarca: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=150',
+                senhaCofre: '4321',
+                premioCofre: 'Ganhou uma Água de Coco grátis!',
+                faturamentoSemanal: 4800.00,
+                comissaoGerada: 480.00,
+                vendedorDestaque: 'Mariana (Gerente)',
+                produtos: [
+                    { categoria: 'BEBIDAS', nome: 'Água de Coco', preco: 9.00 },
+                    { categoria: 'ESPETINHOS', nome: 'Espetinho de Carne', preco: 12.00 }
+                ] 
+            }
+        ];
+
+        function alternarCamposLogin(tipo) {
+            if (tipo === 'admin') {
+                document.getElementById('blocoLoginUsuario').style.display = 'none';
+                document.getElementById('blocoLoginAdmin').style.display = 'block';
+            } else {
+                document.getElementById('blocoLoginUsuario').style.display = 'block';
+                document.getElementById('blocoLoginAdmin').style.display = 'none';
+            }
+        }
+
+        function entrarNaPlataforma() {
+            const tipoAcesso = document.getElementById('tipoAcessoSelect').value;
+
+            if (tipoAcesso === 'admin') {
+                const senha = document.getElementById('loginSenhaAdmin').value.trim();
+                if (senha === SENHA_ADMIN_MESTRE) {
+                    clienteAtual = { id: 0, nome: "Administrador Master", local: "prainha", selos: 0, indicacoesCompradoras: 0 };
+                    document.getElementById('navAdminBtn').style.display = 'block';
+                    document.getElementById('loginTelaInicio').style.display = 'none';
+                    mudarAba('admin');
+                    alert("🔒 Bem-vindo ao Painel Master Administrator, Contabilidade & RH!");
+                } else {
+                    alert("❌ Senha Master incorreta!");
+                }
+            } else {
+                const nome = document.getElementById('loginNome').value.trim();
+                const wpp = document.getElementById('loginWpp').value.trim();
+                const local = document.getElementById('loginLocal').value;
+
+                if (!nome || !wpp) {
+                    alert('Por favor, informe seu Nome e WhatsApp.');
+                    return;
+                }
+
+                clienteAtual = { id: Date.now(), nome, wpp, local, selos: 0, indicacoesCompradoras: 0 };
+                document.getElementById('clientNameDisplay').innerText = nome;
+                document.getElementById('fidelityCardBox').style.display = 'block';
+                
+                const linkInd = `https://orla-inteligente.app/convite?ref=${encodeURIComponent(nome)}`;
+                document.getElementById('linkIndicacaoInput').value = linkInd;
+
+                document.getElementById('navAdminBtn').style.display = 'none';
+
+                atualizarCartaoFidelidade();
+                atualizarPainelIndique();
+                mudarLocalizacao(local);
+
+                document.getElementById('loginTelaInicio').style.display = 'none';
+                mudarAba('vitrine');
+            }
+        }
+
+        function sairDaPagina() {
+            if (confirm("Deseja realmente sair e retornar à tela inicial de login?")) {
+                clienteAtual = null;
+                document.getElementById('loginNome').value = '';
+                document.getElementById('loginWpp').value = '';
+                document.getElementById('loginSenhaAdmin').value = '';
+                document.getElementById('tipoAcessoSelect').value = 'usuario';
+                alternarCamposLogin('usuario');
+                document.getElementById('loginTelaInicio').style.display = 'flex';
+            }
+        }
+
+        function mudarAba(abaId) {
+            if (abaId === 'admin') {
+                const navAdminBtn = document.getElementById('navAdminBtn');
+                if (navAdminBtn.style.display === 'none') {
+                    alert("❌ Acesso restrito apenas para o perfil Administrador.");
+                    return;
+                }
+            }
+
+            document.querySelectorAll('.aba-content').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active'));
+
+            const abaAlvo = document.getElementById(abaId === 'vitrineQuiosque' ? 'abaVitrineQuiosque' : `aba-${abaId}`);
+            if (abaAlvo) {
+                abaAlvo.style.display = 'block';
+            }
+
+            const botoesNav = document.querySelectorAll('.nav-tabs button');
+            botoesNav.forEach(btn => {
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(abaId)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            if (abaId === 'vitrine') {
+                renderizarStoriesQuiosques();
+            } else if (abaId === 'ranking') {
+                atualizarRankingTop10();
+            } else if (abaId === 'admin') {
+                atualizarPainelAdmin();
+            }
+        }
+
+        function adicionarProdutoTemporario() {
+            const nomeProd = document.getElementById('inputNomeProduto').value.trim();
+            const precoProd = parseFloat(document.getElementById('inputPrecoProduto').value);
+
+            if (!nomeProd || isNaN(precoProd)) {
+                alert("Informe o nome e um preço válido para o produto.");
+                return;
+            }
+
+            produtosTemporariosCadastro.push({ categoria: 'CARDÁPIO', nome: nomeProd, preco: precoProd });
+            document.getElementById('inputNomeProduto').value = '';
+            document.getElementById('inputPrecoProduto').value = '';
+            renderizarListaProdutosTemporarios();
+        }
+
+        function renderizarListaProdutosTemporarios() {
+            const container = document.getElementById('listaProdutosTemporariosContainer');
+            if (!container) return;
+
+            if (produtosTemporariosCadastro.length === 0) {
+                container.innerHTML = `<p style="font-size: 0.75rem; color: #888; text-align: center;">Nenhum produto adicionado ainda.</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            produtosTemporariosCadastro.forEach((p, index) => {
+                let div = document.createElement('div');
+                div.className = 'produto-card-adm';
+                div.innerHTML = `
+                    <span><b>${p.nome}</b> - R$ ${p.preco.toFixed(2).replace('.', ',')}</span>
+                    <div>
+                        <button onclick="editarProdutoTemporario(${index})" style="background: #0288D1; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 0.7rem; margin-right: 4px;">Editar</button>
+                        <button onclick="removerProdutoTemporario(${index})" style="background: #D32F2F; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 0.7rem;">Apagar</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function removerProdutoTemporario(index) {
+            produtosTemporariosCadastro.splice(index, 1);
+            renderizarListaProdutosTemporarios();
+        }
+
+        function editarProdutoTemporario(index) {
+            let p = produtosTemporariosCadastro[index];
+            document.getElementById('inputNomeProduto').value = p.nome;
+            document.getElementById('inputPrecoProduto').value = p.preco;
+            produtosTemporariosCadastro.splice(index, 1);
+            renderizarListaProdutosTemporarios();
+        }
+
+        function renderizarStoriesQuiosques() {
+            const storiesContainer = document.getElementById('storiesContainer');
+            const contadorStories = document.getElementById('contadorQuiosquesStories');
+            if (!storiesContainer) return;
+
+            contadorStories.innerText = quiosquesData.length;
+            storiesContainer.innerHTML = '';
+
+            quiosquesData.forEach(q => {
+                let logo = q.logomarca || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=150';
+                let div = document.createElement('div');
+                div.className = 'story-item';
+                div.onclick = () => abrirComandaQuiosque(q.id);
+                div.innerHTML = `
+                    <div class="story-circle">
+                        <img src="${logo}" alt="${q.nome}">
+                    </div>
+                    <span class="story-name">${q.nome}</span>
+                `;
+                storiesContainer.appendChild(div);
+            });
+        }
+
+        function mudarLocalizacao(polo) {
+            renderizarStoriesQuiosques();
+            const container = document.getElementById('listaQuiosquesContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const filtrados = quiosquesData.filter(q => q.localizacao === polo);
+            if (filtrados.length === 0) {
+                container.innerHTML = `<p style="font-size:0.8rem; text-align:center; color:#666;">Nenhum quiosque cadastrado neste polo.</p>`;
+                return;
+            }
+
+            filtrados.forEach(q => {
+                let div = document.createElement('div');
+                div.className = 'card quiosque-item';
+                div.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <img src="${q.logomarca || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=150'}" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                        <div>
+                            <h4 style="font-size: 0.9rem; color: var(--secondary);">${q.nome}</h4>
+                            <p style="font-size: 0.75rem; color: #555;">Resp: ${q.responsavel} | Pag: ${q.pagamento}</p>
+                        </div>
+                    </div>
+                    <button class="btn-submit" style="margin-top: 10px; padding: 6px; font-size: 0.75rem;" onclick="abrirComandaQuiosque(${q.id})">Abrir Comanda Digital 📋</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function abrirComandaQuiosque(quiosqueId) {
+            quiosqueSelecionadoId = quiosqueId;
+            const q = quiosquesData.find(item => item.id === quiosqueId);
+            if (!q) return;
+
+            document.getElementById('nomeQuiosqueComanda').innerText = q.nome;
+            if (clienteAtual && clienteAtual.name !== "Administrador Master") {
+                document.getElementById('comandaCliente').value = clienteAtual.nome;
+            }
+            document.getElementById('comandaMesa').value = '';
+            document.getElementById('comandaObservacoes').value = '';
+            
+            document.getElementById('statusRetornoPainel').style.display = 'none';
+            document.getElementById('contadorEsperaComanda').style.display = 'none';
+
+            const containerItens = document.getElementById('itensComandaContainer');
+            containerItens.innerHTML = '';
+
+            let categorias = {};
+            q.produtos.forEach(prod => {
+                let cat = prod.categoria || 'OUTROS';
+                if (!categorias[cat]) categorias[cat] = [];
+                categorias[cat].push(prod);
+            });
+
+            for (let cat in categorias) {
+                let headerBg = cat.includes('ESPET') ? '#ffecb3' : '#b2ebf2';
+                let headerColor = cat.includes('ESPET') ? '#8d6e63' : '#006064';
+
+                let catDiv = document.createElement('div');
+                catDiv.style.marginBottom = '15px';
+                catDiv.innerHTML = `<h4 style="background: ${headerBg}; padding: 5px 10px; margin: 0 0 8px 0; border-radius: 4px; color: ${headerColor}; font-size: 13px;">${cat}</h4>`;
+
+                categorias[cat].forEach(prod => {
+                    let itemRow = document.createElement('div');
+                    itemRow.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #eee; font-size: 13px;';
+                    
+                    itemRow.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                            <input type="checkbox" class="chk-item" value="${prod.nome}" data-preco="${prod.preco}" data-idprod="${prod.nome}" onchange="calcularTotalComanda()"> 
+                            <span>${prod.nome} (R$ ${prod.preco.toFixed(2).replace('.', ',')})</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <button type="button" onclick="alterarQtdItemComanda('${prod.nome}', -1)" style="background: #ddd; border: none; width: 22px; height: 22px; border-radius: 3px; font-weight: bold; cursor: pointer;">-</button>
+                            <span id="qtd-item-${prod.nome.replace(/\s+/g, '')}" style="font-size: 12px; font-weight: bold; width: 18px; text-align: center;">1</span>
+                            <button type="button" onclick="alterarQtdItemComanda('${prod.nome}', 1)" style="background: var(--primary); color: white; border: none; width: 22px; height: 22px; border-radius: 3px; font-weight: bold; cursor: pointer;">+</button>
+                            <button type="button" onclick="removerItemComandaElemento(this)" style="background: #D32F2F; color: white; border: none; padding: 2px 5px; border-radius: 3px; font-size: 10px; cursor: pointer; margin-left: 4px;" title="Excluir item">🗑️</button>
+                        </div>
+                    `;
+                    catDiv.appendChild(itemRow);
+                });
+
+                containerItens.appendChild(catDiv);
+            }
+
+            calcularTotalComanda();
+            mudarAba('vitrineQuiosque');
+        }
+
+        function alterarQtdItemComanda(nomeProd, delta) {
+            let key = `qtd-item-${nomeProd.replace(/\s+/g, '')}`;
+            let el = document.getElementById(key);
+            if (!el) return;
+            let qtdAtual = parseInt(el.innerText) || 1;
+            let novaQtd = qtdAtual + delta;
+            if (novaQtd < 1) novaQtd = 1;
+            el.innerText = novaQtd;
+            calcularTotalComanda();
+        }
+
+        function removerItemComandaElemento(btn) {
+            let row = btn.closest('div').parentNode;
+            if (row) row.remove();
+            calcularTotalComanda();
+        }
+
+        function calcularTotalComanda() {
+            let total = 0;
+            const checkboxes = document.querySelectorAll('.chk-item:checked');
+            checkboxes.forEach(chk => {
+                let preco = parseFloat(chk.getAttribute('data-preco')) || 0;
+                let nomeProd = chk.getAttribute('data-idprod');
+                let elQtd = document.getElementById(`qtd-item-${nomeProd.replace(/\s+/g, '')}`);
+                let qtd = elQtd ? parseInt(elQtd.innerText) || 1 : 1;
+                total += preco * qtd;
+            });
+            document.getElementById('valorTotalComanda').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        let timerEsperaInterval = null;
+
+        function enviarComandaParaQuiosque(destinoOpcao = 'whatsapp') {
+            const cliente = document.getElementById('comandaCliente').value.trim();
+            const mesa = document.getElementById('comandaMesa').value.trim();
+            const obs = document.getElementById('comandaObservacoes').value.trim();
+            const checkboxes = document.querySelectorAll('.chk-item:checked');
+
+            if (!cliente) {
+                alert("Por favor, preencha o nome do cliente.");
+                return;
+            }
+            if (checkboxes.length === 0) {
+                alert("Selecione pelo menos um item na comanda.");
+                return;
+            }
+
+            const q = quiosquesData.find(item => item.id === quiosqueSelecionadoId);
+            if (!q) return;
+
+            quiosqueUltimaCompraId = q.id;
+            let itensSelecionadosStr = [];
+            let valorTotal = 0;
+
+            checkboxes.forEach(chk => {
+                let preco = parseFloat(chk.getAttribute('data-preco')) || 0;
+                let nomeProd = chk.getAttribute('data-idprod');
+                let elQtd = document.getElementById(`qtd-item-${nomeProd.replace(/\s+/g, '')}`);
+                let qtd = elQtd ? parseInt(elQtd.innerText) || 1 : 1;
+                
+                valorTotal += preco * qtd;
+                itensSelecionadosStr.push(`${qtd}x ${nomeProd}`);
+                adminConfig.itensVendidosHistorico[nomeProd] = (adminConfig.itensVendidosHistorico[nomeProd] || 0) + qtd;
+                
+                // Adicionar automaticamente à lista de compras do comparador de mercados
+                listaComprasUsuario.push({ nome: `${nomeProd} (${q.nome})`, qtd: qtd });
+            });
+
+            adminConfig.pedidosRealizados += 1;
+            adminConfig.faturamentoQuiosques += valorTotal;
+
+            if (clienteAtual && clienteAtual.id !== 0) {
+                if (clienteAtual.selos < 6) {
+                    clienteAtual.selos += 1;
+                    atualizarCartaoFidelidade();
+                }
+                if (clienteAtual.indicacoesCompradoras < 3) {
+                    clienteAtual.indicacoesCompradoras += 1;
+                    atualizarPainelIndique();
+                }
+            }
+
+            const statusPainel = document.getElementById('statusRetornoPainel');
+            statusPainel.style.display = 'block';
+            statusPainel.innerText = "Seu pedido já foi entregue ao quiosque, aguarde....";
+
+            const contadorBox = document.getElementById('contadorEsperaComanda');
+            const tempoTexto = document.getElementById('tempoEsperaSegundos');
+            contadorBox.style.display = 'block';
+            
+            let segundosRestantes = 300; 
+            if (timerEsperaInterval) clearInterval(timerEsperaInterval);
+            
+            timerEsperaInterval = setInterval(() => {
+                segundosRestantes--;
+                let min = Math.floor(segundosRestantes / 60);
+                let seg = segundosRestantes % 60;
+                tempoTexto.innerText = `${min}:${seg < 10 ? '0' : ''}${seg}`;
+                if (segundosRestantes <= 0) {
+                    clearInterval(timerEsperaInterval);
+                    tempoTexto.innerText = "Pronto / Entregando!";
+                }
+            }, 1000);
+
+            let mensagemWhatsApp = `*COMANDA DIGITAL - ${q.nome}*%0aCliente: ${cliente}%0aMesa/Retirada: ${mesa || 'Não informada'}%0a%0a*Itens:*%0a- ${itensSelecionadosStr.join('%0a- ')}%0a%0aObs: ${obs || 'Nenhuma'}%0a*VALOR TOTAL: R$ ${valorTotal.toFixed(2).replace('.', ',')}*`;
+
+            if (destinoOpcao === 'comparador') {
+                alert(`✅ Itens da comanda montados e enviados com sucesso para a Lista Inteligente / Comparador de Mercados! Total: R$ ${valorTotal.toFixed(2).replace('.', ',')}`);
+                abrirModalSupermercados();
+                mudarAbaSupermercado('lista');
+            } else {
+                alert(`✅ Pedido gerado e enviado ao WhatsApp da Loja com sucesso!\n⭐️ +1 Selo adicionado ao seu cartão fidelidade!`);
+                window.open(`https://wa.me/${q.whatsapp}?text=${mensagemWhatsApp}`, '_blank');
+            }
+        }
+
+        function abrirModalSupermercados() {
+            document.getElementById('supermercadosModal').style.display = 'flex';
+            mudarAbaSupermercado('ofertas');
+        }
+
+        function fecharModalSupermercados() {
+            document.getElementById('supermercadosModal').style.display = 'none';
+        }
+
+        function mudarAbaSupermercado(subAba) {
+            document.getElementById('supSecOfertas').style.display = subAba === 'ofertas' ? 'block' : 'none';
+            document.getElementById('supSecComparativo').style.display = subAba === 'comparativo' ? 'block' : 'none';
+            document.getElementById('supSecLista').style.display = subAba === 'lista' ? 'block' : 'none';
+
+            document.getElementById('btnSupOfertas').style.background = subAba === 'ofertas' ? '#E65100' : '#ddd';
+            document.getElementById('btnSupOfertas').style.color = subAba === 'ofertas' ? 'white' : '#333';
+
+            document.getElementById('btnSupComparativo').style.background = subAba === 'comparativo' ? '#E65100' : '#ddd';
+            document.getElementById('btnSupComparativo').style.color = subAba === 'comparativo' ? 'white' : '#333';
+
+            document.getElementById('btnSupLista').style.background = subAba === 'lista' ? '#E65100' : '#ddd';
+            document.getElementById('btnSupLista').style.color = subAba === 'lista' ? 'white' : '#333';
+
+            if (subAba === 'ofertas') renderizarOfertasSupermercados();
+            if (subAba === 'comparativo') renderizarComparativoPrecos();
+            if (subAba === 'lista') renderizarListaComprasUsuario();
+        }
+
+        function cadastrarPromocaoSupermercado() {
+            const mercado = document.getElementById('supMercadoNome').value.trim();
+            const regiao = document.getElementById('supRegiaoNome').value.trim();
+            const gerente = document.getElementById('supGerenteNome').value.trim();
+            const endereco = document.getElementById('supEnderecoLoja').value.trim();
+            const siteUrl = document.getElementById('supSiteUrl').value.trim();
+            const produto = document.getElementById('supProdutoNome').value.trim();
+            const preco = parseFloat(document.getElementById('supProdutoPreco').value);
+            const compensa = document.getElementById('supCompensaSelect').value === 'sim';
+
+            if (!mercado || !produto || isNaN(preco)) {
+                alert("Preencha os campos obrigatórios do supermercado e da promoção.");
+                return;
+            }
+
+            superOfertasData.push({ mercado, regiao, gerente, endereco, siteUrl, produto, preco, compensa });
+            
+            document.getElementById('supMercadoNome').value = '';
+            document.getElementById('supRegiaoNome').value = '';
+            document.getElementById('supGerenteNome').value = '';
+            document.getElementById('supEnderecoLoja').value = '';
+            document.getElementById('supSiteUrl').value = '';
+            document.getElementById('supProdutoNome').value = '';
+            document.getElementById('supProdutoPreco').value = '';
+
+            renderizarOfertasSupermercados();
+            alert("🤖 Robô de Promoções: Entrada direta por nome do mercado executada! Oferta varrida e lançada com sucesso.");
+        }
+
+        function renderizarOfertasSupermercados() {
+            const container = document.getElementById('listaOfertasSupermercados');
+            if (!container) return;
+
+            if (superOfertasData.length === 0) {
+                container.innerHTML = `<p style="font-size:0.75rem; color:#888; text-align:center;">Nenhuma oferta encontrada pelo robô.</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            superOfertasData.forEach(o => {
+                let div = document.createElement('div');
+                div.style.cssText = 'background: #fafafa; padding: 8px; border-radius: 4px; margin-bottom: 6px; border: 1px solid #ddd; font-size: 0.8rem;';
+                div.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <b>${o.produto}</b><br>
+                            <small style="color: #666;">🏢 ${o.mercado} | 📍 ${o.regiao || 'Geral'}</small><br>
+                            <small style="color: #444;">Gerente: ${o.gerente || 'Não inf.'} | End: ${o.endereco || 'Não inf.'}</small>
+                        </div>
+                        <div style="text-align: right;">
+                            <strong style="color: #E65100; font-size: 0.9rem;">R$ ${o.preco.toFixed(2).replace('.', ',')}</strong><br>
+                            ${o.siteUrl ? `<a href="${o.siteUrl}" target="_blank" style="font-size: 0.7rem; color: #0288D1; text-decoration: underline;">Abrir Site 🔗</a>` : ''}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function pesquisarMercadosRegiao() {
+            const termo = document.getElementById('inputBuscaRegiaoSup').value.toLowerCase().trim();
+            const container = document.getElementById('tabelaComparativoContainer');
+            if (!container) return;
+
+            const filtrados = superOfertasData.filter(o => 
+                (o.regiao && o.regiao.toLowerCase().includes(termo)) || 
+                (o.mercado && o.mercado.toLowerCase().includes(termo)) ||
+                (o.produto && o.produto.toLowerCase().includes(termo))
+            );
+
+            renderizarComparativoPrecosFiltrados(filtrados);
+        }
+
+        function renderizarComparativoPrecos() {
+            renderizarComparativoPrecosFiltrados(superOfertasData);
+        }
+
+        function renderizarComparativoPrecosFiltrados(lista) {
+            const container = document.getElementById('tabelaComparativoContainer');
+            if (!container) return;
+
+            if (lista.length === 0) {
+                container.innerHTML = `<p style="font-size:0.75rem; color:#888; text-align:center;">Nenhum mercado ou promoção encontrado para esta pesquisa.</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            lista.forEach(o => {
+                let statusCompensa = o.compensa ? 
+                    `<span style="color: #2e7d32; font-weight: bold; background: #e8f5e9; padding: 2px 6px; border-radius: 3px;">✅ Compensa Comprar</span>` : 
+                    `<span style="color: #c62828; font-weight: bold; background: #ffebee; padding: 2px 6px; border-radius: 3px;">❌ Não Compensa</span>`;
+
+                let div = document.createElement('div');
+                div.style.cssText = 'background: #f1f8e9; padding: 10px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #c8e6c9; font-size: 0.8rem;';
+                div.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span>🏷️ <b>${o.produto}</b></span>
+                        <span style="color: #2e7d32; font-weight: bold; font-size: 0.9rem;">R$ ${o.preco.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <small style="color: #333;">🏢 ${o.mercado} (📍 ${o.regiao || 'Geral'})</small><br>
+                            ${statusCompensa}
+                        </div>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <button onclick="adicionarItemDaOfertaAoComparador('${o.produto}', ${o.preco})" style="background: #2e7d32; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">+ Adicionar à Lista</button>
+                            ${o.siteUrl ? `<a href="${o.siteUrl}" target="_blank" style="font-size: 0.75rem; color: #0288D1; font-weight: bold;">Visitar ➔</a>` : ''}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function adicionarItemDaOfertaAoComparador(nomeProd, precoProd) {
+            listaComprasUsuario.push({ nome: nomeProd, qtd: 1 });
+            alert(`✅ "${nomeProd}" adicionado com sucesso à sua Lista Inteligente de Compras!`);
+            mudarAbaSupermercado('lista');
+        }
+
+        function adicionarItemListaCompras() {
+            const item = document.getElementById('inputItemListaCompras').value.trim();
+            if (!item) return;
+
+            listaComprasUsuario.push({ nome: item, qtd: 1 });
+            document.getElementById('inputItemListaCompras').value = '';
+            renderizarListaComprasUsuario();
+        }
+
+        function alterarQtdListaCompras(index, delta) {
+            listaComprasUsuario[index].qtd += delta;
+            if (listaComprasUsuario[index].qtd < 1) listaComprasUsuario[index].qtd = 1;
+            renderizarListaComprasUsuario();
+        }
+
+        function excluirItemListaCompras(index) {
+            listaComprasUsuario.splice(index, 1);
+            renderizarListaComprasUsuario();
+        }
+
+        function renderizarListaComprasUsuario() {
+            const container = document.getElementById('containerItensListaCompras');
+            if (!container) return;
+
+            if (listaComprasUsuario.length === 0) {
+                container.innerHTML = `<p style="font-size: 0.75rem; color: #888; text-align: center;">Sua lista de compras inteligente está vazia.</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            let valorTotalEstimado = 0;
+
+            listaComprasUsuario.forEach((it, index) => {
+                let subtotal = it.qtd * 5.00;
+                valorTotalEstimado += subtotal;
+
+                let div = document.createElement('div');
+                div.style.cssText = 'display: flex; justify-content: space-between; padding: 6px; background: #fafafa; border-bottom: 1px solid #eee; font-size: 0.8rem; align-items: center;';
+                div.innerHTML = `
+                    <span><b>${it.nome}</b></span>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <button onclick="alterarQtdListaCompras(${index}, -1)" style="background: #ddd; border: none; width: 20px; height: 20px; border-radius: 3px; cursor: pointer; font-weight: bold;">-</button>
+                        <span>${it.qtd}</span>
+                        <button onclick="alterarQtdListaCompras(${index}, 1)" style="background: var(--primary); color: white; border: none; width: 20px; height: 20px; border-radius: 3px; cursor: pointer; font-weight: bold;">+</button>
+                        <button onclick="excluirItemListaCompras(${index})" style="background: #D32F2F; color: white; border: none; padding: 2px 5px; border-radius: 3px; cursor: pointer; font-size: 0.7rem;">Excluir</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            let contadorDiv = document.getElementById('contadorValoresListaCompras');
+            if (contadorDiv) {
+                contadorDiv.innerText = `Total Estimado de Itens: R$ ${valorTotalEstimado.toFixed(2).replace('.', ',')}`;
+            }
+        }
+
+        function compartilharListaComprasWpp() {
+            if (listaComprasUsuario.length === 0) {
+                alert("Sua lista está vazia.");
+                return;
+            }
+            let itensStr = listaComprasUsuario.map(i => `${i.qtd}x ${i.nome}`).join('\n- ');
+            const msg = encodeURIComponent(`🛒 *Lista de Compras Inteligente da Orla:*\n- ${itensStr}`);
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
+        }
+
+        function abrirModalFaturamentoQuiosques() {
+            const container = document.getElementById('detalhesQuiosquesComissaoContainer');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            quiosquesData.forEach(q => {
+                let div = document.createElement('div');
+                div.style.cssText = 'background: #f9f9f9; padding: 10px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #ddd; font-size: 0.8rem;';
+                div.innerHTML = `
+                    <b>🌴 ${q.nome}</b><br>
+                    <small style="color: #555;">Responsável/Vendedor: ${q.responsavel} | Destaque: ${q.vendedorDestaque || 'Geral'}</small><br>
+                    <div style="display: flex; justify-content: space-between; margin-top: 6px; font-weight: bold;">
+                        <span style="color: #0288D1;">Faturamento Bruto: R$ ${(q.faturamentoSemanal || 3500.00).toFixed(2)}</span>
+                        <span style="color: #2E7D32;">Comissão Gerada: R$ ${(q.comissaoGerada || 350.00).toFixed(2)}</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('modalFaturamentoQuiosques').style.display = 'flex';
+        }
+
+        function fecharModalFaturamentoQuiosques() {
+            document.getElementById('modalFaturamentoQuiosques').style.display = 'none';
+        }
+
+        function gerarTabelaPdfEmpresa() {
+            let conteudoTabela = `📄 [RELATÓRIO EM TABELA PDF - ORLA INTELIGENTE]\n\n`;
+            conteudoTabela += `EMPRESA: Marketplace da Orla & Master Franquias\n`;
+            conteudoTabela += `--------------------------------------------------\n`;
+            conteudoTabela += `ESTATÍSTICAS GERAIS:\n`;
+            conteudoTabela += `• Pedidos Realizados: ${adminConfig.pedidosRealizados}\n`;
+            conteudoTabela += `• Faturamento Quiosques: R$ ${adminConfig.faturamentoQuiosques.toFixed(2)}\n`;
+            conteudoTabela += `• Arrecadação Bolão: R$ ${adminConfig.arrecadacaoBolao.toFixed(2)}\n`;
+            conteudoTabela += `• Faturamento Franquias: R$ ${adminConfig.faturamentoFranquias.toFixed(2)}\n`;
+            conteudoTabela += `--------------------------------------------------\n`;
+            conteudoTabela += `RELAÇÃO DE QUIOSQUES:\n`;
+            quiosquesData.forEach(q => {
+                conteudoTabela += `- ${q.nome} (${q.localizacao}): Faturamento R$ ${(q.faturamentoSemanal || 3500.00).toFixed(2)} | Comissão R$ ${(q.comissaoGerada || 350.00).toFixed(2)}\n`;
+            });
+            conteudoTabela += `--------------------------------------------------\n`;
+            conteudoTabela += `Status: Arquivo PDF gerado e pronto para download e envio contábil!`;
+            
+            alert(conteudoTabela);
+        }
+
+        function enviarMensagemChat() {
+            const input = document.getElementById('chatInputMensagem');
+            const texto = input.value.trim();
+            if (!texto) return;
+
+            adicionarMensagemChatBox(clienteAtual ? clienteAtual.nome : "Visitante", texto, "sent", "text");
+            input.value = '';
+
+            setTimeout(() => {
+                adicionarMensagemChatBox("Orla Bot", "Recebido! Aproveite a orla com responsabilidade 🌊", "received", "text");
+            }, 1200);
+        }
+
+        function enviarMidiaChat(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const tipoMidia = file.type.startsWith('video') ? 'video' : 'image';
+                    adicionarMensagemChatBox(clienteAtual ? clienteAtual.nome : "Visitante", e.target.result, "sent", tipoMidia);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function adicionarMensagemChatBox(remetente, conteudo, tipoEnvio, tipoMidia) {
+            const chatBox = document.getElementById('chatBoxContainer');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-msg ${tipoEnvio}`;
+
+            let htmlConteudo = `<b>${remetente}:</b> `;
+            if (tipoMidia === 'text') {
+                htmlConteudo += `${conteudo}`;
+            } else if (tipoMidia === 'image') {
+                htmlConteudo += `<br><img src="${conteudo}">`;
+            } else if (tipoMidia === 'video') {
+                htmlConteudo += `<br><video src="${conteudo}" controls></video>`;
+            }
+
+            msgDiv.innerHTML = htmlConteudo;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function atualizarCartaoFidelidade() {
+            if (!clienteAtual) return;
+            const totalSelos = clienteAtual.selos;
+            const statusText = document.getElementById('fidelityStatusText');
+            if (statusText) statusText.innerText = `${totalSelos}/6 Selos`;
+
+            for (let i = 1; i <= 6; i++) {
+                const circle = document.getElementById(`stamp-${i}`);
+                if (circle) {
+                    if (i <= totalSelos) {
+                        circle.classList.add('active');
+                    } else {
+                        circle.classList.remove('active');
+                    }
+                }
+            }
+            const btnCofre = document.getElementById('btnAbrirCofreMain');
+            if (btnCofre) btnCofre.style.display = totalSelos >= 6 ? 'block' : 'none';
+        }
+
+        function atualizarPainelIndique() {
+            if (!clienteAtual) return;
+            const disp = document.getElementById('indIndicacoesDisplay');
+            if (disp) disp.innerText = `${clienteAtual.indicacoesCompradoras} / 3 Amigos`;
+        }
+
+        function compartilharIndicação() {
+            if (!clienteAtual) return;
+            const link = document.getElementById('linkIndicacaoInput').value;
+            if (clienteAtual.indicacoesCompradoras < 3) {
+                alert("⚠️ Regra de Indicação Restrita: É necessário completar 3 cadastros com compras efetivadas para liberar a premiação total.");
+            }
+            const msg = encodeURIComponent(`Fala, meu irmão! Tô usando o app da Orla para pedir nos quiosques e ganhar brindes. Entra pelo meu link para garantir um brinde: ${link}`);
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
+        }
+
+        function chamarMobilidade(servico) {
+            if (servico === 'uber') {
+                window.open('https://m.uber.com', '_blank');
+            } else if (servico === '99') {
+                window.open('https://99app.com', '_blank');
+            }
+        }
+
+        function abrirSocial(rede) {
+            const modal = document.getElementById('socialModal');
+            const title = document.getElementById('socialModalTitle');
+            const container = document.getElementById('socialContainer');
+            modal.style.display = 'flex';
+
+            if (rede === 'tiktok') {
+                title.innerText = '🎵 TikTok';
+                container.innerHTML = `<iframe src="https://www.tiktok.com" style="width:100%; height:100%; border:none;"></iframe>`;
+            } else if (rede === 'kwai') {
+                title.innerText = '⚡ Kwai';
+                container.innerHTML = `<iframe src="https://www.kwai.com" style="width:100%; height:100%; border:none;"></iframe>`;
+            } else if (rede === 'instagram') {
+                title.innerText = '📸 Instagram';
+                container.innerHTML = `<iframe src="https://www.instagram.com" style="width:100%; height:100%; border:none;"></iframe>`;
+            } else if (rede === 'whatsapp') {
+                title.innerText = '💬 WhatsApp';
+                window.open('https://wa.me/?text=Olá%20conheça%20o%20Marketplace%20da%20Orla', '_blank');
+                fecharSocial();
+            } else if (rede === 'telegram') {
+                title.innerText = '✈️ Telegram';
+                window.open('https://t.me', '_blank');
+                fecharSocial();
+            } else if (rede === 'fb') {
+                title.innerText = '👥 Facebook';
+                container.innerHTML = `<iframe src="https://m.facebook.com" style="width:100%; height:100%; border:none;"></iframe>`;
+            }
+        }
+
+        function fecharSocial() {
+            document.getElementById('socialModal').style.display = 'none';
+            document.getElementById('socialContainer').innerHTML = '';
+        }
+
+        let mediaRecorderLive = null;
+        let recordedBlobsLive = [];
+
+        async function iniciarTransmissaoReporter() {
+            const titulo = document.getElementById('reporterTitulo').value.trim();
+            if (!titulo) {
+                alert("Preencha o título da transmissão.");
+                return;
+            }
+
+            try {
+                mediaStreamAtiva = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                const videoElement = document.getElementById('liveVideoFeed');
+                videoElement.srcObject = mediaStreamAtiva;
+                videoElement.style.display = 'block';
+
+                document.getElementById('livePlaceholder').style.display = 'none';
+                document.getElementById('btnEncerrarLive').style.display = 'inline-block';
+                document.getElementById('btnPausarLive').style.display = 'inline-block';
+                document.getElementById('btnGravarLive').style.display = 'inline-block';
+
+                recordedBlobsLive = [];
+                mediaRecorderLive = new MediaRecorder(mediaStreamAtiva, { mimeType: 'video/webm' });
+                mediaRecorderLive.ondataavailable = (event) => {
+                    if (event.data && event.data.size > 0) {
+                        recordedBlobsLive.push(event.data);
+                    }
+                };
+                mediaRecorderLive.start(100);
+
+                alert(`🔴 Transmissão e Gravação iniciadas, ${clienteAtual.nome}! Você é o Repórter da Orla.`);
+            } catch (error) {
+                alert("Não foi possível acessar a câmera. Verifique as permissões do navegador.");
+            }
+        }
+
+        function pausarContinuarLive() {
+            if (!mediaRecorderLive) return;
+            const btnPausar = document.getElementById('btnPausarLive');
+            if (mediaRecorderLive.state === "recording") {
+                mediaRecorderLive.pause();
+                btnPausar.innerText = "▶️ Continuar";
+                alert("⏸️ Transmissão pausada.");
+            } else if (mediaRecorderLive.state === "paused") {
+                mediaRecorderLive.resume();
+                btnPausar.innerText = "⏸️ Pausar";
+                alert("▶️ Transmissão retomada.");
+            }
+        }
+
+        function encerrarTransmissaoReporter() {
+            if (mediaRecorderLive && mediaRecorderLive.state !== "inactive") {
+                mediaRecorderLive.stop();
+            }
+            if (mediaStreamAtiva) {
+                mediaStreamAtiva.getTracks().forEach(track => track.stop());
+                mediaStreamAtiva = null;
+            }
+            const videoElement = document.getElementById('liveVideoFeed');
+            videoElement.srcObject = null;
+            videoElement.style.display = 'none';
+
+            document.getElementById('livePlaceholder').style.display = 'flex';
+            document.getElementById('liveStatusText').innerText = 'Transmissão encerrada e salva!';
+            document.getElementById('btnEncerrarLive').style.display = 'none';
+            document.getElementById('btnPausarLive').style.display = 'none';
+            document.getElementById('btnGravarLive').style.display = 'none';
+
+            setTimeout(() => {
+                const blob = new Blob(recordedBlobsLive, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'reporter-orla-live.webm';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }, 100);
+            }, 500);
+
+            alert("⏹️ Live encerrada e arquivo de vídeo baixado com sucesso!");
+        }
+
+        function compartilharLiveRedesSociais(rede) {
+            const texto = encodeURIComponent("🎥 Acompanhe agora a transmissão ao vivo do Repórter da Orla! Venha conferir os bastidores em tempo real.");
+            if (rede === 'whatsapp') {
+                window.open(`https://wa.me/?text=${texto}`, '_blank');
+            } else if (rede === 'telegram') {
+                window.open(`https://t.me/share/url?url=https://orla-inteligente.app&text=${texto}`, '_blank');
+            } else if (rede === 'facebook') {
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=https://orla-inteligente.app`, '_blank');
+            }
+        }
+
+        function abrirModalCofre() {
+            document.getElementById('cofreSenhaInput').value = '';
+            document.getElementById('cofreResultadoBox').style.display = 'none';
+            document.getElementById('cofreModal').style.display = 'flex';
+        }
+
+        function fecharCofre() {
+            document.getElementById('cofreModal').style.display = 'none';
+        }
+
+        function tentarAbrirCofre() {
+            const senhaDigitada = document.getElementById('cofreSenhaInput').value.trim();
+            if (senhaDigitada.length !== 4) {
+                alert("A senha deve ter 4 dígitos.");
+                return;
+            }
+            const quiosqueAlvo = quiosquesData.find(item => item.id === quiosqueUltimaCompraId) || quiosquesData[0];
+
+            if (senhaDigitada === quiosqueAlvo.senhaCofre) {
+                document.getElementById('cofrePremioTexto').innerText = `${quiosqueAlvo.nome}: ${quiosqueAlvo.premioCofre}`;
+                document.getElementById('cofreResultadoBox').style.display = 'block';
+            } else {
+                alert("❌ Senha incorreta!");
+            }
+        }
+
+        function comprarBolao() {
+            const numeros = document.getElementById('bolaoNumeros').value.trim();
+            if (!numeros) {
+                alert("Digite os números do Mini Bolão.");
+                return;
+            }
+            document.getElementById('modalPagamentoPixBolao').style.display = 'flex';
+        }
+
+        function confirmarPagamentoPixBolao() {
+            adminConfig.arrecadacaoBolao += 3.00;
+            const poteDisplay = document.getElementById('poteBolaoDisplay');
+            if (poteDisplay) poteDisplay.innerText = `R$ ${adminConfig.arrecadacaoBolao.toFixed(2)}`;
+            
+            document.getElementById('modalPagamentoPixBolao').style.display = 'none';
+            document.getElementById('bolaoNumeros').value = '';
+            
+            document.getElementById('comprovanteApostaBox').style.display = 'block';
+            document.getElementById('comprovanteTextoInfo').innerText = `Aposta registrada com sucesso! Validade do bilhete: 24h (Reversão automática para o próximo bolão se não resgatado).`;
+            alert(`🎲 Pagamento via Pix confirmado! Comprovante emitido com sucesso.`);
+        }
+
+        function fecharModalPixBolao() {
+            document.getElementById('modalPagamentoPixBolao').style.display = 'none';
+        }
+
+        setInterval(() => {
+            const agora = new Date();
+            const dataSorteio = new Date(agora.getTime() + 86400000);
+            const elSorteio = document.getElementById('exibicaoAoVivoSorteio');
+            if (elSorteio) {
+                elSorteio.innerText = `Próximo Sorteio: ${dataSorteio.toLocaleDateString()} às 20:00`;
+            }
+        }, 1000);
+
+        function publicarMomentoLazer(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const container = document.getElementById('galeriaLazerContainer');
+                    let card = document.createElement('div');
+                    card.style.cssText = 'background: white; border-radius: 6px; padding: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center;';
+                    card.innerHTML = `
+                        <img src="${e.target.result}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 4px; margin-bottom: 5px;">
+                        <p style="font-size: 0.75rem; font-weight: bold; color: var(--secondary);">${clienteAtual ? clienteAtual.nome : 'Visitante'}</p>
+                    `;
+                    container.prepend(card);
+                    alert("📸 Foto publicada com sucesso no Momento Lazer!");
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function solicitarFranquia() {
+            const cidade = document.getElementById('franqCidade').value.trim();
+            const wpp = document.getElementById('franqWpp').value.trim();
+
+            if (!cidade || !wpp) {
+                alert("Preencha todos os campos para solicitar sua franquia.");
+                return;
+            }
+
+            franquiasData.push({
+                id: franquiasData.length + 1,
+                nome: clienteAtual ? clienteAtual.nome : "Parceiro",
+                cidade: cidade,
+                whatsapp: wpp,
+                status: "Ativa",
+                faturamentoPraça: 1500.00,
+                historicoOperacoes: "Nova franquia recém implantada na região.",
+                oQueDáCerto: "Estrutura inicial pronta para captação de quiosques.",
+                oQueMelhorar: "Intensificar divulgação comercial local."
+            });
+
+            adminConfig.faturamentoFranquias += 1500.00;
+
+            alert(`🚀 Solicitação e Setup registrados com sucesso!\nPraça de ${cidade} adicionada à rede master.`);
+            document.getElementById('franqCidade').value = '';
+            document.getElementById('franqWpp').value = '';
+        }
+
+        function salvarNovoQuiosque() {
+            const local = document.getElementById('novoLocalSelect').value;
+            const nome = document.getElementById('novoNome').value.trim();
+            const resp = document.getElementById('novoResp').value.trim();
+            const wpp = document.getElementById('novoWpp').value.trim();
+            const pag = document.getElementById('novoPag').value.trim();
+            const senhaCofre = document.getElementById('novoSenhaCofre').value.trim();
+            const premioCofre = document.getElementById('novoPremioCofre').value.trim();
+            const logoInput = document.getElementById('novoLogoInput');
+
+            if (!nome || !resp || !wpp || senhaCofre.length !== 4) {
+                alert('Preencha os campos obrigatórios e senha de cofre com 4 dígitos.');
+                return;
+            }
+
+            let logomarcaUrl = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=150';
+            if (logoInput.files && logoInput.files[0]) {
+                logomarcaUrl = URL.createObjectURL(logoInput.files[0]);
+            }
+
+            let quiosqueExistente = quiosquesData.find(q => q.nome.toLowerCase() === nome.toLowerCase());
+
+            if (quiosqueExistente) {
+                quiosqueExistente.responsavel = resp;
+                quiosqueExistente.whatsapp = wpp;
+                quiosqueExistente.pagamento = pag || quiosqueExistente.pagamento;
+                if (logoInput.files && logoInput.files[0]) quiosqueExistente.logomarca = logomarcaUrl;
+                quiosqueExistente.senhaCofre = senhaCofre;
+                quiosqueExistente.premioCofre = premioCofre || quiosqueExistente.premioCofre;
+                if (produtosTemporariosCadastro.length > 0) {
+                    quiosqueExistente.produtos = [...produtosTemporariosCadastro];
+                }
+                alert(`✅ Quiosque "${nome}" atualizado com sucesso com novos produtos!`);
+            } else {
+                let produtosFinais = produtosTemporariosCadastro.length > 0 ? [...produtosTemporariosCadastro] : [{ categoria: 'OUTROS', nome: 'Item Padrão', preco: 15.00 }];
+                const novoId = quiosquesData.length > 0 ? quiosquesData[quiosquesData.length - 1].id + 1 : 1;
+                
+                quiosquesData.push({
+                    id: novoId, localizacao: local, nome, responsavel: resp, whatsapp: wpp,
+                    pagamento: pag || 'Pix', logomarca: logomarcaUrl, senhaCofre, 
+                    premioCofre: premioCofre || 'Brinde especial!', produtos: produtosFinais,
+                    faturamentoSemanal: 3000.00, comissaoGerada: 300.00, vendedorDestaque: resp
+                });
+                alert('Novo quiosque cadastrado com sucesso!');
+            }
+
+            document.getElementById('novoNome').value = '';
+            document.getElementById('novoResp').value = '';
+            document.getElementById('novoWpp').value = '';
+            document.getElementById('novoPag').value = '';
+            document.getElementById('novoSenhaCofre').value = '';
+            document.getElementById('novoPremioCofre').value = '';
+            logoInput.value = '';
+            produtosTemporariosCadastro = [];
+            renderizarListaProdutosTemporarios();
+
+            mudarLocalizacao(local);
+        }
+
+        function atualizarRankingTop10() {
+            const container = document.getElementById('topTenContainer');
+            if (!container) return;
+            const sortedItens = Object.entries(adminConfig.itensVendidosHistorico)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            if (sortedItens.length === 0) {
+                container.innerHTML = `<p style="font-size: 0.8rem; color: #888; text-align: center;">Nenhum produto vendido.</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            sortedItens.forEach(([item, qtd], index) => {
+                let div = document.createElement('div');
+                div.className = 'ranking-item';
+                div.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <span class="ranking-pos">${index + 1}º</span>
+                        <span>${item}</span>
+                    </div>
+                    <strong style="color: var(--secondary);">${qtd} pedidos</strong>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function atualizarPainelAdmin() {
+            const faturamentoQuiosques = adminConfig.faturamentoQuiosques;
+            const arrecadacaoBolao = adminConfig.arrecadacaoBolao;
+            const faturamentoFranquias = adminConfig.faturamentoFranquias;
+            const faturamentoTotalConsolidado = faturamentoQuiosques + arrecadacaoBolao + faturamentoFranquias;
+
+            const elContadorFrq = document.getElementById('contadorFranqueadosAtivos');
+            const elFatQ = document.getElementById('adminFaturamentoQuiosques');
+            const elArrecB = document.getElementById('adminArrecadacaoBolao');
+            const elFatF = document.getElementById('adminFaturamentoFranquias');
+            const elFatT = document.getElementById('adminFaturamentoTotal');
+
+            if (elContadorFrq) elContadorFrq.innerText = franquiasData.length;
+            if (elFatQ) elFatQ.innerText = `R$ ${faturamentoQuiosques.toFixed(2)}`;
+            if (elArrecB) elArrecB.innerText = `R$ ${arrecadacaoBolao.toFixed(2)}`;
+            if (elFatF) elFatF.innerText = `R$ ${faturamentoFranquias.toFixed(2)}`;
+            if (elFatT) elFatT.innerText = `R$ ${faturamentoTotalConsolidado.toFixed(2)}`;
+
+            const franquiasContainer = document.getElementById('listaFranquiasAdminContainer');
+            if (franquiasContainer) {
+                if (franquiasData.length === 0) {
+                    franquiasContainer.innerHTML = `<p style="font-size: 0.75rem; color: #888;">Nenhuma franquia ativa.</p>`;
+                } else {
+                    franquiasContainer.innerHTML = '';
+                    franquiasData.forEach((f, idx) => {
+                        let row = document.createElement('div');
+                        row.className = 'franquia-row';
+                        row.innerHTML = `
+                            <div style="flex: 1;">
+                                <strong>🏢 ${f.cidade}</strong><br>
+                                <small style="color: #555;">Franqueado: ${f.nome} (${f.whatsapp})</small>
+                            </div>
+                            <div style="display: flex; gap: 5px; align-items: center;">
+                                <button onclick="excluirFranquiaMaster(${idx})" style="background: #D32F2F; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Excluir</button>
+                            </div>
+                        `;
+                        franquiasContainer.appendChild(row);
+                    });
+                }
+            }
+
+            renderizarEscritorioContabilRH();
+        }
+
+        function excluirFranquiaMaster(index) {
+            if (confirm("Deseja realmente excluir esta franquia da rede master?")) {
+                franquiasData.splice(index, 1);
+                atualizarPainelAdmin();
+                alert("Franquia excluída com sucesso.");
+            }
+        }
+
+        function renderizarEscritorioContabilRH() {
+            const containerFuncs = document.getElementById('listaFuncionariosRHContainer');
+            if (!containerFuncs) return;
+
+            if (funcionariosRHData.length === 0) {
+                containerFuncs.innerHTML = `<p style="font-size: 0.75rem; color: #888;">Nenhum funcionário ou sócio cadastrado.</p>`;
+            } else {
+                containerFuncs.innerHTML = '';
+                let totalBruto = 0;
+                let totalDescontos = 0;
+
+                funcionariosRHData.forEach((func, idx) => {
+                    totalBruto += func.salarioBruto;
+                    totalDescontos += func.descontos;
+                    let liquido = func.salarioBruto - func.descontos;
+
+                    let div = document.createElement('div');
+                    div.style.cssText = 'background: #f9f9f9; padding: 8px; border-radius: 4px; margin-bottom: 6px; border: 1px solid #ddd; font-size: 0.8rem;';
+                    div.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <b>${func.nome}</b> (${func.cargo})<br>
+                                <small style="color: #555;">📍 ${func.endereco} | 📞 ${func.telefone} | ✉️ ${func.email}</small><br>
+                                <small style="color: #2e7d32;">Bruto: R$ ${func.salarioBruto.toFixed(2)} | Descontos: R$ ${func.descontos.toFixed(2)} | <b>Líquido: R$ ${liquido.toFixed(2)}</b></small>
+                            </div>
+                            <div style="display: flex; gap: 4px; flex-direction: column;">
+                                <button onclick="emitirPdfValoresPagos(${func.id})" style="background: #2E7D32; color: white; border: none; padding: 3px 6px; border-radius: 3px; font-size: 0.7rem; cursor: pointer;">PDF Holerite</button>
+                                <button onclick="excluirFuncionarioRH(${idx})" style="background: #D32F2F; color: white; border: none; padding: 3px 6px; border-radius: 3px; font-size: 0.7rem; cursor: pointer;">Excluir</button>
+                            </div>
+                        </div>
+                    `;
+                    containerFuncs.appendChild(div);
+                });
+
+                let totalLiquido = totalBruto - totalDescontos;
+                document.getElementById('relatorioContabilResumo').innerHTML = `
+                    <b>Folha de Pagamento Consolidada:</b><br>
+                    • Total Bruto: R$ ${totalBruto.toFixed(2)}<br>
+                    • Total Descontos: R$ ${totalDescontos.toFixed(2)}<br>
+                    • <b>Total Líquido: R$ ${totalLiquido.toFixed(2)}</b>
+                `;
+            }
+        }
+
+        function cadastrarFuncionarioRH() {
+            const nome = document.getElementById('rhNome').value.trim();
+            const cargo = document.getElementById('rhCargo').value.trim();
+            const endereco = document.getElementById('rhEndereco').value.trim();
+            const telefone = document.getElementById('rhTelefone').value.trim();
+            const email = document.getElementById('rhEmail').value.trim();
+            const bruto = parseFloat(document.getElementById('rhBruto').value);
+            const descontos = parseFloat(document.getElementById('rhDescontos').value) || 0;
+
+            if (!nome || !cargo || isNaN(bruto)) {
+                alert("Preencha os campos obrigatórios do funcionário/sócio.");
+                return;
+            }
+
+            funcionariosRHData.push({
+                id: funcionariosRHData.length + 1,
+                nome, cargo, endereco, telefone, email, salarioBruto: bruto, descontos
+            });
+
+            document.getElementById('rhNome').value = '';
+            document.getElementById('rhCargo').value = '';
+            document.getElementById('rhEndereco').value = '';
+            document.getElementById('rhTelefone').value = '';
+            document.getElementById('rhEmail').value = '';
+            document.getElementById('rhBruto').value = '';
+            document.getElementById('rhDescontos').value = '';
+
+            renderizarEscritorioContabilRH();
+            alert("✅ Funcionário / Sócio cadastrado com sucesso!");
+        }
+
+        function excluirFuncionarioRH(index) {
+            if (confirm("Deseja excluir este registro de RH?")) {
+                funcionariosRHData.splice(index, 1);
+                renderizarEscritorioContabilRH();
+            }
+        }
+
+        function emitirPdfValoresPagos(funcId) {
+            const f = funcionariosRHData.find(item => item.id === funcId);
+            if (!f) return;
+            let liquido = f.salarioBruto - f.descontos;
+            alert(`📄 [EMISSÃO DE PDF DE VALORES PAGOS]\n\nColaborador: ${f.nome}\nCargo: ${f.cargo}\nSalário Bruto: R$ ${f.salarioBruto.toFixed(2)}\nDescontos: R$ ${f.descontos.toFixed(2)}\nValor Líquido Pago: R$ ${liquido.toFixed(2)}\n\n(PDF gerado e pronto para envio ao contador!)`);
+        }
+
+        function enviarRelatorioContadorWpp() {
+            let totalBruto = funcionariosRHData.reduce((acc, f) => acc + f.salarioBruto, 0);
+            let totalDescontos = funcionariosRHData.reduce((acc, f) => acc + f.descontos, 0);
+            let totalLiquido = totalBruto - totalDescontos;
+
+            let msg = encodeURIComponent(`📊 *RELATÓRIO CONTÁBIL & FOLHA DE PAGAMENTO*\n\n• Total Bruto: R$ ${totalBruto.toFixed(2)}\n• Descontos: R$ ${totalDescontos.toFixed(2)}\n• Líquido: R$ ${totalLiquido.toFixed(2)}\n\nEnviado diretamente ao escritório de contabilidade.`);
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
+        }
+    </script>
 </body>
 </html>
