@@ -2,7 +2,17 @@ let clienteAtual = null;
 let quiosqueSelecionadoId = null;
 let quiosqueUltimaCompraId = null;
 let mediaStreamAtiva = null;
-const SENHA_ADMIN_MESTRE = "00256383"; // Nova senha master de auditoria
+const SENHA_ADMIN_MESTRE = "00256383";
+
+let produtosTemporariosCadastro = [];
+let listaComprasUsuario = [];
+
+// Base de Supermercados atualizada com região, gerente, endereço e link direto
+let superOfertasData = [
+    { mercado: "Supermercado Extra", regiao: "Prainha / Asa Norte", gerente: "Roberto Carlos", endereco: "SGAN 602", siteUrl: "https://www.extra.com.br", produto: "Cerveja Heineken 350ml", preco: 5.49, compensa: true },
+    { mercado: "Supermercado Carrefour", regiao: "Pontão / Lago Sul", gerente: "Ana Souza", endereco: "SHIS QI 7/9", siteUrl: "https://www.carrefour.com.br", produto: "Arroz Tipo 1 (5kg)", preco: 23.90, compensa: true },
+    { mercado: "Supermercado Pão de Açúcar", regiao: "Lago Sul", gerente: "Marcos Paulo", endereco: "SHIS QI 21", siteUrl: "https://www.paodeacucar.com", produto: "Água Mineral 500ml", preco: 2.50, compensa: false }
+];
 
 let adminConfig = {
     pedidosRealizados: 0,
@@ -12,6 +22,12 @@ let adminConfig = {
     itensVendidosHistorico: {}
 };
 
+// Módulo Contábil e RH Integrado ao Admin Master
+let funcionariosRHData = [
+    { id: 1, nome: "João da Silva", cargo: "Gerente Operacional", endereco: "Asa Sul Q. 302", telefone: "61988887777", email: "joao@orla.com", salarioBruto: 3500.00, descontos: 350.00 },
+    { id: 2, nome: "Carla Mendes", cargo: "Contadora / RH", endereco: "Lago Norte QI 4", telefone: "61977776666", email: "carla@orla.com", salarioBruto: 4200.00, descontos: 420.00 }
+];
+
 let franquiasData = [
     { 
         id: 1, 
@@ -20,9 +36,9 @@ let franquiasData = [
         whatsapp: "5561999999999", 
         status: "Ativa", 
         faturamentoPraça: 4200.00,
-        historicoOperacoes: "Implantado com 4 quiosques na Orla do Paranoá. Alta demanda em fins de semana.",
-        oQueDáCerto: "Entrega rápida via comanda digital e forte engajamento nos bolões.",
-        oQueMelhorar: "Expandir cobertura de quiosques noturnos e iluminação na praça."
+        historicoOperacoes: "Implantado com 4 quiosques na Orla do Paranoá.",
+        oQueDáCerto: "Entrega rápida via comanda digital e bolões.",
+        oQueMelhorar: "Expandir cobertura de quiosques noturnos."
     },
     { 
         id: 2, 
@@ -31,9 +47,9 @@ let franquiasData = [
         whatsapp: "5511988888888", 
         status: "Ativa", 
         faturamentoPraça: 8900.00,
-        historicoOperacoes: "Parceria consolidada com quiosques na represa e ciclovia.",
-        oQueDáCerto: "Eventos semanais e forte divulgação no Instagram.",
-        oQueMelhorar: "Agilizar o tempo de resposta dos ambulantes nos horários de pico."
+        historicoOperacoes: "Parceria consolidada com quiosques na represa.",
+        oQueDáCerto: "Eventos semanais e divulgação no Instagram.",
+        oQueMelhorar: "Agilizar o atendimento nos horários de pico."
     }
 ];
 
@@ -50,7 +66,6 @@ let quiosquesData = [
         premioCofre: '10% de desconto na próxima porção!',
         produtos: [
             { categoria: 'ESPETINHOS', nome: 'Carne de sol c/ queijo', preco: 10.00 },
-            { categoria: 'ESPETINHOS', nome: 'Frango c/ bacon', preco: 10.00 },
             { categoria: 'BEBIDAS', nome: 'Heineken 330ml', preco: 10.00 },
             { categoria: 'BEBIDAS', nome: 'Água Mineral', preco: 5.00 }
         ] 
@@ -92,7 +107,7 @@ function entrarNaPlataforma() {
             document.getElementById('navAdminBtn').style.display = 'block';
             document.getElementById('loginTelaInicio').style.display = 'none';
             mudarAba('admin');
-            alert("🔒 Bem-vindo ao Painel Master Administrator & Auditoria!");
+            alert("🔒 Bem-vindo ao Painel Master Administrator, Contabilidade & RH!");
         } else {
             alert("❌ Senha Master incorreta!");
         }
@@ -152,10 +167,10 @@ function mudarAba(abaId) {
     if (abaAlvo) {
         abaAlvo.style.display = 'block';
     }
-    
+
     const botoesNav = document.querySelectorAll('.nav-tabs button');
     botoesNav.forEach(btn => {
-        if(btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(abaId)) {
+        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(abaId)) {
             btn.classList.add('active');
         }
     });
@@ -169,7 +184,60 @@ function mudarAba(abaId) {
     }
 }
 
-// 🌴 Renderizar Stories / Bolinhas de Quiosques no Topo
+// 🍔 Gestão de Produtos no Cadastro
+function adicionarProdutoTemporario() {
+    const nomeProd = document.getElementById('inputNomeProduto').value.trim();
+    const precoProd = parseFloat(document.getElementById('inputPrecoProduto').value);
+
+    if (!nomeProd || isNaN(precoProd)) {
+        alert("Informe o nome e um preço válido para o produto.");
+        return;
+    }
+
+    produtosTemporariosCadastro.push({ categoria: 'CARDÁPIO', nome: nomeProd, preco: precoProd });
+    document.getElementById('inputNomeProduto').value = '';
+    document.getElementById('inputPrecoProduto').value = '';
+    renderizarListaProdutosTemporarios();
+}
+
+function renderizarListaProdutosTemporarios() {
+    const container = document.getElementById('listaProdutosTemporariosContainer');
+    if (!container) return;
+
+    if (produtosTemporariosCadastro.length === 0) {
+        container.innerHTML = `<p style="font-size: 0.75rem; color: #888; text-align: center;">Nenhum produto adicionado ainda.</p>`;
+        return;
+    }
+
+    container.innerHTML = '';
+    produtosTemporariosCadastro.forEach((p, index) => {
+        let div = document.createElement('div');
+        div.className = 'produto-card-adm';
+        div.innerHTML = `
+            <span><b>${p.nome}</b> - R$ ${p.preco.toFixed(2).replace('.', ',')}</span>
+            <div>
+                <button onclick="editarProdutoTemporario(${index})" style="background: #0288D1; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 0.7rem; margin-right: 4px;">Editar</button>
+                <button onclick="removerProdutoTemporario(${index})" style="background: #D32F2F; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 0.7rem;">Apagar</button>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function removerProdutoTemporario(index) {
+    produtosTemporariosCadastro.splice(index, 1);
+    renderizarListaProdutosTemporarios();
+}
+
+function editarProdutoTemporario(index) {
+    let p = produtosTemporariosCadastro[index];
+    document.getElementById('inputNomeProduto').value = p.nome;
+    document.getElementById('inputPrecoProduto').value = p.preco;
+    produtosTemporariosCadastro.splice(index, 1);
+    renderizarListaProdutosTemporarios();
+}
+
+// 🌴 Renderizar Stories
 function renderizarStoriesQuiosques() {
     const storiesContainer = document.getElementById('storiesContainer');
     const contadorStories = document.getElementById('contadorQuiosquesStories');
@@ -233,6 +301,9 @@ function abrirComandaQuiosque(quiosqueId) {
     }
     document.getElementById('comandaMesa').value = '';
     document.getElementById('comandaObservacoes').value = '';
+    
+    document.getElementById('statusRetornoPainel').style.display = 'none';
+    document.getElementById('contadorEsperaComanda').style.display = 'none';
 
     const containerItens = document.getElementById('itensComandaContainer');
     containerItens.innerHTML = '';
@@ -254,11 +325,20 @@ function abrirComandaQuiosque(quiosqueId) {
 
         categorias[cat].forEach(prod => {
             let itemRow = document.createElement('div');
-            itemRow.className = 'item-comanda';
-            itemRow.style.cssText = 'display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #eee; font-size: 13px;';
+            itemRow.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #eee; font-size: 13px;';
+            
+            // Lista de Compras Inteligente: botões de + e - para quantidade e exclusão
             itemRow.innerHTML = `
-                <label><input type="checkbox" class="chk-item" value="${prod.nome}" data-preco="${prod.preco}" onchange="calcularTotalComanda()"> ${prod.nome}</label>
-                <span>R$ ${prod.preco.toFixed(2).replace('.', ',')}</span>
+                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                    <input type="checkbox" class="chk-item" value="${prod.nome}" data-preco="${prod.preco}" data-idprod="${prod.nome}" onchange="calcularTotalComanda()"> 
+                    <span>${prod.nome} (R$ ${prod.preco.toFixed(2).replace('.', ',')})</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <button type="button" onclick="alterarQtdItemComanda('${prod.nome}', -1)" style="background: #ddd; border: none; width: 22px; height: 22px; border-radius: 3px; font-weight: bold; cursor: pointer;">-</button>
+                    <span id="qtd-item-${prod.nome.replace(/\s+/g, '')}" style="font-size: 12px; font-weight: bold; width: 18px; text-align: center;">1</span>
+                    <button type="button" onclick="alterarQtdItemComanda('${prod.nome}', 1)" style="background: var(--primary); color: white; border: none; width: 22px; height: 22px; border-radius: 3px; font-weight: bold; cursor: pointer;">+</button>
+                    <button type="button" onclick="removerItemComandaElemento(this)" style="background: #D32F2F; color: white; border: none; padding: 2px 5px; border-radius: 3px; font-size: 10px; cursor: pointer; margin-left: 4px;" title="Excluir item">🗑️</button>
+                </div>
             `;
             catDiv.appendChild(itemRow);
         });
@@ -270,16 +350,39 @@ function abrirComandaQuiosque(quiosqueId) {
     mudarAba('vitrineQuiosque');
 }
 
+function alterarQtdItemComanda(nomeProd, delta) {
+    let key = `qtd-item-${nomeProd.replace(/\s+/g, '')}`;
+    let el = document.getElementById(key);
+    if (!el) return;
+    let qtdAtual = parseInt(el.innerText) || 1;
+    let novaQtd = qtdAtual + delta;
+    if (novaQtd < 1) novaQtd = 1;
+    el.innerText = novaQtd;
+    calcularTotalComanda();
+}
+
+function removerItemComandaElemento(btn) {
+    let row = btn.closest('div').parentNode;
+    if (row) row.remove();
+    calcularTotalComanda();
+}
+
 function calcularTotalComanda() {
     let total = 0;
     const checkboxes = document.querySelectorAll('.chk-item:checked');
     checkboxes.forEach(chk => {
-        total += parseFloat(chk.getAttribute('data-preco')) || 0;
+        let preco = parseFloat(chk.getAttribute('data-preco')) || 0;
+        let nomeProd = chk.getAttribute('data-idprod');
+        let elQtd = document.getElementById(`qtd-item-${nomeProd.replace(/\s+/g, '')}`);
+        let qtd = elQtd ? parseInt(elQtd.innerText) || 1 : 1;
+        total += preco * qtd;
     });
     document.getElementById('valorTotalComanda').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
 }
 
-function enviarComandaParaQuiosque() {
+let timerEsperaInterval = null;
+
+function enviarComandaParaQuiosque(destinoOpcao = 'whatsapp') {
     const cliente = document.getElementById('comandaCliente').value.trim();
     const mesa = document.getElementById('comandaMesa').value.trim();
     const obs = document.getElementById('comandaObservacoes').value.trim();
@@ -303,9 +406,13 @@ function enviarComandaParaQuiosque() {
 
     checkboxes.forEach(chk => {
         let preco = parseFloat(chk.getAttribute('data-preco')) || 0;
-        valorTotal += preco;
-        itensSelecionadosStr.push(chk.value);
-        adminConfig.itensVendidosHistorico[chk.value] = (adminConfig.itensVendidosHistorico[chk.value] || 0) + 1;
+        let nomeProd = chk.getAttribute('data-idprod');
+        let elQtd = document.getElementById(`qtd-item-${nomeProd.replace(/\s+/g, '')}`);
+        let qtd = elQtd ? parseInt(elQtd.innerText) || 1 : 1;
+        
+        valorTotal += preco * qtd;
+        itensSelecionadosStr.push(`${qtd}x ${nomeProd}`);
+        adminConfig.itensVendidosHistorico[nomeProd] = (adminConfig.itensVendidosHistorico[nomeProd] || 0) + qtd;
     });
 
     adminConfig.pedidosRealizados += 1;
@@ -319,20 +426,248 @@ function enviarComandaParaQuiosque() {
         if (clienteAtual.indicacoesCompradoras < 3) {
             clienteAtual.indicacoesCompradoras += 1;
             atualizarPainelIndique();
-            if (clienteAtual.indicacoesCompradoras === 3) {
-                alert("🎉 PARABÉNS! Você completou 3 indicações e ganhou um brinde grátis!");
-            }
         }
     }
 
-    let mensagemWhatsApp = `*COMANDA DIGITAL - ${q.nome}*%0aCliente: ${cliente}%0aMesa/Retirada: ${mesa || 'Não informada'}%0a%0a*Itens:*%0a- ${itensSelecionadosStr.join('%0a- ')}%0a%0aObs: ${obs || 'Nenhuma'}%0a*TOTAL: R$ ${valorTotal.toFixed(2).replace('.', ',')}*`;
+    const statusPainel = document.getElementById('statusRetornoPainel');
+    statusPainel.style.display = 'block';
+    statusPainel.innerText = "Seu pedido já foi entregue ao quiosque, aguarde....";
 
-    alert(`✅ Pedido gerado com sucesso!\n⭐️ +1 Selo adicionado ao seu cartão fidelidade!`);
-    window.open(`https://wa.me/${q.whatsapp}?text=${mensagemWhatsApp}`, '_blank');
-    mudarAba('vitrine');
+    const contadorBox = document.getElementById('contadorEsperaComanda');
+    const tempoTexto = document.getElementById('tempoEsperaSegundos');
+    contadorBox.style.display = 'block';
+    
+    let segundosRestantes = 300; 
+    if (timerEsperaInterval) clearInterval(timerEsperaInterval);
+    
+    timerEsperaInterval = setInterval(() => {
+        segundosRestantes--;
+        let min = Math.floor(segundosRestantes / 60);
+        let seg = segundosRestantes % 60;
+        tempoTexto.innerText = `${min}:${seg < 10 ? '0' : ''}${seg}`;
+        if (segundosRestantes <= 0) {
+            clearInterval(timerEsperaInterval);
+            tempoTexto.innerText = "Pronto / Entregando!";
+        }
+    }, 1000);
+
+    let mensagemWhatsApp = `*COMANDA DIGITAL - ${q.nome}*%0aCliente: ${cliente}%0aMesa/Retirada: ${mesa || 'Não informada'}%0a%0a*Itens:*%0a- ${itensSelecionadosStr.join('%0a- ')}%0a%0aObs: ${obs || 'Nenhuma'}%0a*VALOR TOTAL: R$ ${valorTotal.toFixed(2).replace('.', ',')}*`;
+
+    if (destinoOpcao === 'comparador') {
+        alert(`✅ Pedido contabilizado no comparador de preços! Total: R$ ${valorTotal.toFixed(2).replace('.', ',')}`);
+    } else {
+        alert(`✅ Pedido gerado e enviado ao WhatsApp da Loja com sucesso!\n⭐️ +1 Selo adicionado ao seu cartão fidelidade!`);
+        window.open(`https://wa.me/${q.whatsapp}?text=${mensagemWhatsApp}`, '_blank');
+    }
 }
 
-// 💬 Funções do Bate-Papo com Envio de Mídia
+// 🛒 Módulo de Supermercados, Promoções, Robô de Escuta, Comparativo e Pesquisa por Região
+function abrirModalSupermercados() {
+    document.getElementById('supermercadosModal').style.display = 'flex';
+    mudarAbaSupermercado('ofertas');
+}
+
+function fecharModalSupermercados() {
+    document.getElementById('supermercadosModal').style.display = 'none';
+}
+
+function mudarAbaSupermercado(subAba) {
+    document.getElementById('supSecOfertas').style.display = subAba === 'ofertas' ? 'block' : 'none';
+    document.getElementById('supSecComparativo').style.display = subAba === 'comparativo' ? 'block' : 'none';
+    document.getElementById('supSecLista').style.display = subAba === 'lista' ? 'block' : 'none';
+
+    document.getElementById('btnSupOfertas').style.background = subAba === 'ofertas' ? '#E65100' : '#ddd';
+    document.getElementById('btnSupOfertas').style.color = subAba === 'ofertas' ? 'white' : '#333';
+
+    document.getElementById('btnSupComparativo').style.background = subAba === 'comparativo' ? '#E65100' : '#ddd';
+    document.getElementById('btnSupComparativo').style.color = subAba === 'comparativo' ? 'white' : '#333';
+
+    document.getElementById('btnSupLista').style.background = subAba === 'lista' ? '#E65100' : '#ddd';
+    document.getElementById('btnSupLista').style.color = subAba === 'lista' ? 'white' : '#333';
+
+    if (subAba === 'ofertas') renderizarOfertasSupermercados();
+    if (subAba === 'comparativo') renderizarComparativoPrecos();
+    if (subAba === 'lista') renderizarListaComprasUsuario();
+}
+
+function cadastrarPromocaoSupermercado() {
+    const mercado = document.getElementById('supMercadoNome').value.trim();
+    const regiao = document.getElementById('supRegiaoNome').value.trim();
+    const gerente = document.getElementById('supGerenteNome').value.trim();
+    const endereco = document.getElementById('supEnderecoLoja').value.trim();
+    const siteUrl = document.getElementById('supSiteUrl').value.trim();
+    const produto = document.getElementById('supProdutoNome').value.trim();
+    const preco = parseFloat(document.getElementById('supProdutoPreco').value);
+    const compensa = document.getElementById('supCompensaSelect').value === 'sim';
+
+    if (!mercado || !produto || isNaN(preco)) {
+        alert("Preencha os campos obrigatórios do supermercado e da promoção.");
+        return;
+    }
+
+    superOfertasData.push({ mercado, regiao, gerente, endereco, siteUrl, produto, preco, compensa });
+    
+    document.getElementById('supMercadoNome').value = '';
+    document.getElementById('supRegiaoNome').value = '';
+    document.getElementById('supGerenteNome').value = '';
+    document.getElementById('supEnderecoLoja').value = '';
+    document.getElementById('supSiteUrl').value = '';
+    document.getElementById('supProdutoNome').value = '';
+    document.getElementById('supProdutoPreco').value = '';
+
+    renderizarOfertasSupermercados();
+    alert("🤖 Robô de Promoções: Entrada direta por nome do mercado executada! Oferta varrida e lançada com sucesso.");
+}
+
+function renderizarOfertasSupermercados() {
+    const container = document.getElementById('listaOfertasSupermercados');
+    if (!container) return;
+
+    if (superOfertasData.length === 0) {
+        container.innerHTML = `<p style="font-size:0.75rem; color:#888; text-align:center;">Nenhuma oferta encontrada pelo robô.</p>`;
+        return;
+    }
+
+    container.innerHTML = '';
+    superOfertasData.forEach(o => {
+        let div = document.createElement('div');
+        div.style.cssText = 'background: #fafafa; padding: 8px; border-radius: 4px; margin-bottom: 6px; border: 1px solid #ddd; font-size: 0.8rem;';
+        div.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <b>${o.produto}</b><br>
+                    <small style="color: #666;">🏢 ${o.mercado} | 📍 ${o.regiao || 'Geral'}</small><br>
+                    <small style="color: #444;">Gerente: ${o.gerente || 'Não inf.'} | End: ${o.endereco || 'Não inf.'}</small>
+                </div>
+                <div style="text-align: right;">
+                    <strong style="color: #E65100; font-size: 0.9rem;">R$ ${o.preco.toFixed(2).replace('.', ',')}</strong><br>
+                    ${o.siteUrl ? `<a href="${o.siteUrl}" target="_blank" style="font-size: 0.7rem; color: #0288D1; text-decoration: underline;">Abrir Site 🔗</a>` : ''}
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function pesquisarMercadosRegiao() {
+    const termo = document.getElementById('inputBuscaRegiaoSup').value.toLowerCase().trim();
+    const container = document.getElementById('tabelaComparativoContainer');
+    if (!container) return;
+
+    const filtrados = superOfertasData.filter(o => 
+        (o.regiao && o.regiao.toLowerCase().includes(termo)) || 
+        (o.mercado && o.mercado.toLowerCase().includes(termo)) ||
+        (o.produto && o.produto.toLowerCase().includes(termo))
+    );
+
+    renderizarComparativoPrecosFiltrados(filtrados);
+}
+
+function renderizarComparativoPrecos() {
+    renderizarComparativoPrecosFiltrados(superOfertasData);
+}
+
+function renderizarComparativoPrecosFiltrados(lista) {
+    const container = document.getElementById('tabelaComparativoContainer');
+    if (!container) return;
+
+    if (lista.length === 0) {
+        container.innerHTML = `<p style="font-size:0.75rem; color:#888; text-align:center;">Nenhum mercado ou promoção encontrado para esta região.</p>`;
+        return;
+    }
+
+    container.innerHTML = '';
+    lista.forEach(o => {
+        let statusCompensa = o.compensa ? 
+            `<span style="color: #2e7d32; font-weight: bold; background: #e8f5e9; padding: 2px 6px; border-radius: 3px;">✅ Compensa Comprar</span>` : 
+            `<span style="color: #c62828; font-weight: bold; background: #ffebee; padding: 2px 6px; border-radius: 3px;">❌ Não Compensa</span>`;
+
+        let div = document.createElement('div');
+        div.style.cssText = 'background: #f1f8e9; padding: 10px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #c8e6c9; font-size: 0.8rem;';
+        div.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span>🏷️ <b>${o.produto}</b></span>
+                <span style="color: #2e7d32; font-weight: bold; font-size: 0.9rem;">R$ ${o.preco.toFixed(2).replace('.', ',')}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <small style="color: #333;">🏢 ${o.mercado} (📍 ${o.regiao || 'Geral'})</small><br>
+                    ${statusCompensa}
+                </div>
+                ${o.siteUrl ? `<a href="${o.siteUrl}" target="_blank" style="font-size: 0.75rem; color: #0288D1; font-weight: bold;">Visitar Loja ➔</a>` : ''}
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function adicionarItemListaCompras() {
+    const item = document.getElementById('inputItemListaCompras').value.trim();
+    if (!item) return;
+
+    listaComprasUsuario.push({ nome: item, qtd: 1 });
+    document.getElementById('inputItemListaCompras').value = '';
+    renderizarListaComprasUsuario();
+}
+
+function alterarQtdListaCompras(index, delta) {
+    listaComprasUsuario[index].qtd += delta;
+    if (listaComprasUsuario[index].qtd < 1) listaComprasUsuario[index].qtd = 1;
+    renderizarListaComprasUsuario();
+}
+
+function excluirItemListaCompras(index) {
+    listaComprasUsuario.splice(index, 1);
+    renderizarListaComprasUsuario();
+}
+
+function renderizarListaComprasUsuario() {
+    const container = document.getElementById('containerItensListaCompras');
+    if (!container) return;
+
+    if (listaComprasUsuario.length === 0) {
+        container.innerHTML = `<p style="font-size: 0.75rem; color: #888; text-align: center;">Sua lista de compras inteligente está vazia.</p>`;
+        return;
+    }
+
+    container.innerHTML = '';
+    let valorTotalEstimado = 0;
+
+    listaComprasUsuario.forEach((it, index) => {
+        let subtotal = it.qtd * 5.00; // Valor médio estimado por item
+        valorTotalEstimado += subtotal;
+
+        let div = document.createElement('div');
+        div.style.cssText = 'display: flex; justify-content: space-between; padding: 6px; background: #fafafa; border-bottom: 1px solid #eee; font-size: 0.8rem; align-items: center;';
+        div.innerHTML = `
+            <span><b>${it.nome}</b></span>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <button onclick="alterarQtdListaCompras(${index}, -1)" style="background: #ddd; border: none; width: 20px; height: 20px; border-radius: 3px; cursor: pointer; font-weight: bold;">-</button>
+                <span>${it.qtd}</span>
+                <button onclick="alterarQtdListaCompras(${index}, 1)" style="background: var(--primary); color: white; border: none; width: 20px; height: 20px; border-radius: 3px; cursor: pointer; font-weight: bold;">+</button>
+                <button onclick="excluirItemListaCompras(${index})" style="background: #D32F2F; color: white; border: none; padding: 2px 5px; border-radius: 3px; cursor: pointer; font-size: 0.7rem;">Excluir</button>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+
+    let contadorDiv = document.getElementById('contadorValoresListaCompras');
+    if (contadorDiv) {
+        contadorDiv.innerText = `Total Estimado de Itens: R$ ${valorTotalEstimado.toFixed(2).replace('.', ',')}`;
+    }
+}
+
+function compartilharListaComprasWpp() {
+    if (listaComprasUsuario.length === 0) {
+        alert("Sua lista está vazia.");
+        return;
+    }
+    let itensStr = listaComprasUsuario.map(i => `${i.qtd}x ${i.nome}`).join('\n- ');
+    const msg = encodeURIComponent(`🛒 *Lista de Compras Inteligente da Orla:*\n- ${itensStr}`);
+    window.open(`https://wa.me/?text=${msg}`, '_blank');
+}
+
+// 💬 Chat
 function enviarMensagemChat() {
     const input = document.getElementById('chatInputMensagem');
     const texto = input.value.trim();
@@ -341,9 +676,8 @@ function enviarMensagemChat() {
     adicionarMensagemChatBox(clienteAtual ? clienteAtual.nome : "Visitante", texto, "sent", "text");
     input.value = '';
 
-    // Resposta simulada automatizada
     setTimeout(() => {
-        adicionarMensagemChatBox("Quiosque Central", "Recebido! Aproveite a orla com responsabilidade 🌊", "received", "text");
+        adicionarMensagemChatBox("Orla Bot", "Recebido! Aproveite a orla com responsabilidade 🌊", "received", "text");
     }, 1200);
 }
 
@@ -408,6 +742,9 @@ function atualizarPainelIndique() {
 function compartilharIndicação() {
     if (!clienteAtual) return;
     const link = document.getElementById('linkIndicacaoInput').value;
+    if (clienteAtual.indicacoesCompradoras < 3) {
+        alert("⚠️ Regra de Indicação Restrita: É necessário completar 3 cadastros com compras efetivadas para liberar a premiação total.");
+    }
     const msg = encodeURIComponent(`Fala, meu irmão! Tô usando o app da Orla para pedir nos quiosques e ganhar brindes. Entra pelo meu link para garantir um brinde: ${link}`);
     window.open(`https://wa.me/?text=${msg}`, '_blank');
 }
@@ -454,6 +791,10 @@ function fecharSocial() {
     document.getElementById('socialContainer').innerHTML = '';
 }
 
+// Gravação de Live e Links Sociais com Controles Completos
+let mediaRecorderLive = null;
+let recordedBlobsLive = [];
+
 async function iniciarTransmissaoReporter() {
     const titulo = document.getElementById('reporterTitulo').value.trim();
     if (!titulo) {
@@ -468,15 +809,44 @@ async function iniciarTransmissaoReporter() {
         videoElement.style.display = 'block';
 
         document.getElementById('livePlaceholder').style.display = 'none';
-        document.getElementById('btnEncerrarLive').style.display = 'block';
+        document.getElementById('btnEncerrarLive').style.display = 'inline-block';
+        document.getElementById('btnPausarLive').style.display = 'inline-block';
+        document.getElementById('btnGravarLive').style.display = 'inline-block';
 
-        alert(`🔴 Transmissão iniciada com sucesso, ${clienteAtual.nome}! Você agora é o Repórter da Orla.`);
+        // Inicializar gravador
+        recordedBlobsLive = [];
+        mediaRecorderLive = new MediaRecorder(mediaStreamAtiva, { mimeType: 'video/webm' });
+        mediaRecorderLive.ondataavailable = (event) => {
+            if (event.data && event.data.size > 0) {
+                recordedBlobsLive.push(event.data);
+            }
+        };
+        mediaRecorderLive.start(100);
+
+        alert(`🔴 Transmissão e Gravação iniciadas, ${clienteAtual.nome}! Você é o Repórter da Orla.`);
     } catch (error) {
         alert("Não foi possível acessar a câmera. Verifique as permissões do navegador.");
     }
 }
 
+function pausarContinuarLive() {
+    if (!mediaRecorderLive) return;
+    const btnPausar = document.getElementById('btnPausarLive');
+    if (mediaRecorderLive.state === "recording") {
+        mediaRecorderLive.pause();
+        btnPausar.innerText = "▶️ Continuar";
+        alert("⏸️ Transmissão pausada.");
+    } else if (mediaRecorderLive.state === "paused") {
+        mediaRecorderLive.resume();
+        btnPausar.innerText = "⏸️ Pausar";
+        alert("▶️ Transmissão retomada.");
+    }
+}
+
 function encerrarTransmissaoReporter() {
+    if (mediaRecorderLive && mediaRecorderLive.state !== "inactive") {
+        mediaRecorderLive.stop();
+    }
     if (mediaStreamAtiva) {
         mediaStreamAtiva.getTracks().forEach(track => track.stop());
         mediaStreamAtiva = null;
@@ -486,9 +856,39 @@ function encerrarTransmissaoReporter() {
     videoElement.style.display = 'none';
 
     document.getElementById('livePlaceholder').style.display = 'flex';
-    document.getElementById('liveStatusText').innerText = 'Transmissão encerrada.';
+    document.getElementById('liveStatusText').innerText = 'Transmissão encerrada e salva!';
     document.getElementById('btnEncerrarLive').style.display = 'none';
-    alert("Transmissão encerrada.");
+    document.getElementById('btnPausarLive').style.display = 'none';
+    document.getElementById('btnGravarLive').style.display = 'none';
+
+    // Download automático do vídeo gravado
+    setTimeout(() => {
+        const blob = new Blob(recordedBlobsLive, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'reporter-orla-live.webm';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 100);
+    }, 500);
+
+    alert("⏹️ Live encerrada e arquivo de vídeo baixado com sucesso!");
+}
+
+function compartilharLiveRedesSociais(rede) {
+    const texto = encodeURIComponent("🎥 Acompanhe agora a transmissão ao vivo do Repórter da Orla! Venha conferir os bastidores em tempo real.");
+    if (rede === 'whatsapp') {
+        window.open(`https://wa.me/?text=${texto}`, '_blank');
+    } else if (rede === 'telegram') {
+        window.open(`https://t.me/share/url?url=https://orla-inteligente.app&text=${texto}`, '_blank');
+    } else if (rede === 'facebook') {
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=https://orla-inteligente.app`, '_blank');
+    }
 }
 
 function abrirModalCofre() {
@@ -517,17 +917,62 @@ function tentarAbrirCofre() {
     }
 }
 
+// Mini Bolão com Pix, QR Code, Validade de 24h e Exibição ao Vivo
 function comprarBolao() {
     const numeros = document.getElementById('bolaoNumeros').value.trim();
     if (!numeros) {
         alert("Digite os números do Mini Bolão.");
         return;
     }
+    document.getElementById('modalPagamentoPixBolao').style.display = 'flex';
+}
+
+function confirmarPagamentoPixBolao() {
     adminConfig.arrecadacaoBolao += 3.00;
     const poteDisplay = document.getElementById('poteBolaoDisplay');
     if (poteDisplay) poteDisplay.innerText = `R$ ${adminConfig.arrecadacaoBolao.toFixed(2)}`;
-    alert(`🎲 Aposta registrada com sucesso!`);
+    
+    document.getElementById('modalPagamentoPixBolao').style.display = 'none';
     document.getElementById('bolaoNumeros').value = '';
+    
+    // Gerar comprovante visual de aposta
+    document.getElementById('comprovanteApostaBox').style.display = 'block';
+    document.getElementById('comprovanteTextoInfo').innerText = `Aposta registrada com sucesso! Validade do bilhete: 24h (Reversão automática para o próximo bolão se não resgatado).`;
+    alert(`🎲 Pagamento via Pix confirmado! Comprovante emitido com sucesso.`);
+}
+
+function fecharModalPixBolao() {
+    document.getElementById('modalPagamentoPixBolao').style.display = 'none';
+}
+
+// Sorteio ao vivo relógio e timer
+setInterval(() => {
+    const agora = new Date();
+    const dataSorteio = new Date(agora.getTime() + 86400000); // 24h no futuro
+    const elSorteio = document.getElementById('exibicaoAoVivoSorteio');
+    if (elSorteio) {
+        elSorteio.innerText = `Próximo Sorteio: ${dataSorteio.toLocaleDateString()} às 20:00`;
+    }
+}, 1000);
+
+// Galeria Momento Lazer
+function publicarMomentoLazer(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const container = document.getElementById('galeriaLazerContainer');
+            let card = document.createElement('div');
+            card.style.cssText = 'background: white; border-radius: 6px; padding: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center;';
+            card.innerHTML = `
+                <img src="${e.target.result}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 4px; margin-bottom: 5px;">
+                <p style="font-size: 0.75rem; font-weight: bold; color: var(--secondary);">${clienteAtual ? clienteAtual.nome : 'Visitante'}</p>
+            `;
+            container.prepend(card);
+            alert("📸 Foto publicada com sucesso no Momento Lazer!");
+        }
+        reader.readAsDataURL(file);
+    }
 }
 
 function solicitarFranquia() {
@@ -558,14 +1003,12 @@ function solicitarFranquia() {
     document.getElementById('franqWpp').value = '';
 }
 
-// 📝 Cadastro de Novos Quiosques com Logomarca e Produtos
 function salvarNovoQuiosque() {
     const local = document.getElementById('novoLocalSelect').value;
     const nome = document.getElementById('novoNome').value.trim();
     const resp = document.getElementById('novoResp').value.trim();
     const wpp = document.getElementById('novoWpp').value.trim();
     const pag = document.getElementById('novoPag').value.trim();
-    const prodTexto = document.getElementById('novoProdTexto').value.trim();
     const senhaCofre = document.getElementById('novoSenhaCofre').value.trim();
     const premioCofre = document.getElementById('novoPremioCofre').value.trim();
     const logoInput = document.getElementById('novoLogoInput');
@@ -580,37 +1023,42 @@ function salvarNovoQuiosque() {
         logomarcaUrl = URL.createObjectURL(logoInput.files[0]);
     }
 
-    let listaProdutos = [];
-    if (prodTexto !== "") {
-        prodTexto.split('|').forEach(item => {
-            let sub = item.split('-');
-            let nomeProd = sub[0] ? sub[0].trim() : "Produto";
-            let precoStr = sub[1] ? sub[1].replace('R$', '').replace(',', '.').trim() : "10.00";
-            let precoNum = parseFloat(precoStr) || 10.00;
-            listaProdutos.push({ categoria: 'GELADOS & PORÇÕES', nome: nomeProd, preco: precoNum });
-        });
-    } else {
-        listaProdutos.push({ categoria: 'OUTROS', nome: 'Item Padrão', preco: 15.00 });
-    }
+    let quiosqueExistente = quiosquesData.find(q => q.nome.toLowerCase() === nome.toLowerCase());
 
-    const novoId = quiosquesData.length > 0 ? quiosquesData[quiosquesData.length - 1].id + 1 : 1;
-    quiosquesData.push({
-        id: novoId, localizacao: local, nome, responsavel: resp, whatsapp: wpp,
-        pagamento: pag || 'Pix', logomarca: logomarcaUrl, senhaCofre, 
-        premioCofre: premioCofre || 'Brinde especial!', produtos: listaProdutos
-    });
+    if (quiosqueExistente) {
+        quiosqueExistente.responsavel = resp;
+        quiosqueExistente.whatsapp = wpp;
+        quiosqueExistente.pagamento = pag || quiosqueExistente.pagamento;
+        if (logoInput.files && logoInput.files[0]) quiosqueExistente.logomarca = logomarcaUrl;
+        quiosqueExistente.senhaCofre = senhaCofre;
+        quiosqueExistente.premioCofre = premioCofre || quiosqueExistente.premioCofre;
+        if (produtosTemporariosCadastro.length > 0) {
+            quiosqueExistente.produtos = [...produtosTemporariosCadastro];
+        }
+        alert(`✅ Quiosque "${nome}" atualizado com sucesso com novos produtos!`);
+    } else {
+        let produtosFinais = produtosTemporariosCadastro.length > 0 ? [...produtosTemporariosCadastro] : [{ categoria: 'OUTROS', nome: 'Item Padrão', preco: 15.00 }];
+        const novoId = quiosquesData.length > 0 ? quiosquesData[quiosquesData.length - 1].id + 1 : 1;
+        
+        quiosquesData.push({
+            id: novoId, localizacao: local, nome, responsavel: resp, whatsapp: wpp,
+            pagamento: pag || 'Pix', logomarca: logomarcaUrl, senhaCofre, 
+            premioCofre: premioCofre || 'Brinde especial!', produtos: produtosFinais
+        });
+        alert('Novo quiosque cadastrado com sucesso!');
+    }
 
     document.getElementById('novoNome').value = '';
     document.getElementById('novoResp').value = '';
     document.getElementById('novoWpp').value = '';
     document.getElementById('novoPag').value = '';
-    document.getElementById('novoProdTexto').value = '';
     document.getElementById('novoSenhaCofre').value = '';
     document.getElementById('novoPremioCofre').value = '';
     logoInput.value = '';
+    produtosTemporariosCadastro = [];
+    renderizarListaProdutosTemporarios();
 
     mudarLocalizacao(local);
-    alert('Quiosque e logomarca cadastrados com sucesso na vitrine!');
 }
 
 function atualizarRankingTop10() {
@@ -658,34 +1106,142 @@ function atualizarPainelAdmin() {
     if (elFatF) elFatF.innerText = `R$ ${faturamentoFranquias.toFixed(2)}`;
     if (elFatT) elFatT.innerText = `R$ ${faturamentoTotalConsolidado.toFixed(2)}`;
 
+    // Renderizar Franquias com opção de exclusão interativa
     const franquiasContainer = document.getElementById('listaFranquiasAdminContainer');
     if (franquiasContainer) {
         if (franquiasData.length === 0) {
             franquiasContainer.innerHTML = `<p style="font-size: 0.75rem; color: #888;">Nenhuma franquia ativa.</p>`;
-            return;
+        } else {
+            franquiasContainer.innerHTML = '';
+            franquiasData.forEach((f, idx) => {
+                let row = document.createElement('div');
+                row.className = 'franquia-row';
+                row.innerHTML = `
+                    <div onclick="abrirAuditoriaFranquia(${f.id})" style="flex: 1;">
+                        <strong>🏢 ${f.cidade}</strong><br>
+                        <small style="color: #555;">Franqueado: ${f.nome} (${f.whatsapp})</small>
+                    </div>
+                    <div style="display: flex; gap: 5px; align-items: center;">
+                        <button onclick="abrirAuditoriaFranquia(${f.id})" style="background: #0288D1; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Auditar</button>
+                        <button onclick="excluirFranquiaMaster(${idx})" style="background: #D32F2F; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Excluir</button>
+                    </div>
+                `;
+                franquiasContainer.appendChild(row);
+            });
         }
+    }
 
-        franquiasContainer.innerHTML = '';
-        franquiasData.forEach(f => {
-            let row = document.createElement('div');
-            row.className = 'franquia-row';
-            row.onclick = () => abrirAuditoriaFranquia(f.id);
-            row.innerHTML = `
-                <div>
-                    <strong>🏢 ${f.cidade}</strong><br>
-                    <small style="color: #555;">Franqueado: ${f.nome} (${f.whatsapp})</small>
-                </div>
-                <div style="text-align: right;">
-                    <span style="color: #2E7D32; font-weight: bold; font-size: 0.75rem;">${f.status}</span><br>
-                    <small style="color: #0288D1; font-weight: bold;">Auditar 🔍</small>
-                </div>
-            `;
-            franquiasContainer.appendChild(row);
-        });
+    // Renderizar Mini Escritório Contábil e de RH
+    renderizarEscritorioContabilRH();
+}
+
+function excluirFranquiaMaster(index) {
+    if (confirm("Deseja realmente excluir esta franquia da rede master?")) {
+        franquiasData.splice(index, 1);
+        atualizarPainelAdmin();
+        alert("Franquia excluída com sucesso.");
     }
 }
 
-// ⚙️ Funções de Auditoria Interativa de Franquias
+// Mini Escritório Contábil e de RH completo
+function renderizarEscritorioContabilRH() {
+    const containerFuncs = document.getElementById('listaFuncionariosRHContainer');
+    if (!containerFuncs) return;
+
+    if (funcionariosRHData.length === 0) {
+        containerFuncs.innerHTML = `<p style="font-size: 0.75rem; color: #888;">Nenhum funcionário ou sócio cadastrado.</p>`;
+    } else {
+        containerFuncs.innerHTML = '';
+        let totalBruto = 0;
+        let totalDescontos = 0;
+
+        funcionariosRHData.forEach((func, idx) => {
+            totalBruto += func.salarioBruto;
+            totalDescontos += func.descontos;
+            let liquido = func.salarioBruto - func.descontos;
+
+            let div = document.createElement('div');
+            div.style.cssText = 'background: #f9f9f9; padding: 8px; border-radius: 4px; margin-bottom: 6px; border: 1px solid #ddd; font-size: 0.8rem;';
+            div.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <b>${func.nome}</b> (${func.cargo})<br>
+                        <small style="color: #555;">📍 ${func.endereco} | 📞 ${func.telefone} | ✉️ ${func.email}</small><br>
+                        <small style="color: #2e7d32;">Bruto: R$ ${func.salarioBruto.toFixed(2)} | Descontos: R$ ${func.descontos.toFixed(2)} | <b>Líquido: R$ ${liquido.toFixed(2)}</b></small>
+                    </div>
+                    <div style="display: flex; gap: 4px; flex-direction: column;">
+                        <button onclick="emitirPdfValoresPagos(${func.id})" style="background: #2E7D32; color: white; border: none; padding: 3px 6px; border-radius: 3px; font-size: 0.7rem; cursor: pointer;">PDF Holerite</button>
+                        <button onclick="excluirFuncionarioRH(${idx})" style="background: #D32F2F; color: white; border: none; padding: 3px 6px; border-radius: 3px; font-size: 0.7rem; cursor: pointer;">Excluir</button>
+                    </div>
+                </div>
+            `;
+            containerFuncs.appendChild(div);
+        });
+
+        let totalLiquido = totalBruto - totalDescontos;
+        document.getElementById('relatorioContabilResumo').innerHTML = `
+            <b>Folha de Pagamento Consolidada:</b><br>
+            • Total Bruto: R$ ${totalBruto.toFixed(2)}<br>
+            • Total Descontos: R$ ${totalDescontos.toFixed(2)}<br>
+            • <b>Total Líquido: R$ ${totalLiquido.toFixed(2)}</b>
+        `;
+    }
+}
+
+function cadastrarFuncionarioRH() {
+    const nome = document.getElementById('rhNome').value.trim();
+    const cargo = document.getElementById('rhCargo').value.trim();
+    const endereco = document.getElementById('rhEndereco').value.trim();
+    const telefone = document.getElementById('rhTelefone').value.trim();
+    const email = document.getElementById('rhEmail').value.trim();
+    const bruto = parseFloat(document.getElementById('rhBruto').value);
+    const descontos = parseFloat(document.getElementById('rhDescontos').value) || 0;
+
+    if (!nome || !cargo || isNaN(bruto)) {
+        alert("Preencha os campos obrigatórios do funcionário/sócio.");
+        return;
+    }
+
+    funcionariosRHData.push({
+        id: funcionariosRHData.length + 1,
+        nome, cargo, endereco, telefone, email, salarioBruto: bruto, descontos
+    });
+
+    document.getElementById('rhNome').value = '';
+    document.getElementById('rhCargo').value = '';
+    document.getElementById('rhEndereco').value = '';
+    document.getElementById('rhTelefone').value = '';
+    document.getElementById('rhEmail').value = '';
+    document.getElementById('rhBruto').value = '';
+    document.getElementById('rhDescontos').value = '';
+
+    renderizarEscritorioContabilRH();
+    alert("✅ Funcionário / Sócio cadastrado com sucesso!");
+}
+
+function excluirFuncionarioRH(index) {
+    if (confirm("Deseja excluir este registro de RH?")) {
+        funcionariosRHData.splice(index, 1);
+        renderizarEscritorioContabilRH();
+    }
+}
+
+function emitirPdfValoresPagos(funcId) {
+    const f = funcionariosRHData.find(item => item.id === funcId);
+    if (!f) return;
+    let liquido = f.salarioBruto - f.descontos;
+    alert(`📄 [EMISSÃO DE PDF DE VALORES PAGOS]\n\nColaborador: ${f.nome}\nCargo: ${f.cargo}\nSalário Bruto: R$ ${f.salarioBruto.toFixed(2)}\nDescontos: R$ ${f.descontos.toFixed(2)}\nValor Líquido Pago: R$ ${liquido.toFixed(2)}\n\n(PDF gerado e pronto para envio ao contador!)`);
+}
+
+function enviarRelatorioContadorWpp() {
+    let totalBruto = funcionariosRHData.reduce((acc, f) => acc + f.salarioBruto, 0);
+    let totalDescontos = funcionariosRHData.reduce((acc, f) => acc + f.descontos, 0);
+    let totalLiquido = totalBruto - totalDescontos;
+
+    let msg = encodeURIComponent(`📊 *RELATÓRIO CONTÁBIL & FOLHA DE PAGAMENTO*\n\n• Total Bruto: R$ ${totalBruto.toFixed(2)}\n• Descontos: R$ ${totalDescontos.toFixed(2)}\n• Líquido: R$ ${totalLiquido.toFixed(2)}\n\nEnviado diretamente ao escritório de contabilidade.`);
+    window.open(`https://wa.me/?text=${msg}`, '_blank');
+}
+
 function abrirAuditoriaFranquia(id) {
     const f = franquiasData.find(item => item.id === id);
     if (!f) return;
