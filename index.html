@@ -4,6 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marketplace da Orla & Master Franquias</title>
+<style>
+.collapsible-header {
+    cursor: pointer;
+    padding: 10px;
+    background: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+.content-section {
+    display: none; /* Começa escondido */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+}
+/* Estilo para restaurar a cor do botão de login/submissão */
+.btn-submit, button[type="submit"], .login-modal button, #loginTelaInicio button {
+    background: #ff5722; /* Ou a cor de destaque do seu tema (ex: laranja/vermelho) */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+}
+.btn-submit:hover {
+    opacity: 0.9;
+}
     <style>
         :root {
             --primary: #0288D1;
@@ -133,11 +167,15 @@
     </div>
 
     <header>
-        <h1>🌅 Marketplace da Orla</h1>
-        <button class="btn-sair" onclick="sairDaPagina()">🚪 Sair / Trocar Conta</button>
-    </header>
+<!-- BOTÃO DE SUPORTE NO TOPO -->
+<a href="https://wa.me/5561993479723?text=Olá,%20preciso%20de%20suporte%20no%20Marketplace%20da%20Orla." target="_blank" style="background:#007bff; color:white; padding:5px 15px; border-radius:5px; text-decoration:none; font-size:0.8rem; margin-right:10px;">
+    🎧 Suporte / SAC
+</a>
+<h1>🌅 Marketplace da Orla</h1>
+<button class="btn-sair" onclick="sairDaPagina()">🚪 Sair / Trocar Conta</button>
+</header>
 
-    <div class="nav-tabs" id="navTabsContainer">
+<div class="nav-tabs" id="navTabsContainer">
         <button class="active" onclick="mudarAba('vitrine')">🛍️ Vitrine</button>
         <button onclick="mudarAba('chat')">💬 Bate-Papo</button>
         <button onclick="mudarAba('indique')">🎁 Indique</button>
@@ -162,15 +200,17 @@
         <div class="mobility-bar">
             <button class="social-btn btn-uber" onclick="chamarMobilidade('uber')">🚗 Chamar Uber</button>
             <button class="social-btn btn-99" onclick="chamarMobilidade('99')">🚕 Chamar 99</button>
+<!-- BOTÃO DO IFOOD -->
+<button onclick="abrirModalIfood()" style="background:#ea1d2c; color:white; border:none; padding:10px 15px; border-radius:6px; font-weight:bold; font-size:0.85rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+    🍔 iFood Delivery
+</button>
         </div>
 
         <div class="social-bar">
-            <button class="social-btn btn-tiktok" onclick="abrirSocial('tiktok')">🎵 TikTok</button>
             <button class="social-btn btn-kwai" onclick="abrirSocial('kwai')">⚡ Kwai</button>
-            <button class="social-btn btn-insta" onclick="abrirSocial('instagram')">📸 Instagram</button>
             <button class="social-btn btn-wpp" onclick="abrirSocial('whatsapp')">💬 WhatsApp</button>
             <button class="social-btn btn-tel" onclick="abrirSocial('telegram')">✈️ Telegram</button>
-            <button class="social-btn btn-fb" onclick="abrirSocial('fb')">👥 Facebook</button>
+            
         </div>
 
         <div id="aba-vitrine" class="aba-content">
@@ -203,17 +243,7 @@
                 <button id="btnAbrirCofreMain" style="display: none; width: 100%; margin-top: 10px; background: #FFC107; color: #333; border: none; padding: 6px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; cursor: pointer;" onclick="abrirModalCofre()">🔓 Abrir Mini Cofre!</button>
             </div>
 
-            <div class="card" style="background: #FFF8E1; border: 1px solid #FFE082;">
-                <h4 style="font-size: 0.9rem; color: #F57F17; margin-bottom: 6px;">📸 Galeria "Momento Lazer"</h4>
-                <p style="font-size: 0.75rem; color: #555; margin-bottom: 8px;">Espaço interativo para compartilhamento de fotos entre os usuários.</p>
-                <div class="form-group">
-                    <label style="font-size: 0.75rem;">Enviar Foto do seu Lazer:</label>
-                    <input type="file" accept="image/*" onchange="publicarMomentoLazer(this)" style="font-size: 0.75rem;">
-                </div>
-                <div id="galeriaLazerContainer" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; max-height: 200px; overflow-y: auto;"></div>
-            </div>
-
-            <div class="card">
+           <div class="card">
                 <label style="font-size: 0.75rem; font-weight: bold;">Selecione o Polo:</label>
                 <select id="poloSelect" onchange="mudarLocalizacao(this.value)" style="margin-top: 5px;">
                     <option value="prainha">Prainha do Lago</option>
@@ -223,7 +253,48 @@
 
             <div id="listaQuiosquesContainer"></div>
         </div>
+<!-- BLOCO REORGANIZADO PARA A VITRINE -->
+<div style="margin: 15px 0; display: flex; flex-direction: column; gap: 12px;">
 
+    <!-- 1. RADAR DA ORLA: ALERTA RELÂMPAGO (Compacto) -->
+    <div id="radarOrlaBanner" style="background: linear-gradient(135deg, #FF6F00, #E65100); color: white; padding: 10px 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+        <div>
+            <span style="background: rgba(255,255,255,0.25); padding: 2px 6px; border-radius: 10px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase;">⚡ Ao Vivo • Alerta Relâmpago</span>
+            <h4 id="radarTituloAlerta" style="margin: 4px 0 2px 0; font-size: 0.9rem;">Carregando última oportunidade na orla...</h4>
+            <p id="radarDescAlerta" style="margin: 0; font-size: 0.75rem; opacity: 0.9;">Quiosque parceiro liberou lote limitado.</p>
+        </div>
+        <button onclick="resgatarAlertaRadar()" style="background: white; color: #E65100; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.7rem; cursor: pointer; white-space: nowrap;">Aproveitar 🚀</button>
+    </div>
+
+    <!-- 2. COMANDA COLETIVA & DIVISÃO DE MESA -->
+    <div style="background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+        <h3 style="color: #333; font-size: 0.85rem; margin: 0 0 8px 0;">👥 Comanda Coletiva & Divisão por Mesa</h3>
+        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+            <input type="text" id="comandaItemNome" placeholder="Ex: Porção de Isca" style="flex: 2; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.75rem;">
+            <input type="number" step="0.01" id="comandaItemValor" placeholder="R$" style="flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.75rem;">
+            <button onclick="adicionarItemComanda()" style="background: #2e7d32; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; cursor: pointer;">Adicionar</button>
+        </div>
+        <div id="listaItensComanda" style="max-height: 80px; overflow-y: auto; font-size: 0.75rem; margin-bottom: 6px; border-bottom: 1px solid #eee; padding-bottom: 4px;">
+            <span style="color: #777;">Nenhum item lançado na mesa.</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: bold; font-size: 0.8rem;" id="totalComandaColetiva">Total: R$ 0,00</span>
+            <button onclick="compartilharComandaWhatsApp()" style="background: #25D366; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; cursor: pointer;">📲 Dividir via WhatsApp</button>
+        </div>
+    </div>
+
+    <!-- 3. GALERIA "MOMENTO LAZER" (Stories Simplificado) -->
+    <div style="background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+        <h3 style="color: #333; font-size: 0.85rem; margin: 0 0 4px 0;">📸 Galeria "Momento Lazer" Ao Vivo</h3>
+        <p style="font-size: 0.7rem; color: #666; margin-bottom: 8px;">Compartilhe o clima da orla em tempo real com a galera.</p>
+        <div style="display: flex; gap: 6px; margin-bottom: 6px;">
+            <input type="file" id="inputStoryLocal" accept="image/*" style="font-size: 0.65rem; flex: 1;">
+            <input type="text" id="legendaStory" placeholder="Legenda (Ex: Pôr do sol lindão!)" style="flex: 1.5; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.75rem;">
+        </div>
+        <button onclick="publicarStoryLocal()" style="background: #E65100; color: white; width: 100%; padding: 6px; border: none; border-radius: 4px; font-weight: bold; font-size: 0.75rem; cursor: pointer;">Publicar Story 🚀</button>
+    </div>
+
+</div>
         <div id="abaVitrineQuiosque" class="aba-content" style="display:none; padding: 0;">
             <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); border: 2px solid #ffcc00;">
                 
@@ -261,7 +332,7 @@
                 <div style="display: flex; flex-direction: column; gap: 8px; background: #fffde7; padding: 12px; border-radius: 8px; border: 1px solid #fbc02d; margin-bottom: 10px;">
                     <span style="font-size: 15px; font-weight: bold; color: #d32f2f;">TOTAL: <span id="valorTotalComanda">R$ 0,00</span></span>
                     <button onclick="enviarComandaParaQuiosque('whatsapp')" style="width: 100%; background: #25D366; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">📲 Enviar Pedido direto p/ WhatsApp do Quiosque</button>
-                    <button onclick="enviarComandaParaQuiosque('comparador')" style="width: 100%; background: #E65100; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">🛒 Direcionar ao Comparador / Lista de Mercado</button>
+                   
                 </div>
 
                 <div style="text-align: center;">
@@ -401,7 +472,10 @@
 
         <div id="aba-admin" class="aba-content" style="display: none;">
             <div class="card">
-                <h3 style="font-size: 0.95rem; color: var(--secondary); margin-bottom: 10px;">📊 Painel Master Admin, Contabilidade & RH</h3>
+                <div class="collapsible-header" onclick="toggleSection('painelAdminContent')" style="cursor: pointer; padding: 10px; background: #f1f1f1; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: var(--secondary);">
+    <span>📊 Painel Master Admin, Contabilidade & RH</span> <span>▼</span>
+</div>
+<div id="painelAdminContent" class="content-section" style="display: none;">
                 
                 <div style="background: #E8F5E9; padding: 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #C8E6C9; display: flex; justify-content: space-between; align-items: center;">
                     <div>
@@ -413,6 +487,10 @@
                 
                 <div style="background: #f9f9f9; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="abrirModalFaturamentoQuiosques()">
                     <div>
+<div style="background: #E1F5FE; padding: 10px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #B3E5FC;">
+    <span style="font-size: 0.75rem; color: #0277BD; font-weight: bold;">Faturamento Delivery (Parceiros):</span>
+    <h4 id="adminFaturamentoDelivery" style="color: #0277BD; margin: 0; font-size: 1.1rem;">R$ 0,00</h4>
+</div>
                         <span style="font-size: 0.75rem;">Faturamento Comercial (Quiosques) <small style="color: #0288D1;">(Clique para ver modal detalhado)</small>:</span>
                         <h4 id="adminFaturamentoQuiosques" style="color: var(--primary);">R$ 0,00</h4>
                     </div>
@@ -433,6 +511,21 @@
                 </div>
 
                 <button class="btn-submit" style="background: #C2185B; margin-bottom: 15px;" onclick="gerarTabelaPdfEmpresa()">📄 Gerar Tabela em PDF (Empresa & Dados)</button>
+<!-- RELATÓRIO DE DELIVERY NO ADMIN -->
+<div style="background:#fff; padding:15px; border-radius:8px; border:1px solid #ddd; margin-bottom:15px;">
+    <h4 style="margin-top:0; color:#333; font-size:0.9rem;">📦 Gerenciamento de Delivery (Parceiros)</h4>
+    <table id="tabelaParceiros" style="width:100%; border-collapse:collapse; font-size:0.75rem;">
+        <tr style="background:#f4f4f4;">
+            <th style="padding:6px; border:1px solid #ddd; text-align:left;">Estabelecimento</th>
+            <th style="padding:6px; border:1px solid #ddd; text-align:left;">Endereço</th>
+            <th style="padding:6px; border:1px solid #ddd; text-align:left;">Telefone</th>
+            <th style="padding:6px; border:1px solid #ddd; text-align:left;">Financeiro</th>
+            <th style="padding:6px; border:1px solid #ddd; text-align:center;">iFood</th>
+            <th style="padding:6px; border:1px solid #ddd; text-align:center;">Ações</th>
+        </tr>
+    </table>
+    <button onclick="adicionarParceiroManual()" style="margin-top:10px; background:#ea1d2c; color:white; border:none; padding:6px 12px; border-radius:4px; font-size:0.75rem; cursor:pointer; font-weight:bold;">+ Adicionar Parceiro Manualmente</button>
+</div>
 
                 <h4 style="font-size: 0.85rem; color: var(--secondary); margin-bottom: 8px;">🏢 Gestão & Exclusão de Franquias:</h4>
                 <div id="listaFranquiasAdminContainer" style="margin-bottom: 15px;"></div>
@@ -527,7 +620,10 @@
                 <div id="containerItensListaCompras" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px; border: 1px solid #eee; padding: 5px; border-radius: 4px;"></div>
                 <div style="display: flex; justify-content: space-between; align-items: center; background: #e8f5e9; padding: 8px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px;">
                     <strong id="contadorValoresListaCompras" style="color: #2e7d32;">Total Estimado de Itens: R$ 0,00</strong>
-                    <button onclick="compartilharListaComprasWpp()" style="background: #25D366; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; cursor: pointer;">Enviar p/ WhatsApp 📲</button>
+                    <div style="display:flex; gap:5px; margin-top:5px;">
+        <button onclick="mudarAbaSupermercado('comparar')" style="background:#E65100; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.75rem; cursor:pointer; flex:1;">📊 Comparar Preços</button>
+        <button onclick="compartilharListaComprasWpp()" style="background:#25D366; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.75rem; cursor:pointer; flex:1;">Enviar p/ WhatsApp 📱</button>
+    </div>
                 </div>
             </div>
 
@@ -582,7 +678,7 @@
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=PixOrlaInteligenteBolaoR3" alt="QR Code Pix" style="width: 180px; height: 180px; display: block; margin: 0 auto;">
             </div>
 
-            <p style="font-size: 0.7rem; color: #444; margin-bottom: 15px;">Chave Pix (CNPJ): <b>00.123.456/0001-99</b></p>
+            <p style="font-size: 0.7rem; color: #444; margin-bottom: 15px;">Chave Pix (CPF): <b>959.645.763-20</b></p>
             
             <div style="display: flex; gap: 8px;">
                 <button class="btn-submit" style="background: #25D366; flex: 1;" onclick="confirmarPagamentoPixBolao()">Já Fiz o Pix ✅</button>
@@ -1884,6 +1980,98 @@
             let msg = encodeURIComponent(`📊 *RELATÓRIO CONTÁBIL & FOLHA DE PAGAMENTO*\n\n• Total Bruto: R$ ${totalBruto.toFixed(2)}\n• Descontos: R$ ${totalDescontos.toFixed(2)}\n• Líquido: R$ ${totalLiquido.toFixed(2)}\n\nEnviado diretamente ao escritório de contabilidade.`);
             window.open(`https://wa.me/?text=${msg}`, '_blank');
         }
+function abrirModalIfood() {
+    document.getElementById('modalIfood').style.display = 'flex';
+}
+
+function fecharModalIfood() {
+    document.getElementById('modalIfood').style.display = 'none';
+}
     </script>
 </body>
+<!-- MODAL DE IFOOD ATUALIZADO COM FORMULÁRIO -->
+<div id="modalIfood" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:white; width:90%; max-width:480px; border-radius:12px; padding:20px; box-shadow:0 4px 20px rgba(0,0,0,0.25); position:relative;">
+        <button onclick="fecharModalIfood()" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
+
+        <h3 style="color:#ea1d2c; margin-top:0;">🍔 Cadastre seu Delivery</h3>
+        <p style="font-size:0.85rem; color:#555;">Preencha os dados abaixo e clique em enviar para falar com nossa equipe via WhatsApp:</p>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            <input type="text" id="ifoodNomeEstab" placeholder="Nome do Estabelecimento" style="padding:10px; border:1px solid #ddd; border-radius:6px;">
+            <input type="text" id="ifoodResponsavel" placeholder="Nome do Responsável" style="padding:10px; border:1px solid #ddd; border-radius:6px;">
+            <input type="text" id="ifoodWhatsApp" placeholder="Seu WhatsApp (DDD + Número)" style="padding:10px; border:1px solid #ddd; border-radius:6px;">
+            <input type="text" id="ifoodLink" placeholder="Link do seu iFood (Opcional)" style="padding:10px; border:1px solid #ddd; border-radius:6px;">
+            
+            <button onclick="enviarCadastroIfood()" style="background:#25D366; color:white; border:none; padding:12px; border-radius:6px; font-weight:bold; cursor:pointer;">Enviar Cadastro p/ WhatsApp 🚀</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function enviarCadastroIfood() {
+    const nomeEstab = document.getElementById('ifoodNomeEstab').value;
+    const responsavel = document.getElementById('ifoodResponsavel').value;
+    const wpp = document.getElementById('ifoodWhatsApp').value;
+    const link = document.getElementById('ifoodLink').value;
+    
+    // Mude o número abaixo para o seu número de WhatsApp com 55 na frente
+    const numeroSuporte = "5561993479723"; 
+    const mensagem = `Olá! Quero cadastrar meu delivery no Marketplace:
+    *Estabelecimento:* ${nomeEstab}
+    *Responsável:* ${responsavel}
+    *WhatsApp:* ${wpp}
+    *Link iFood:* ${link}`;
+    
+    const url = `https://wa.me/${numeroSuporte}?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, '_blank');
+}
+function adicionarParceiroManual() {
+    const nome = prompt("Nome do Estabelecimento:");
+    if (!nome) return;
+    const endereco = prompt("Endereço do Local:");
+    const telefone = prompt("Telefone / WhatsApp:");
+    const linkIfood = prompt("Link do iFood:");
+    const comissaoPorc = parseFloat(prompt("Porcentagem de Comissão (ex: 10 para 10%):") || 0);
+    const taxaFixa = parseFloat(prompt("Valor da Taxa Fixa em R$ (ex: 100.00):") || 0);
+
+    const tabela = document.getElementById('tabelaParceiros');
+    const novaLinha = tabela.insertRow();
+    
+    novaLinha.innerHTML = `
+        <td style="padding:6px; border:1px solid #ddd;">${nome}</td>
+        <td style="padding:6px; border:1px solid #ddd;">${endereco || 'Não informado'}</td>
+        <td style="padding:6px; border:1px solid #ddd;">${telefone || 'Não informado'}</td>
+        <td style="padding:6px; border:1px solid #ddd;">Comissão: ${comissaoPorc}% | Fixa: R$ ${taxaFixa.toFixed(2)}</td>
+        <td style="padding:6px; border:1px solid #ddd; text-align:center;">
+            <a href="${linkIfood}" target="_blank" style="text-decoration:none; color:blue; font-weight:bold;">Acessar</a>
+        </td>
+        <td style="padding:6px; border:1px solid #ddd; text-align:center;">
+            <button onclick="this.parentElement.parentElement.remove()" style="background:#ea1d2c; color:white; border:none; padding:2px 8px; border-radius:3px; cursor:pointer; font-weight:bold;">Excluir</button>
+        </td>
+    `;
+
+    // Inicializa a variável no objeto de config se não existir
+    if (typeof adminConfig !== 'undefined') {
+        if (adminConfig.faturamentoDelivery === undefined) adminConfig.faturamentoDelivery = 0;
+        adminConfig.faturamentoDelivery += taxaFixa;
+        atualizarPainelAdmin();
+    }
+    
+    alert("Parceiro " + nome + " cadastrado com sucesso no Delivery!");
+}
+// ... (suas outras funções anteriores, como a do iFood ou a de parceiros) ...
+
+// ---- FUNÇÃO PARA RECOLHER/MOSTRAR AS SEÇÕES (EFEITO ACORDEÃO) ----
+function toggleSection(id) {
+    const section = document.getElementById(id);
+    section.style.display = (section.style.display === "block") ? "none" : "block";
+}
+
+</script> <!-- Cole a função acima desta linha -->
+</script>
+        </div>
+
+    </div>
+</div>
 </html>
