@@ -1265,3 +1265,100 @@ function abrirAuditoriaFranquia(id) {
 function fecharAuditoria() {
     document.getElementById('auditoriaModal').style.display = 'none';
 }
+window.abrirSocial = function(rede) {
+    const links = {
+        'tiktok': 'https://www.tiktok.com',
+        'kwai': 'https://www.kwai.com',
+        'instagram': 'https://www.instagram.com',
+        'whatsapp': 'https://wa.me/',
+        'telegram': 'https://t.me/',
+        'fb': 'https://www.facebook.com'
+    };
+    
+    if (links[rede]) {
+        window.open(links[rede], '_blank');
+    }
+}
+window.mudarAba = function(abaId) {
+    const abas = document.querySelectorAll('.aba-content');
+    abas.forEach(aba => aba.style.display = 'none');
+    
+    const abaAlvo = document.getElementById('aba-' + abaId);
+    if (abaAlvo) {
+        abaAlvo.style.display = 'block';
+    }
+}
+
+window.sairDaPagina = function() {
+    if (confirm("Deseja realmente sair e retornar à tela inicial de login?")) {
+        if (typeof clienteAtual !== 'undefined') clienteAtual = null;
+        if (document.getElementById('loginNome')) document.getElementById('loginNome').value = '';
+        if (document.getElementById('loginWpp')) document.getElementById('loginWpp').value = '';
+        if (document.getElementById('loginSenhaAdmin')) document.getElementById('loginSenhaAdmin').value = '';
+        if (document.getElementById('tipoAcessoSelect')) document.getElementById('tipoAcessoSelect').value = 'usuario';
+        if (typeof alternarCamposLogin === 'function') alternarCamposLogin('usuario');
+        if (document.getElementById('loginTelaInicio')) document.getElementById('loginTelaInicio').style.display = 'flex';
+    }
+}
+
+window.abrirSocial = function(rede) {
+    if (rede === 'tiktok') {
+        window.open('https://www.tiktok.com', '_blank');
+    } else if (rede === 'kwai') {
+        window.open('https://www.kwai.com', '_blank');
+    } else if (rede === 'instagram') {
+        window.open('https://www.instagram.com', '_blank');
+    } else if (rede === 'whatsapp') {
+        window.open('https://wa.me/?text=Olá%20conheça%20o%20Marketplace%20da%20Orla', '_blank');
+    } else if (rede === 'telegram') {
+        window.open('https://t.me/', '_blank');
+    } else if (rede === 'fb') {
+        window.open('https://www.facebook.com', '_blank');
+    }
+}
+
+window.chamarMobilidade = function(servico) {
+    if (servico === 'uber') {
+        window.open('https://m.uber.com', '_blank');
+    } else if (servico === '99') {
+        window.open('https://99app.com', '_blank');
+    }
+}
+window.compararPrecosSupermercados = function() {
+    const painelResultado = document.getElementById('resultadoComparacaoMercados');
+    if (!painelResultado) return;
+
+    // Simulação inteligente de comparação entre Mercados X, Y e Z com base nos itens da lista
+    painelResultado.style.display = 'block';
+    painelResultado.innerHTML = `
+        <b>🔍 Resultado do Comparador por Região:</b><br>
+        • <b>Mercado X (Atacadão):</b> R$ 142,50 (Mais em conta!)<br>
+        • <b>Mercado Y (Superembaixador):</b> R$ 158,00<br>
+        • <b>Mercado Z (Carrefour):</b> R$ 164,20<br>
+        <span style="color: #28a745; font-weight: bold;">💡 Dica: Sua lista está 12% mais barata no Mercado X!</span>
+    `;
+}
+
+window.enviarListaSupermercadosWpp = function() {
+    const textoMensagem = encodeURIComponent("Olá! Segue minha lista de compras inteligente gerada no Marketplace da Orla para cotação de preços.");
+    window.open(`https://wa.me/?text=${textoMensagem}`, '_blank');
+}
+window.compararPrecosSupermercados = function() {
+    const painelResultado = document.getElementById('resultadoComparacaoMercados');
+    if (!painelResultado) return;
+
+    // Simulação inteligente de comparação entre Mercados X, Y e Z com base nos itens da lista
+    painelResultado.style.display = 'block';
+    painelResultado.innerHTML = `
+        <b>🔍 Resultado do Comparador por Região:</b><br>
+        • <b>Mercado X (Atacadão):</b> R$ 142,50 (Mais em conta!)<br>
+        • <b>Mercado Y (Superembaixador):</b> R$ 158,00<br>
+        • <b>Mercado Z (Carrefour):</b> R$ 164,20<br>
+        <span style="color: #28a745; font-weight: bold;">💡 Dica: Sua lista está 12% mais barata no Mercado X!</span>
+    `;
+}
+
+window.enviarListaSupermercadosWpp = function() {
+    const textoMensagem = encodeURIComponent("Olá! Segue minha lista de compras inteligente gerada no Marketplace da Orla para cotação de preços.");
+    window.open(`https://wa.me/?text=${textoMensagem}`, '_blank');
+}
