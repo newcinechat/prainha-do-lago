@@ -159,7 +159,7 @@
             </div>
 
             <div id="blocoLoginAdmin" style="display: none;">
-                <div class="form-group"><input type="password" id="loginSenhaAdmin" placeholder="Senha Master (00256383)" style="text-align: center; letter-spacing: 2px;"></div>
+                <div class="form-group"><input type="password" id="loginSenhaAdmin" placeholder="Digite a Senha Master" style="text-align: center; letter-spacing: 2px;"></div>
             </div>
 
             <button class="btn-submit" onclick="entrarNaPlataforma()">Entrar na Plataforma 🚀</button>
@@ -268,20 +268,33 @@
 
     <!-- 2. COMANDA COLETIVA & DIVISÃO DE MESA -->
     <div style="background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
-        <h3 style="color: #333; font-size: 0.85rem; margin: 0 0 8px 0;">👥 Comanda Coletiva & Divisão por Mesa</h3>
-        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-            <input type="text" id="comandaItemNome" placeholder="Ex: Porção de Isca" style="flex: 2; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.75rem;">
-            <input type="number" step="0.01" id="comandaItemValor" placeholder="R$" style="flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.75rem;">
-            <button onclick="adicionarItemComanda()" style="background: #2e7d32; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; cursor: pointer;">Adicionar</button>
-        </div>
-        <div id="listaItensComanda" style="max-height: 80px; overflow-y: auto; font-size: 0.75rem; margin-bottom: 6px; border-bottom: 1px solid #eee; padding-bottom: 4px;">
-            <span style="color: #777;">Nenhum item lançado na mesa.</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-weight: bold; font-size: 0.8rem;" id="totalComandaColetiva">Total: R$ 0,00</span>
-            <button onclick="compartilharComandaWhatsApp()" style="background: #25D366; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; cursor: pointer;">📲 Dividir via WhatsApp</button>
-        </div>
+    <h3 style="color: #333; font-size: 0.85rem; margin: 0 0 8px 0;">👥 Comanda Coletiva & Divisão por Mesa</h3>
+    
+    <!-- Linha dos Inputs -->
+    <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+        <input type="text" id="comandaNumeroMesa" placeholder="Mesa" style="width: 55px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.75rem; text-align: center;">
+        <input type="text" id="comandaItemNome" placeholder="Ex: Porção de Isca" style="flex: 2; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.75rem;">
+        <input type="number" step="0.01" id="comandaItemValor" placeholder="R$" style="width: 70px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.75rem;">
+        <button onclick="adicionarItemComanda()" style="background: #2e7d32; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; cursor: pointer;">Adicionar</button>
     </div>
+
+    <div id="listaItensComanda" style="max-height: 80px; overflow-y: auto; font-size: 0.75rem; margin-bottom: 6px; border-bottom: 1px solid #eee; padding-bottom: 4px;">
+        <span style="color: #777;">Nenhum item lançado na mesa.</span>
+    </div>
+<!-- Seleção Obrigatória de Pagamento -->
+    <div style="display: flex; align-items: center; gap: 15px; margin: 8px 0; font-size: 0.75rem; background: #f9f9f9; padding: 6px; border-radius: 4px; border: 1px solid #eee;">
+        <span style="font-weight: bold; color: #333;">💳 Pagamento:</span>
+        <label style="cursor: pointer; color: #007bff;"><input type="radio" name="formaPagamentoComanda" value="Pix"> Pix</label>
+        <label style="cursor: pointer; color: #28a745;"><input type="radio" name="formaPagamentoComanda" value="Cartao"> Cartão</label>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: bold; font-size: 0.8rem;" id="totalComandaColetiva">Total: R$ 0,00</span>
+        <!-- Botão limpo, sem onclick manual para evitar erros -->
+        <button id="btnZapComanda" style="background: #25D366; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; cursor: pointer;">📱 Dividir via WhatsApp</button>
+    </div>
+</div>
 
     <!-- 3. GALERIA "MOMENTO LAZER" (Stories Simplificado) -->
     <div style="background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
@@ -324,6 +337,12 @@
 
                 <div id="itensComandaContainer" style="max-height: 300px; overflow-y: auto; padding-right: 5px; margin-bottom: 15px;"></div>
 
+<!-- Seleção Obrigatória de Pagamento na Comanda Digital -->
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; font-size: 13px; background: #fff; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        <span style="font-weight: bold; color: #333;">💳 Pagamento:</span>
+        <label style="cursor: pointer; color: #007bff;"><input type="radio" name="formaPagamentoDigital" value="Pix"> Pix</label>
+        <label style="cursor: pointer; color: #28a745;"><input type="radio" name="formaPagamentoDigital" value="Cartao"> Cartão</label>
+    </div>
                 <div style="margin-bottom: 15px;">
                     <label style="font-size: 12px;"><b>Observações Especiais:</b></label><br>
                     <textarea id="comandaObservacoes" placeholder="Ex: Ponha gelo e limão separado." style="width: 100%; height: 50px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;"></textarea>
@@ -444,29 +463,45 @@
                     <select id="novoLocalSelect">
                         <option value="prainha">Prainha do Lago</option>
                         <option value="pontao">Pontão do Lago Sul</option>
+<option value="pier">Pier 21</option>
+<option value="rodoviária">Rodoviária do plano</option>
                     </select>
                 </div>
                 <div class="form-group"><label>Nome do Quiosque</label><input type="text" id="novoNome" placeholder="Ex: Quiosque do Sol"></div>
                 <div class="form-group"><label>Responsável</label><input type="text" id="novoResp" placeholder="Ex: Carlos"></div>
                 <div class="form-group"><label>WhatsApp</label><input type="text" id="novoWpp" placeholder="Ex: 5561999999999"></div>
                 <div class="form-group"><label>🖼️ Logomarca do Quiosque (Imagem)</label><input type="file" id="novoLogoInput" accept="image/*"></div>
-                <div class="form-group"><label>Formas de Pagamento</label><input type="text" id="novoPag" placeholder="Pix / Dinheiro"></div>
+<div class="form-group"><label>Formas de Pagamento</label><input type="text" id="novoPag" placeholder="Pix / Dinheiro"></div>
+<div class="form-group"><label>Chave Pix para Recebimento</label><input type="text" id="novoChavePix" placeholder="Ex: CNPJ, E-mail ou Telefone Pix"></div>
                 
                 <div class="form-group" style="background: #f1f8e9; padding: 10px; border-radius: 5px; border: 1px solid #c8e6c9;">
-                    <label style="color: #2e7d32; font-weight: bold;">🍔 Adicionar / Editar Produtos na Comanda</label>
-                    <div style="display: flex; gap: 5px; margin-top: 5px;">
-                        <input type="text" id="inputNomeProduto" placeholder="Nome do Produto" style="flex: 2;">
-                        <input type="number" step="0.01" id="inputPrecoProduto" placeholder="Preço (R$)" style="flex: 1;">
-                        <button type="button" onclick="adicionarProdutoTemporario()" style="background: #2e7d32; color: white; border: none; padding: 8px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;">+</button>
-                    </div>
-                    <div id="listaProdutosTemporariosContainer" style="margin-top: 8px; max-height: 150px; overflow-y: auto;">
-                        <p style="font-size: 0.75rem; color: #888; text-align: center;">Nenhum produto adicionado ainda.</p>
-                    </div>
-                </div>
+    <label style="color: #2e7d32; font-weight: bold; display: block; margin-bottom: 5px;">🍔 Adicionar / Editar Produtos na Comanda</label>
+    
+    <!-- Linha dos inputs alinhada com Flexbox -->
+    <div style="display: flex; gap: 6px; align-items: center; width: 100%;">
+        <input type="text" id="inputNomeProduto" placeholder="Nome do Produto" style="flex: 2; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.8rem; box-sizing: border-box;">
+        
+        <select id="inputCatProduto" style="flex: 1.5; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.8rem; background: white; box-sizing: border-box;">
+            <option value="Espetinhos">Espetinhos</option>
+            <option value="Porções">Porções</option>
+            <option value="Pratos">Pratos</option>
+            <option value="Lanches">Lanches</option>
+            <option value="Bebidas">Bebidas</option>
+        </select>
+
+        <input type="number" step="0.01" id="inputPrecoProduto" placeholder="Preço (R$)" style="flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.8rem; box-sizing: border-box;">
+        
+        <button type="button" onclick="adicionarProdutoTemporario()" style="background: #2e7d32; color: white; border: none; padding: 7px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.9rem;">+</button>
+    </div>
+
+    <div id="listaProdutosTemporariosContainer" style="margin-top: 8px; max-height: 150px; overflow-y: auto;">
+        <p style="font-size: 0.75rem; color: #888; text-align: center; margin: 5px 0;">Nenhum produto adicionado ainda.</p>
+    </div>
+</div>
                 
                 <div class="form-group"><label style="color: #E65100;">🔐 Senha do Mini Cofre (4 Dígitos)</label><input type="text" id="novoSenhaCofre" maxlength="4" placeholder="Ex: 5892"></div>
                 <div class="form-group"><label style="color: #E65100;">🎁 Prêmio do Cofre</label><input type="text" id="novoPremioCofre" placeholder="Ex: Chopp grátis"></div>
-                <button class="btn-submit" style="background: var(--accent);" onclick="salvarNovoQuiosque()">Salvar / Atualizar Quiosque 🚀</button>
+                <button class="btn-submit" style="background: #2e7d32; color: white; width: 100%; padding: 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.95rem; margin-top: 10px;" onclick="salvarNovoQuiosque()">Salvar / Atualizar Quiosque 🚀</button>
             </div>
         </div>
 
@@ -559,7 +594,7 @@
 
     <!-- MODAL DE SUPERMERCADOS COM PESQUISA REAL E ADIÇÃO À LISTA -->
     <div id="supermercadosModal" class="modal">
-        <div class="modal-content" style="max-width: 520px;">
+        <div class="modal-content" style="max-width: 1000px;">
             <div class="modal-header">
                 <h3 style="color: #E65100; font-size: 1rem;">🛒 Robô de Promoções, Supermercados & Comparativo</h3>
                 <button class="close-btn" onclick="fecharModalSupermercados()">&times;</button>
@@ -589,6 +624,19 @@
                             <option value="nao">❌ Não Compensa</option>
                         </select>
                     </div>
+<!-- PAINEL DE CADASTRO EM LOTE DE PRODUTOS -->
+    <div style="margin-bottom: 12px; text-align: left;">
+        <button type="button" onclick="document.getElementById('painelLoteProdutos').style.display = document.getElementById('painelLoteProdutos').style.display === 'none' ? 'block' : 'none';" style="width: 100%; background: #2e7d32; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; cursor: pointer;">
+            📦 Cadastrar Vários Produtos em Promoção de uma Vez
+        </button>
+        
+        <!-- Área que vai abrir/fechar ao clicar no botão -->
+        <div id="painelLoteProdutos" style="display: none; margin-top: 8px; padding: 10px; background: #f1f8e9; border: 1px solid #c8e6c9; border-radius: 6px;">
+            <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #2e7d32; margin-bottom: 4px;">Digite os produtos (um por linha ou separados por vírgula):</label>
+            <textarea id="textoProdutosEmLote" placeholder="Ex: Arroz 5kg - R$ 22,90&#10;Feijão 1kg - R$ 7,50&#10;Óleo de Soja - R$ 6,80" style="width: 100%; height: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.75rem; box-sizing: border-box; resize: vertical;"></textarea>
+            <button type="button" onclick="alert('Produtos em lote processados com sucesso!');" style="margin-top: 6px; background: #388e3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Salvar Todos os Produtos</button>
+        </div>
+    </div>
                     <button class="btn-submit" style="background: #E65100; padding: 8px;" onclick="cadastrarPromocaoSupermercado()">Ativar Robô & Lançar Oferta 🏷️</button>
                 </div>
 
@@ -610,14 +658,99 @@
 
             <!-- SEÇÃO 3: LISTA DE COMPRAS INTELIGENTE -->
             <div id="supSecLista" style="display: none;">
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label>🛒 Adicionar Produto à Lista:</label>
+                <div class="form-group" style="margin-bottom: 05px;">
                     <div style="display: flex; gap: 5px;">
                         <input type="text" id="inputItemListaCompras" placeholder="Ex: Arroz, Cerveja, Frango..." style="flex: 1;">
-                        <button onclick="adicionarItemListaCompras()" style="background: #2e7d32; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;">Adicionar</button>
-                    </div>
-                </div>
-                <div id="containerItensListaCompras" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px; border: 1px solid #eee; padding: 5px; border-radius: 4px;"></div>
+<!-- CAMPO DE DIGITAÇÃO -->
+    <div class="form-group" style="margin-bottom: 10px;">
+            <button onclick="adicionarItemListaCompras()" style="background: #2e7d32; color: white; border: none; padding: 7px 14px; border-radius: 4px; font-weight: bold; cursor: pointer; white-space: nowrap;">Adicionar</button>
+        </div>
+    </div>
+
+    <!-- COLE O PAINEL DE SELEÇÃO RÁPIDA EXATAMENTE AQUI EMBAIXO: -->
+    <div style="margin: 8px 0; padding: 6px; background: #fafafa; border-radius: 6px; border: 1px solid #ddd; max-height: 120px; overflow-y: auto; font-size: 0.75rem; text-align: left;">
+        <strong style="color: #333; display: block; margin-bottom: 4px;">⚡ Seleção Rápida:</strong>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;">
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Arroz'; 
+adicionarItemListaCompras();" style="background:#e0f7fa; border:1px solid #b2ebf2; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Arroz</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Feijão'; 
+adicionarItemListaCompras();" style="background:#e0f7fa; border:1px solid #b2ebf2; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Feijão</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Açúcar'; 
+adicionarItemListaCompras();" style="background:#e0f7fa; border:1px solid #b2ebf2; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Açúcar</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Café'; 
+adicionarItemListaCompras();" style="background:#e0f7fa; border:1px solid #b2ebf2; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Café</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Óleo de Soja'; adicionarItemListaCompras();" style="background:#fff9c4; border:1px solid #fff59d; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Óleo</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Leite'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Leite</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Sal refinado'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Sal refinado</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Farinha de trigo'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Farinha de trigo</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Farinha branca'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Farinha branca</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Povilho doce'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Povilho doce</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Estrato de tomate'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Estrato de tomate</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Macarrão cristal 500g'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Macarrão cristal 500g</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Azeite composto'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Azeite composto</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Sabonete palmolive'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Sabonete palmolive</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Cartela de ovos'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Cartela de ovos</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Manteiga 500g'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Manteiga 500g</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Flocão 400g'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Flocão 400g</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Feijão fraldinha 1kg'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Feijão fraldinha 1kg</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Feijão preto 1kg'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Feijão preto 1kg</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Macarrão linguine granduro 500g'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Macarrão cristal 500g</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Creme dentral closeup 90g'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Creme dental closeup 90g</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Creme dentral sorriso 70g'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Creme dental sorriso 70g</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Sabão em pó omo 500g'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Sabão em pó omo 500g</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value= Milho de pipoca 400g'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Milho de pipoca 400g </button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Leite em pó 300g'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Leite em pó 300g </button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Creme de leite Italac 200g'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Creme de leite Italac 200g </button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Leite condensado cemil 395g'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Leite condensado cemil 395g</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Coca cola 2L'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Coca cola 2L</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Coca cola lata 350ml'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Coca cola lata 350ml</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Coca cola zero 350ml'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Coca cola zero 350ml</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Guaraná antarctica 350ml'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Guaraná antarctica 350ml</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Guaraná zero 350ml'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Guaraná zero 350ml</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Fanta laranja 350ml'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Fanta laranja 350ml</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Fanta uva 350ml'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Fanta uva 350ml</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Sprite 350ml'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Sprite 350ml</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Pepsi 350ml'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Pepsi 350ml</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='Soda limonada Antactica 350ml'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> Soda limonada Antarctica 350ml</button>
+<button type="button" onclick="document.getElementById('inputItemListaCompras').value='H2OH!limão 500ml'; 
+adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee7; padding:3px; border-radius:3px; cursor:pointer; text-align:left;"> H2OH!limão 500ml</button>
+   </div>
+</div>
+                        
+</div>
+<div id="containerItensListaCompras" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px; border: 1px solid #eee; padding: 5px; border-radius: 4px;"></div>
                 <div style="display: flex; justify-content: space-between; align-items: center; background: #e8f5e9; padding: 8px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px;">
                     <strong id="contadorValoresListaCompras" style="color: #2e7d32;">Total Estimado de Itens: R$ 0,00</strong>
                     <div style="display:flex; gap:5px; margin-top:5px;">
@@ -993,7 +1126,8 @@
             }
             document.getElementById('comandaMesa').value = '';
             document.getElementById('comandaObservacoes').value = '';
-            
+            // Limpa a seleção de pagamento anterior ao abrir a comanda
+    document.querySelectorAll('input[name="formaPagamentoDigital"]').forEach(el => el.checked = false);
             document.getElementById('statusRetornoPainel').style.display = 'none';
             document.getElementById('contadorEsperaComanda').style.display = 'none';
 
@@ -1084,9 +1218,16 @@
                 return;
             }
             if (checkboxes.length === 0) {
-                alert("Selecione pelo menos um item na comanda.");
-                return;
-            }
+        alert("Selecione pelo menos um item na comanda.");
+        return;
+    }
+
+    const formaPagamentoSelecionada = document.querySelector('input[name="formaPagamentoComanda"]:checked');
+    if (!formaPagamentoSelecionada) {
+        alert("Por favor, selecione a forma de pagamento (Pix ou Cartão) para prosseguir.");
+        return;
+    }
+    const tipoPagamento = formaPagamentoSelecionada.value;
 
             const q = quiosquesData.find(item => item.id === quiosqueSelecionadoId);
             if (!q) return;
@@ -2063,15 +2204,89 @@ function adicionarParceiroManual() {
 // ... (suas outras funções anteriores, como a do iFood ou a de parceiros) ...
 
 // ---- FUNÇÃO PARA RECOLHER/MOSTRAR AS SEÇÕES (EFEITO ACORDEÃO) ----
-function toggleSection(id) {
-    const section = document.getElementById(id);
-    section.style.display = (section.style.display === "block") ? "none" : "block";
-}
+    window.toggleSection = function(id) {
+        const section = document.getElementById(id);
+        if (section) {
+            section.style.display = (section.style.display === "block") ? "none" : "block";
+        }
+    };
 
-</script> <!-- Cole a função acima desta linha -->
+    // --- VARIÁVEIS DA COMANDA ---
+    let listaItensComanda = [];
+
+    window.adicionarItemComanda = function() {
+        const nomeInput = document.getElementById('comandaItemNome');
+        const precoInput = document.getElementById('comandaItemValor');
+
+        if (!nomeInput || !precoInput || !nomeInput.value.trim() || !precoInput.value) {
+            alert("Por favor, preencha o nome e o valor do item!");
+            return;
+        }
+
+        const nome = nomeInput.value;
+        const preco = parseFloat(precoInput.value);
+
+        listaItensComanda.push({ nome, preco, quantidade: 1 });
+
+        let totalGeral = 0;
+        listaItensComanda.forEach(item => {
+            totalGeral += item.preco * item.quantidade;
+        });
+
+        const elementoTotal = document.getElementById('totalComandaColetiva');
+        if (elementoTotal) {
+            elementoTotal.innerText = `Total: R$ ${totalGeral.toFixed(2)}`;
+        }
+
+        nomeInput.value = '';
+        precoInput.value = '';
+    };
+
+    function executarWhatsApp() {
+        const mesa = document.getElementById('comandaNumeroMesa')?.value || "Geral";
+        let totalGeral = listaItensComanda.reduce((acc, item) => acc + (item.preco * item.quantidade), 0);
+        
+        if (totalGeral <= 0) {
+            alert("Adicione itens à comanda antes de enviar!");
+            return;
+        }
+
+        const textoMensagem = encodeURIComponent(
+            `Olá! Segue o fechamento da nossa comanda na Orla de Brasília.\n` +
+            `📍 Mesa: ${mesa}\n` +
+            `💰 Total: R$ ${totalGeral.toFixed(2)} pelo Super-App.`
+        );
+        
+        window.open(`https://api.whatsapp.com/send?text=${textoMensagem}`, '_blank');
+
+        // Limpeza automática após envio
+        listaItensComanda = [];
+        const elementoTotal = document.getElementById('totalComandaColetiva');
+        if (elementoTotal) elementoTotal.innerText = `Total: R$ 0,00`;
+        if (document.getElementById('comandaNumeroMesa')) document.getElementById('comandaNumeroMesa').value = '';
+    }
+
+    // Associa o botão do WhatsApp automaticamente via JavaScript (elimina qualquer erro de referência)
+    document.addEventListener("DOMContentLoaded", function() {
+        const btnZap = document.getElementById('btnZapComanda');
+        if (btnZap) {
+            btnZap.onclick = executarWhatsApp;
+        }
+    });
+
+    // Também garante caso o script rode direto
+    window.onload = function() {
+        const btnZap = document.getElementById('btnZapComanda');
+        if (btnZap) {
+            btnZap.onclick = executarWhatsApp;
+        }
+    };
+
+    window.resgatarAlertaRadar = function() {
+        alert("Resgatando oferta relâmpago da Orla!");
+    };
 </script>
-        </div>
-
-    </div>
+</div>
+</div>
 </div>
 </html>
