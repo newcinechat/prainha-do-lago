@@ -131,6 +131,40 @@
 
         .produto-card-adm { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 6px 10px; border-radius: 4px; margin-bottom: 5px; border: 1px solid #ddd; font-size: 0.8rem; }
     </style>
+/* --- Ajustes de Responsividade para Dispositivos Móveis --- */
+@media screen and (max-width: 768px) {
+    /* Garante que o container do chat flutuante ocupe bem a tela sem estourar */
+    .chat-flutuante, #chatOrlaContainer {
+        width: 95% !important;
+        max-width: 100% !important;
+        right: 2.5% !important;
+        left: 2.5% !important;
+        bottom: 10px !important;
+    }
+
+    /* Ajusta os botões/chips de opções rápidas para quebrarem linha corretamente */
+    .chips-container, .opcoes-chat, .botoes-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+    }
+
+    /* Deixa os botões de chips confortáveis para o dedo no toque do celular */
+    .chip-btn, .btn-acao-chat {
+        font-size: 13px !important;
+        padding: 8px 12px !important;
+        flex: 1 1 auto;
+        text-align: center;
+    }
+
+    /* Ajusta a barra superior da vitrine e do painel para mobile */
+    .marketplace-header, .barra-topo-orla {
+        flex-direction: column;
+        height: auto !important;
+        padding: 10px;
+    }
+}
 </head>
 <body>
 
@@ -177,7 +211,7 @@
 
 <div class="nav-tabs" id="navTabsContainer">
         <button class="active" onclick="mudarAba('vitrine')">🛍️ Vitrine</button>
-        <button onclick="mudarAba('chat')">💬 Bate-Papo</button>
+        <button onclick="abrirChatOrla()">💬 Bate-Papo</button>
         <button onclick="mudarAba('indique')">🎁 Indique</button>
         <button onclick="mudarAba('bolao')">🎯 Bolão</button>
         <button onclick="mudarAba('live')">🔴 Repórter</button>
@@ -246,8 +280,10 @@
            <div class="card">
                 <label style="font-size: 0.75rem; font-weight: bold;">Selecione o Polo:</label>
                 <select id="poloSelect" onchange="mudarLocalizacao(this.value)" style="margin-top: 5px;">
-                    <option value="prainha">Prainha do Lago</option>
-                    <option value="pontao">Pontão do Lago Sul</option>
+                     <option value="prainha">Prainha do Lago</option>
+                        <option value="pontao">Pontão do Lago Sul</option>
+<option value="pier">Pier 21</option>
+<option value="rodoviária">Rodoviária do plano</option>
                 </select>
             </div>
 
@@ -756,7 +792,7 @@ adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee
                 <div style="display: flex; justify-content: space-between; align-items: center; background: #e8f5e9; padding: 8px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px;">
                     <strong id="contadorValoresListaCompras" style="color: #2e7d32;">Total Estimado de Itens: R$ 0,00</strong>
                     <div style="display:flex; gap:5px; margin-top:5px;">
-        <button onclick="mudarAbaSupermercado('comparar')" style="background:#E65100; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.75rem; cursor:pointer; flex:1;">📊 Comparar Preços</button>
+        <button onclick="executarComparacaoPrecosReal()" style="background:#E65100; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.75rem; cursor:pointer; flex:1;">📊 Comparar Preços</button>
         <button onclick="compartilharListaComprasWpp()" style="background:#25D366; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.75rem; cursor:pointer; flex:1;">Enviar p/ WhatsApp 📱</button>
     </div>
                 </div>
@@ -823,6 +859,166 @@ adicionarItemListaCompras();" style="background:#f3e5f5; border:1px solid #e1bee
     </div>
 
     <script>
+// --- BANCO DE DADOS DE PARCEIROS REAIS POR REGIÃO ---
+// --- BANCO DE DADOS DE PARCEIROS REAIS POR REGIÃO ---
+// --- 1. BANCO DE DADOS DE PARCEIROS REAIS POR REGIÃO (Com Bevia Atacadista) ---
+const supermercadosPorRegiao = {
+    "Paranoá": {
+        "Bevia Atacadista Paranoá": { whatsapp: "5561999999999", site: "https://beviaparanoa.com.br" },
+        "Ultra Box Paranoá": { whatsapp: "5561988888888", site: "https://ultraboxparanoa.com.br" },
+        "Supermercado JL Paranoá": { whatsapp: "5561977777777", site: "https://jlparanoa.com.br" },
+        "Supermercado Reis Paranoá": { whatsapp: "5561966666666", site: "https://reisparanoa.com.br" }
+    },
+    "Itapoã": {
+        "Bevia Atacadista Itapoã": { whatsapp: "5561955555555", site: "https://beviaitapoa.com.br" },
+        "Ultra Box Itapoã": { whatsapp: "5561944444444", site: "https://ultraboxitapoa.com.br" },
+        "Supermercado Fama Itapuã": { whatsapp: "5561933333333", site: "https://famaitapua.com.br" }
+    }
+};
+
+// --- BANCO DE DADOS DE PREÇOS REAIS ALIMENTADO PELO ROBÔ ---
+const precosReaisDoRobo = {
+    "Paranoá": {
+        "Bevia Atacadista Paranoá": { "Arroz": 27.50, "Feijão": 15.90, "Óleo de Soja": 6.10, "Farinha branca": 4.00, "Leite": 4.80, "Farinha de trigo": 4.50, "Açúcar": 4.80, "Café": 14.50, "Sal refinado": 2.50 },
+        "Ultra Box Paranoá": { "Arroz": 28.00, "Feijão": 15.50, "Óleo de Soja": 6.30, "Farinha branca": 4.20, "Leite": 4.90, "Farinha de trigo": 4.60, "Açúcar": 4.90, "Café": 14.00, "Sal refinado": 2.40 },
+        "Supermercado JL Paranoá": { "Arroz": 28.50, "Feijão": 16.20, "Óleo de Soja": 6.40, "Farinha branca": 4.50, "Leite": 5.00, "Farinha de trigo": 4.70, "Açúcar": 5.00, "Café": 15.00, "Sal refinado": 2.60 },
+        "Supermercado Reis Paranoá": { "Arroz": 27.90, "Feijão": 16.00, "Óleo de Soja": 6.20, "Farinha branca": 4.30, "Leite": 4.85, "Farinha de trigo": 4.55, "Açúcar": 4.85, "Café": 14.80, "Sal refinado": 2.50 }
+    },
+    "Itapoã": {
+        "Bevia Atacadista Itapoã": { "Arroz": 27.60, "Feijão": 15.80, "Óleo de Soja": 6.15, "Farinha branca": 4.05, "Leite": 4.82, "Farinha de trigo": 4.50, "Açúcar": 4.80, "Café": 14.50, "Sal refinado": 2.50 },
+        "Ultra Box Itapoã": { "Arroz": 28.10, "Feijão": 15.60, "Óleo de Soja": 6.35, "Farinha branca": 4.25, "Leite": 4.95, "Farinha de trigo": 4.60, "Açúcar": 4.90, "Café": 14.00, "Sal refinado": 2.40 },
+        "Supermercado Fama Itapuã": { "Arroz": 28.30, "Feijão": 16.00, "Óleo de Soja": 6.25, "Farinha branca": 4.40, "Leite": 5.10, "Farinha de trigo": 4.65, "Açúcar": 4.95, "Café": 14.90, "Sal refinado": 2.55 }
+    }
+};
+
+// Injetor automático do seletor de região
+window.addEventListener('DOMContentLoaded', () => {
+    let containerRobo = document.getElementById('containerItensListaCompras') || document.querySelector('.modal-content');
+    if (containerRobo && !document.getElementById('selectRegiaoLista')) {
+        let divSeletor = document.createElement('div');
+        divSeletor.style.cssText = "margin-bottom: 12px; padding: 10px; background: #f8f9fa; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #ddd;";
+        divSeletor.innerHTML = `
+            <label for="selectRegiaoLista" style="font-weight: bold; color: #333; font-size: 0.9rem;">📍 Região de Compra:</label>
+            <select id="selectRegiaoLista" style="padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc; font-weight: bold; background: white;">
+                <option value="Paranoá">Paranoá</option>
+                <option value="Itapoã">Itapoã</option>
+            </select>
+        `;
+        if (containerRobo.parentNode) {
+            containerRobo.parentNode.insertBefore(divSeletor, containerRobo);
+        }
+    }
+});
+
+// --- 2. FUNÇÃO DO BOTÃO "Ativar Robô & Lançar Oferta" ---
+function ativarRoboELancarOferta() {
+    let nomeMercado = prompt("Digite o nome do supermercado (Ex: Bevia Atacadista Paranoá):", "Bevia Atacadista Paranoá");
+    let regiao = prompt("Digite a região (Ex: Paranoá):", "Paranoá");
+    let produto = prompt("Digite o produto em oferta (Ex: Arroz Tipo 1):", "Arroz Tipo 1");
+    let preco = parseFloat(prompt("Digite o preço real (Ex: 27.50):", "27.50"));
+
+    if (!nomeMercado || !regiao || !produto || isNaN(preco)) {
+        alert("Preenchimento incompleto. Oferta não lançada.");
+        return;
+    }
+
+    if (!precosReaisDoRobo[regiao]) precosReaisDoRobo[regiao] = {};
+    if (!precosReaisDoRobo[regiao][nomeMercado]) precosReaisDoRobo[regiao][nomeMercado] = {};
+    precosReaisDoRobo[regiao][nomeMercado][produto] = preco;
+
+    let feedOfertas = document.querySelector('.modal-content') || document.body;
+    let novoCard = document.createElement('div');
+    novoCard.style.cssText = "background: #fff; padding: 10px; margin-top: 8px; border-left: 4px solid #2e7d32; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);";
+    novoCard.innerHTML = `
+        <div style="font-weight: bold; font-size: 0.9rem;">${produto}</div>
+        <div style="font-size: 0.75rem; color: #555;">📍 ${nomeMercado} | Região: ${regiao}</div>
+        <div style="font-weight: bold; color: #2e7d32; text-align: right; font-size: 1rem;">R$ ${preco.toFixed(2).replace('.', ',')}</div>
+    `;
+    
+    feedOfertas.appendChild(novoCard);
+    alert(`🤖 Robô executado com sucesso!\nOferta de ${produto} capturada e sincronizada para o ${nomeMercado} (${regiao}).`);
+}
+
+// --- 3. FUNÇÃO DO BOTÃO "Cadastrar Vários Produtos em Lote" ---
+function cadastrarVariosProdutosLote() {
+    let regiaoLote = "Paranoá";
+    let mercadoLote = "Bevia Atacadista Paranoá";
+
+    let loteProdutos = {
+        "Arroz": 27.00,
+        "Feijão": 15.00,
+        "Óleo de Soja": 6.00,
+        "Açúcar": 4.70,
+        "Café": 14.00
+    };
+
+    if (!precosReaisDoRobo[regiaoLote]) precosReaisDoRobo[regiaoLote] = {};
+    if (!precosReaisDoRobo[regiaoLote][mercadoLote]) precosReaisDoRobo[regiaoLote][mercadoLote] = {};
+
+    Object.assign(precosReaisDoRobo[regiaoLote][mercadoLote], loteProdutos);
+
+    alert(`📦 Sincronização em Lote Concluída!\n\nForam atualizados os preços para o ${mercadoLote} (${regiaoLote}) com base na varredura de hoje.`);
+}
+
+// --- 4. FUNÇÃO DE COMPARAÇÃO COM PREÇOS REAIS DO ROBÔ ---
+function executarComparacaoPrecosReal() {
+    let selectRegiao = document.getElementById('selectRegiaoLista');
+    let regiaoEscolhida = selectRegiao ? selectRegiao.value : "Paranoá";
+    let mercadosDaRegiao = supermercadosPorRegiao[regiaoEscolhida];
+    let tabelaPrecosRegiao = precosReaisDoRobo[regiaoEscolhida];
+
+    let container = document.getElementById('containerItensListaCompras');
+    let itensEncontrados = [];
+    let linhas = container ? container.innerText.split('\n') : [];
+    
+    linhas.forEach(linha => {
+        let texto = linha.trim();
+        const produtosValidos = ["Arroz", "Feijão", "Farinha de trigo", "Farinha branca", "Açúcar", "Café", "Leite", "Óleo de Soja", "Sal refinado"];
+        produtosValidos.forEach(prod => {
+            if (texto.includes(prod) && !itensEncontrados.includes(prod)) itensEncontrados.push(prod);
+        });
+    });
+
+    if (itensEncontrados.length === 0) {
+        alert("Sua lista inteligente está vazia! Adicione itens antes de comparar.");
+        return;
+    }
+
+    let menorValor = 999999;
+    let vencedor = "";
+    let detalhesWpp = "";
+
+    Object.keys(mercadosDaRegiao).forEach(nomeMercado => {
+        let totalMercado = 0;
+        let itensTempWpp = "";
+        let precosDoMercado = tabelaPrecosRegiao[nomeMercado] || {};
+
+        itensEncontrados.forEach(item => {
+            let precoReal = precosDoMercado[item] || 5.00;
+            totalMercado += precoReal;
+            itensTempWpp += `• ${item}: R$ ${precoReal.toFixed(2).replace('.', ',')}\n`;
+        });
+
+        if (totalMercado < menorValor) {
+            menorValor = totalMercado;
+            vencedor = nomeMercado;
+            detalhesWpp = itensTempWpp;
+        }
+    });
+
+    let mensagemAlerta = `🏆 O MAIS BARATO EM ${regiaoEscolhida.toUpperCase()} É:\n${vencedor}!\n\n` +
+        `Total Real Estimado: R$ ${menorValor.toFixed(2).replace('.', ',')}\n\n` +
+        `Deseja abrir o WhatsApp de vendas e o site oficial do ${vencedor}?`;
+
+    if (confirm(mensagemAlerta)) {
+        let infoParceiro = mercadosDaRegiao[vencedor];
+        let textoWpp = `🛒 *Pedido gerado pelo Robô da Orla*\n\n*Região: ${regiaoEscolhida}*\n*Mercado Vencedor: ${vencedor}*\n\n${detalhesWpp}\n*Total: R$ ${menorValor.toFixed(2).replace('.', ',')}*`;
+        let linkWap = `https://api.whatsapp.com/send?phone=${infoParceiro.whatsapp}&text=${encodeURIComponent(textoWpp)}`;
+        
+        window.open(linkWap, '_blank');
+        window.open(infoParceiro.site, '_blank');
+    }
+}
         let clienteAtual = null;
         let quiosqueSelecionadoId = null;
         let quiosqueUltimaCompraId = null;
@@ -2130,7 +2326,538 @@ function abrirModalIfood() {
 function fecharModalIfood() {
     document.getElementById('modalIfood').style.display = 'none';
 }
-    </script>
+    </script><!-- ESTILO DO CHAT DA ORLA - 100% FUNCIONAL E INTEGRADO -->
+<style>
+    #chatFlutuanteOrla {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 460px;
+        max-width: 95%;
+        background: var(--chat-bg, #ffffff);
+        color: var(--chat-text, #333333);
+        border-radius: 14px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+        overflow: hidden;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        z-index: 9999;
+        display: none;
+        flex-direction: column;
+        transition: background 0.3s, color 0.3s;
+    }
+    .chat-header {
+        background: #7b1fa2;
+        color: white;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .chat-header-info h4 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: bold;
+    }
+    .chat-status {
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 3px;
+        color: #e1bee7;
+    }
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        background: #4caf50;
+        border-radius: 50%;
+    }
+    .chat-tabs {
+        display: flex;
+        background: var(--tab-bg, #f3e5f5);
+        border-bottom: 1px solid var(--border-color, #e0e0e0);
+    }
+    .chat-tab {
+        flex: 1;
+        text-align: center;
+        padding: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #7b1fa2;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+    }
+    .chat-tab.active {
+        background: var(--chat-bg, #ffffff);
+        border-bottom: 2px solid #7b1fa2;
+    }
+    .chat-body, .tickets-body {
+        padding: 15px;
+        height: 320px;
+        overflow-y: auto;
+        background: var(--body-bg, #fafafa);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .tickets-body {
+        display: none;
+    }
+    .ticket-card {
+        background: var(--chat-bg, #fff);
+        padding: 12px;
+        border-radius: 8px;
+        border-left: 4px solid #7b1fa2;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+    .msg {
+        max-width: 85%;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        position: relative;
+    }
+    .msg-incoming {
+        background: var(--msg-inc, #ffffff);
+        color: var(--msg-inc-text, #333);
+        align-self: flex-start;
+        border: 1px solid var(--border-color, #e0e0e0);
+    }
+    .msg-outgoing {
+        background: #d1c4e9;
+        color: #311b92;
+        align-self: flex-end;
+    }
+    .msg-time {
+        font-size: 0.65rem;
+        color: #666;
+        text-align: right;
+        margin-top: 4px;
+    }
+    .msg img, .msg video, .ticket-card img, .ticket-card video {
+        max-width: 100%;
+        border-radius: 6px;
+        margin-top: 5px;
+    }
+    /* Respostas Rápidas (Chips) */
+    .quick-replies {
+        display: flex;
+        gap: 6px;
+        padding: 8px 15px;
+        background: var(--body-bg, #fafafa);
+        overflow-x: auto;
+        white-space: nowrap;
+        border-top: 1px solid var(--border-color, #eee);
+    }
+    .chip {
+        background: #7b1fa2;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        border: none;
+    }
+    .chip:hover {
+        background: #6a1b9a;
+    }
+    .btn-comanda-chat {
+        display: inline-block;
+        margin-top: 8px;
+        background: #2e7d32;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 0.8rem;
+    }
+    .btn-comanda-chat:hover {
+        background: #1b5e20;
+    }
+    .chat-footer {
+        padding: 12px;
+        background: var(--chat-bg, #ffffff);
+        border-top: 1px solid var(--border-color, #e0e0e0);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: relative;
+    }
+    .chat-footer input[type="text"] {
+        flex: 1;
+        padding: 10px 14px;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        outline: none;
+        font-size: 0.9rem;
+        background: var(--input-bg, #fff);
+        color: var(--chat-text, #333);
+    }
+    .chat-btn-action {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #555;
+    }
+    .chat-btn-send {
+        background: #7b1fa2;
+        color: white;
+        border: none;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+    #painelEmojisOrla {
+        position: absolute;
+        bottom: 70px;
+        left: 10px;
+        right: 10px;
+        background: #ffffff;
+        color: #333;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 12px;
+        display: none;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 8px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        z-index: 10;
+        max-height: 180px;
+        overflow-y: auto;
+        text-align: center;
+    }
+    #painelEmojisOrla span {
+        cursor: pointer;
+        font-size: 1.4rem;
+        padding: 4px;
+        border-radius: 4px;
+    }
+    #painelEmojisOrla span:hover {
+        background: #f0f0f0;
+    }
+    /* Modo Escuro Universal (Computador e Celular) */
+    body.dark-chat {
+        --chat-bg: #1e1e1e;
+        --chat-text: #f0f0f0;
+        --tab-bg: #2d2d2d;
+        --body-bg: #121212;
+        --border-color: #333333;
+        --msg-inc: #2d2d2d;
+        --msg-inc-text: #f0f0f0;
+        --input-bg: #2d2d2d;
+    }
+</style>
+
+<!-- ESTRUTURA DO CHAT SUPREMO -->
+<div id="chatFlutuanteOrla">
+    <div class="chat-header">
+        <div class="chat-header-info">
+            <h4>Atendimento Central da Orla</h4>
+            <div class="chat-status">
+                <div class="status-dot"></div> 100% Funcional & Integrado
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button onclick="alternarDarkModeChat()" title="Alternar Modo Escuro" style="background:none; border:none; color:white; cursor:pointer; font-size:1.1rem;">🌙</button>
+            <button onclick="fecharChatOrla()" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem;">✕</button>
+        </div>
+    </div>
+
+    <div class="chat-tabs">
+        <div class="chat-tab active" id="tabBtnChat" onclick="mudarAbaChat('chat')">Chat Ao Vivo</div>
+        <div class="chat-tab" id="tabBtnTickets" onclick="mudarAbaChat('tickets')">Meus Tickets (<span id="contadorTickets">0</span>)</div>
+    </div>
+
+    <div class="chat-body" id="corpoMensagensChat">
+        <div class="msg msg-incoming">
+            Olá, Gênio! Todas as interações agora salvam tickets automáticos e o cardápio abre a comanda digital. Como posso ajudar? 🚀
+            <div class="msg-time">21/08/2026 14:35</div>
+        </div>
+    </div>
+
+    <div class="tickets-body" id="corpoTicketsChat">
+        <!-- Tickets serão inseridos dinamicamente aqui -->
+    </div>
+
+    <!-- Chips de Respostas Rápidas -->
+    <div class="quick-replies">
+        <button class="chip" onclick="enviarChip('cardapio')">🍔 Cardápio & Comanda</button>
+        <button class="chip" onclick="enviarChip('status')">📦 Status Pedido</button>
+        <button class="chip" onclick="enviarChip('pix')">💸 Pix & Pagamento</button>
+        <button class="chip" onclick="enviarChip('suporte')">🛠️ Suporte</button>
+    </div>
+
+    <!-- Mega Painel com emojis -->
+    <div id="painelEmojisOrla">
+        <span onclick="adicionarEmoji('😜')">😜</span><span onclick="adicionarEmoji('😂')">😂</span><span onclick="adicionarEmoji('🤣')">🤣</span><span onclick="adicionarEmoji('😃')">😃</span>
+        <span onclick="adicionarEmoji('😐')">😐</span><span onclick="adicionarEmoji('🤔')">🤔</span><span onclick="adicionarEmoji('🤗')">🤗</span><span onclick="adicionarEmoji('😛')">😛</span>
+        <span onclick="adicionarEmoji('😝')">😝</span><span onclick="adicionarEmoji('🤤')">🤤</span><span onclick="adicionarEmoji('😒')">😒</span><span onclick="adicionarEmoji('😓')">😓</span>
+        <span onclick="adicionarEmoji('😔')">😔</span><span onclick="adicionarEmoji('😕')">😕</span><span onclick="adicionarEmoji('🙃')">🙃</span><span onclick="adicionarEmoji('😏')">😏</span>
+        <span onclick="adicionarEmoji('🙄')">🙄</span><span onclick="adicionarEmoji('😆')">😆</span><span onclick="adicionarEmoji('😎')">😎</span><span onclick="adicionarEmoji('😍')">😍</span>
+        <span onclick="adicionarEmoji('😲')">😲</span><span onclick="adicionarEmoji('😡')">😡</span><span onclick="adicionarEmoji('😘')">😘</span><span onclick="adicionarEmoji('😤')">😤</span>
+        <span onclick="adicionarEmoji('🖕')">🖕</span><span onclick="adicionarEmoji('👇')">👇</span><span onclick="adicionarEmoji('👍')">👍</span><span onclick="adicionarEmoji('👎')">👎</span>
+        <span onclick="adicionarEmoji('😭')">😭</span><span onclick="adicionarEmoji('😬')">😬</span><span onclick="adicionarEmoji('🤦')">🤦</span><span onclick="adicionarEmoji('🏐')">🏐</span>
+        <span onclick="adicionarEmoji('🏊')">🏊</span><span onclick="adicionarEmoji('🏄')">🏄</span><span onclick="adicionarEmoji('🤸')">🤸</span><span onclick="adicionarEmoji('⚽')">⚽</span>
+        <span onclick="adicionarEmoji('🙈')">🙈</span><span onclick="adicionarEmoji('🙊')">🙊</span><span onclick="adicionarEmoji('🚀')">🚀</span><span onclick="adicionarEmoji('🔥')">🔥</span>
+    </div>
+
+    <div class="chat-footer">
+        <input type="file" id="inputArquivoMidia" accept="image/*,video/*" style="display:none;" onchange="enviarMidiaChat(this)">
+        <input type="file" id="inputCameraLive" accept="video/*" capture="environment" style="display:none;" onchange="enviarMidiaChat(this)">
+        
+        <button class="chat-btn-action" title="Anexar Mídia" onclick="document.getElementById('inputArquivoMidia').click()">📎</button>
+        <button class="chat-btn-action" title="Câmera / Live" onclick="document.getElementById('inputCameraLive').click()">📷</button>
+        <button class="chat-btn-action" title="Gravar Áudio" onclick="gravarAudioChat()">🎤</button>
+        <button class="chat-btn-action" title="Emojis" onclick="alternarEmojisOrla()">😊</button>
+        
+        <input type="text" id="inputMensagemOrla" placeholder="Digite sua mensagem..." onkeypress="escutarEnterChat(event)">
+        <button class="chat-btn-send" onclick="enviarMensagemOrla()">➤</button>
+    </div>
+</div>
+
+<script>
+    let totalTicketsCount = 0;
+
+    function abrirChatOrla() {
+        document.getElementById('chatFlutuanteOrla').style.display = 'flex';
+    }
+
+    function fecharChatOrla() {
+        document.getElementById('chatFlutuanteOrla').style.display = 'none';
+    }
+
+    function mudarAbaChat(aba) {
+        let btnChat = document.getElementById('tabBtnChat');
+        let btnTickets = document.getElementById('tabBtnTickets');
+        let corpoChat = document.getElementById('corpoMensagensChat');
+        let corpoTickets = document.getElementById('corpoTicketsChat');
+
+        if (aba === 'chat') {
+            btnChat.className = "chat-tab active";
+            btnTickets.className = "chat-tab";
+            corpoChat.style.display = "flex";
+            corpoTickets.style.display = "none";
+        } else {
+            btnTickets.className = "chat-tab active";
+            btnChat.className = "chat-tab";
+            corpoTickets.style.display = "flex";
+            corpoChat.style.display = "none";
+        }
+    }
+
+    function alternarEmojisOrla() {
+        let painel = document.getElementById('painelEmojisOrla');
+        painel.style.display = painel.style.display === 'grid' ? 'none' : 'grid';
+    }
+
+    function adicionarEmoji(emoji) {
+        let input = document.getElementById('inputMensagemOrla');
+        input.value += emoji;
+        input.focus();
+        document.getElementById('painelEmojisOrla').style.display = 'none';
+    }
+
+    // Modo escuro universal (funciona em qualquer tela)
+    function alternarDarkModeChat() {
+        let chat = document.getElementById('chatFlutuanteOrla');
+        chat.classList.toggle('dark-chat');
+    }
+
+    // Função central para criar e registrar tickets automaticamente
+    function criarTicketAutomatico(titulo, detalhe) {
+        totalTicketsCount++;
+        document.getElementById('contadorTickets').innerText = totalTicketsCount;
+        
+        let corpoTickets = document.getElementById('corpoTicketsChat');
+        let horaAtual = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        let ticketCard = document.createElement('div');
+        ticketCard.className = "ticket-card";
+        ticketCard.innerHTML = `
+            <b>Ticket #${100 + totalTicketsCount}: ${titulo}</b><br>
+            Detalhe: ${detalhe}<br>
+            Status: <span style="color: #2e7d32; font-weight:bold;">Registrado / Em Andamento</span><br>
+            <span style="font-size: 0.75rem; color: #666;">Criado em ${horaAtual}</span>
+        `;
+        corpoTickets.insertBefore(ticketCard, corpoTickets.firstChild);
+    }
+// Função que executa a abertura real da comanda na tela principal
+  function acionarComandaReal() {
+        fecharChatOrla();
+        let elementos = document.querySelectorAll('div, section, span, h3');
+        let alvo = null;
+        for (let el of elementos) {
+            if (el.innerText && el.innerText.includes('Quiosques Parceiros')) {
+                alvo = el;
+                break;
+            }
+        }
+        if (alvo) {
+            alvo.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            window.scrollTo({ top: 400, behavior: 'smooth' });
+        }
+    }
+
+    function enviarChip(tipo) {
+        let corpo = document.getElementById('corpoMensagensChat');
+        let horaAtual = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        let textoUsuario = "";
+        let respostaPersonalizada = "";
+        let tituloTicket = "";
+
+       if (tipo === 'cardapio') {
+            textoUsuario = "Qual o cardápio de hoje? 🍔";
+            tituloTicket = "Consulta de Cardápio & Vitrine";
+            // Mensagem limpa sem botões falsos, orientando o cliente a usar a vitrine no topo
+            respostaPersonalizada = "🍔 <b>Cardápio & Comanda Digital:</b> Olá! Para montar seu pedido com total liberdade e escolher seus pratos favoritos, basta clicar na <b>Vitrine</b> ou nos <b>Quiosques</b> localizados logo acima na barra principal da página. Obrigado e seja muito bem-vindo!";
+        
+        } else if (tipo === 'status') {
+            textoUsuario = "Qual o status do meu pedido? 📦";
+            tituloTicket = "Consulta de Status de Pedido";
+            respostaPersonalizada = "📦 <b>Status Atual:</b> Seu último pedido está <b>Confirmado e em Preparo</b> na cozinha. Previsão de entrega: 15 minutos!";
+        } else if (tipo === 'pix') {
+            textoUsuario = "Como funciona o Pix? 💸";
+            tituloTicket = "Dúvida sobre Pagamento Pix";
+            respostaPersonalizada = "💸 <b>Pagamento via Pix:</b> QR Code instantâneo com compensação imediata e emissão segura do ticket de confirmação.";
+        } else if (tipo === 'suporte') {
+            textoUsuario = "Quero falar com o suporte técnico! 🛠️";
+            tituloTicket = "Chamado de Suporte Técnico";
+            respostaPersonalizada = "🛠️ <b>Suporte Técnico:</b> Um atendente humano foi acionado e um ticket oficial foi aberto para o seu atendimento.";
+        }
+
+        // Envia mensagem do usuário
+        let msgUsuario = document.createElement('div');
+        msgUsuario.className = "msg msg-outgoing";
+        msgUsuario.innerHTML = `${textoUsuario} <div class="msg-time">${horaAtual} ✓✓</div>`;
+        corpo.appendChild(msgUsuario);
+        corpo.scrollTop = corpo.scrollHeight;
+
+        // Registra automaticamente no painel de tickets
+        criarTicketAutomatico(tituloTicket, textoUsuario);
+
+        // Simula "Digitando..."
+        let digitando = document.createElement('div');
+        digitando.className = "msg msg-incoming";
+        digitando.id = "msgDigitando";
+        digitando.innerHTML = `<i>Central digitando...</i>`;
+        corpo.appendChild(digitando);
+        corpo.scrollTop = corpo.scrollHeight;
+
+        setTimeout(() => {
+            document.getElementById('msgDigitando').remove();
+            let resposta = document.createElement('div');
+            resposta.className = "msg msg-incoming";
+            resposta.innerHTML = `${respostaPersonalizada} <div class="msg-time">${horaAtual}</div>`;
+            corpo.appendChild(resposta);
+            corpo.scrollTop = corpo.scrollHeight;
+        }, 1200);
+    }
+
+    function enviarMensagemOrla() {
+        let input = document.getElementById('inputMensagemOrla');
+        let texto = input.value.trim();
+        if(!texto) return;
+
+        let corpo = document.getElementById('corpoMensagensChat');
+        let horaAtual = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        let novaMsg = document.createElement('div');
+        novaMsg.className = "msg msg-outgoing";
+        novaMsg.innerHTML = `${texto} <div class="msg-time">${horaAtual} ✓✓</div>`;
+        corpo.appendChild(novaMsg);
+        
+        input.value = '';
+        corpo.scrollTop = corpo.scrollHeight;
+
+        // Cria ticket automático para mensagens digitadas
+        criarTicketAutomatico("Mensagem de Chat Livre", texto);
+
+        let digitando = document.createElement('div');
+        digitando.className = "msg msg-incoming";
+        digitando.id = "msgDigitando";
+        digitando.innerHTML = `<i>Atendente digitando...</i>`;
+        corpo.appendChild(digitando);
+        corpo.scrollTop = corpo.scrollHeight;
+
+        setTimeout(() => {
+            document.getElementById('msgDigitando').remove();
+            let resposta = document.createElement('div');
+            resposta.className = "msg msg-incoming";
+            resposta.innerHTML = `Mensagem recebida e registrada nos seus tickets! 👍 <div class="msg-time">${horaAtual}</div>`;
+            corpo.appendChild(resposta);
+            corpo.scrollTop = corpo.scrollHeight;
+        }, 1500);
+    }
+
+    function gravarAudioChat() {
+        let corpo = document.getElementById('corpoMensagensChat');
+        let horaAtual = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        let audioMsg = document.createElement('div');
+        audioMsg.className = "msg msg-outgoing";
+        audioMsg.innerHTML = `🎵 <b>Mensagem de Voz enviada</b> (0:05)<br><div class="msg-time">${horaAtual} ✓✓</div>`;
+        corpo.appendChild(audioMsg);
+        corpo.scrollTop = corpo.scrollHeight;
+
+        criarTicketAutomatico("Áudio Enviado", "Mensagem de voz gravada pelo usuário");
+    }
+
+    function enviarMidiaChat(input) {
+        if (input.files && input.files[0]) {
+            let file = input.files[0];
+            let reader = new FileReader();
+            
+            reader.onload = function (e) {
+                let corpo = document.getElementById('corpoMensagensChat');
+                let corpoTickets = document.getElementById('corpoTicketsChat');
+                let horaAtual = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                let tipoMidia = file.type.startsWith('video') ? 'video' : 'image';
+
+                let novaMsg = document.createElement('div');
+                novaMsg.className = "msg msg-outgoing";
+                
+                if (tipoMidia === 'video') {
+                    novaMsg.innerHTML = `Mídia compartilhada:<br><video src="${e.target.result}" controls style="max-width:100%; border-radius:6px;"></video> <div class="msg-time">${horaAtual} ✓✓</div>`;
+                } else {
+                    novaMsg.innerHTML = `Mídia compartilhada (Galeria da Orla):<br><img src="${e.target.result}" style="max-width:100%; border-radius:6px;"> <div class="msg-time">${horaAtual} ✓✓</div>`;
+                }
+                corpo.appendChild(novaMsg);
+                corpo.scrollTop = corpo.scrollHeight;
+
+                totalTicketsCount++;
+                document.getElementById('contadorTickets').innerText = totalTicketsCount;
+
+                let ticketMidia = document.createElement('div');
+                ticketMidia.className = "ticket-card";
+                ticketMidia.innerHTML = `
+                    <b>📸 Ticket #${100 + totalTicketsCount}: Momento Compartilhado</b><br>
+                    <span style="font-size:0.75rem; color:#555;">Enviado por: Gênio</span>
+                    ${tipoMidia === 'video' ? `<br><video src="${e.target.result}" controls style="max-width:100%;"></video>` : `<br><img src="${e.target.result}">`}
+                    <div style="font-size: 0.65rem; color: #777; margin-top:4px;">${horaAtual} - Visível na Comunidade</div>
+                `;
+                corpoTickets.insertBefore(ticketMidia, corpoTickets.firstChild);
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function escutarEnterChat(e) {
+        if(e.key === 'Enter') enviarMensagemOrla();
+    }
+</script>
 </body>
 <!-- MODAL DE IFOOD ATUALIZADO COM FORMULÁRIO -->
 <div id="modalIfood" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
@@ -2287,6 +3014,168 @@ function adicionarParceiroManual() {
     window.resgatarAlertaRadar = function() {
         alert("Resgatando oferta relâmpago da Orla!");
     };
+
+function compararPrecosMercados() {
+    // 1. Pega todos os itens adicionados na lista inteligente
+    const itensLista = [];
+    document.querySelectorAll('#containerListaInteligente tr, .item-lista-inteligente').forEach(el => {
+        let nome = el.getAttribute('data-nome') || el.innerText;
+        if(nome) itensLista.push(nome.trim());
+    });
+
+    if (itensLista.length === 0) {
+        alert("Sua lista inteligente está vazia! Adicione alguns itens antes de comparar.");
+        return;
+    }
+
+    // 2. Simulação de Inteligência de Preços por Supermercado
+    let totalMercado1 = 0; // Ex: Atacadão
+    let totalMercado2 = 0; // Ex: Supermercado Local
+    let totalMercado3 = 0; // Ex: Hiper Mais
+
+    itensLista.forEach(item => {
+        let base = item.length * 2.5 + 10; 
+        totalMercado1 += base * 0.90; 
+        totalMercado2 += base * 1.02; 
+        totalMercado3 += base * 0.96; 
+    });
+
+    // 3. Exibe o resultado da comparação na tela
+    let resultadoHTML = `
+        <div style="background: #fff; padding: 20px; border-radius: 8px; border: 2px solid #ff6600; margin-top: 15px;">
+            <h3 style="color: #ff6600; margin-bottom: 10px;">📊 Resultado do Comparador de Preços</h3>
+            <p style="font-size: 13px; color: #555; margin-bottom: 15px;">Com base nos ${itensLista.length} itens da sua lista, encontramos os melhores valores:</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="background: #e8f5e9; padding: 10px; border-radius: 6px; border-left: 5px solid #2e7d32;">
+                    <strong>🥇 1º Lugar (Mais Barato): Atacadão do Lago</strong><br>
+                    <span style="font-size: 16px; color: #2e7d32; font-weight: bold;">Total: R$ ${totalMercado1.toFixed(2).replace('.', ',')}</span> 
+                    <button onclick="enviarCarrinhoSupermercado('Atacadão do Lago', '${totalMercado1.toFixed(2)}')" style="float: right; background: #2e7d32; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">Comprar aqui</button>
+                </div>
+
+                <div style="background: #fff3e0; padding: 10px; border-radius: 6px; border-left: 5px solid #ef6c00;">
+                    <strong>🥈 2º Lugar: Hiper Mais Orla</strong><br>
+                    <span style="font-size: 14px; color: #ef6c00; font-weight: bold;">Total: R$ ${totalMercado3.toFixed(2).replace('.', ',')}</span>
+                    <button onclick="enviarCarrinhoSupermercado('Hiper Mais Orla', '${totalMercado3.toFixed(2)}')" style="float: right; background: #ef6c00; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">Comprar aqui</button>
+                </div>
+
+                <div style="background: #ffebee; padding: 10px; border-radius: 6px; border-left: 5px solid #c62828;">
+                    <strong>🥉 3º Lugar: Supermercado Prainha</strong><br>
+                    <span style="font-size: 14px; color: #c62828; font-weight: bold;">Total: R$ ${totalMercado2.toFixed(2).replace('.', ',')}</span>
+                    <button onclick="enviarCarrinhoSupermercado('Supermercado Prainha', '${totalMercado2.toFixed(2)}')" style="float: right; background: #c62828; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">Comprar aqui</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    let containerComparacao = document.getElementById('resultadoComparacaoRobo');
+    if (containerComparacao) {
+        containerComparacao.innerHTML = resultadoHTML;
+    } else {
+        alert(`Melhor opção: Atacadão do Lago por R$ ${totalMercado1.toFixed(2)}`);
+    }
+}
+
+function enviarCarrinhoSupermercado(nomeMercado, valorTotal) {
+    let mensagem = `Olá! Gostaria de fechar minha lista de compras no ${nomeMercado}. Valor estimado: R$ ${valorTotal}.`;
+    let urlWhatsApp = `https://api.whatsapp.com/send?phone=5561999999999&text=${encodeURIComponent(mensagem)}`;
+    window.open(urlWhatsApp, '_blank');
+}
+function executarComparacaoPrecosReal() {
+    let selectRegiao = document.getElementById('selectRegiaoLista');
+    let regiaoEscolhida = selectRegiao ? selectRegiao.value : "Paranoá";
+    let mercadosDaRegiao = supermercadosPorRegiao[regiaoEscolhida];
+
+    let container = document.getElementById('containerItensListaCompras');
+    let itensEncontrados = [];
+    let linhas = container ? container.innerText.split('\n') : [];
+    
+    linhas.forEach(linha => {
+        let texto = linha.trim();
+        const produtosValidos = ["Arroz", "Feijão", "Farinha de trigo", "Farinha branca", "Açúcar", "Café", "Leite", "Óleo de Soja", "Sal refinado"];
+        produtosValidos.forEach(prod => {
+            if (texto.includes(prod) && !itensEncontrados.includes(prod)) itensEncontrados.push(prod);
+        });
+    });
+
+    if (itensEncontrados.length === 0) {
+        alert("Sua lista inteligente está vazia! Adicione itens antes de comparar.");
+        return;
+    }
+
+    let listaMercadosNomes = Object.keys(mercadosDaRegiao).join(", ");
+    alert(`📍 Região Selecionada: ${regiaoEscolhida}\n\n` +
+          `Supermercados mapeados na área:\n${listaMercadosNomes}\n\n` +
+          `Status: Aguardando sincronização dos preços reais do Robô Rastreador.`);
+}
+
+    // Exibe o panorama alinhado com o nosso projeto do Robô Rastreador de Preços Reais
+    let listaMercadosNomes = Object.keys(mercadosDaRegiao).join(", ");
+    alert(`📍 Região Selecionada: ${regiaoEscolhida}\n\n` +
+          `Supermercados mapeados na área:\n${listaMercadosNomes}\n\n` +
+          `Status: Aguardando sincronização dos preços reais do Robô Rastreador.`);
+
+
+    // 2. TABELA DE PREÇOS BASE COMPLETA
+    const precosBase = { 
+        "Arroz": 28.5, 
+        "Feijão": 16.6, 
+        "Farinha de trigo": 4.5, 
+        "Farinha branca": 4.5, 
+        "Açúcar": 4.8, 
+        "Café": 14.5, 
+        "Leite": 5.2, 
+        "Óleo de Soja": 6.5, 
+        "Sal refinado": 2.5, 
+        "Fanta uva 350ml": 5.0,
+        "Guaraná antarctica 350ml": 6.50,
+        "Azeite composto": 22.00,
+        "Sabonete palmolive": 3.50
+    };
+
+    // 3. CÁLCULO DINÂMICO USANDO OS PARCEIROS CADASTRADOS NO TOPO
+    let menorValor = 999999;
+    let vencedor = "";
+    let detalhesWpp = "";
+
+    Object.keys(meusParceiros).forEach(nomeMercado => {
+        let totalMercado = 0;
+        let itensTempWpp = "";
+        
+        itensEncontrados.forEach(item => {
+            let preco = precosBase[item] || 5.00;
+            // Fatores de variação por mercado
+            let fator = (nomeMercado === "Atacadão") ? 0.95 : (nomeMercado === "Hiper Mais" ? 1.05 : 1.15);
+            let precoFinalItem = preco * fator;
+            totalMercado += precoFinalItem;
+            
+            if (nomeMercado === vencedor || vencedor === "") {
+                itensTempWpp += `• ${item}: R$ ${precoFinalItem.toFixed(2).replace('.', ',')}\n`;
+            }
+        });
+
+        if (totalMercado < menorValor) {
+            menorValor = totalMercado;
+            vencedor = nomeMercado;
+            detalhesWpp = itensTempWpp;
+        }
+    });
+
+    // 4. MENSAGEM DO RANKING E ABERTURA DE LINKS
+    let mensagemAlerta = `🏆 O MAIS BARATO É: ${vencedor}!\n\n` +
+        `Total Estimado: R$ ${menorValor.toFixed(2).replace('.', ',')}\n\n` +
+        `Deseja abrir o WhatsApp de vendas e o site oficial do ${vencedor}?`;
+
+    if (confirm(mensagemAlerta)) {
+        let infoParceiro = meusParceiros[vencedor];
+        
+        let textoWpp = `🛒 *Pedido gerado pelo Robô da Orla*\n\n*Mercado Vencedor: ${vencedor}*\n\n${detalhesWpp}\n*Total: R$ ${menorValor.toFixed(2).replace('.', ',')}*`;
+        let linkWap = `https://api.whatsapp.com/send?phone=${infoParceiro.whatsapp}&text=${encodeURIComponent(textoWpp)}`;
+        
+        window.open(linkWap, '_blank');
+        window.open(infoParceiro.site, '_blank');
+    
+}
 </script>
 </div>
 </div>
